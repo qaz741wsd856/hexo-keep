@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="qaz741wsd856">
+    
+    <title>
+        
+            打通大内网第三期 固定服务端口 |
+        
+        我的小站
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"我的小站","author":"qaz741wsd856","avatar":"/images/avatar.svg","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":"enable","background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"生命在于折腾！","hitokoto":false},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":null,"category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":false,"img_link":null,"text":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":false,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":true,"site_pv":true,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"valine","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.21"},"waline":{"server_url":null,"reaction":false,"version":2},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":true,"provider":"jsdelivr"},"pjax":{"enable":true},"footer":{"since":2020,"word_count":false,"icp":{"enable":false,"record_code":null,"url":"https://beian.miit.gov.cn"},"site_deploy":{"enable":false,"provider":"github","url":null},"shields_style":{"enable":false,"custom":[{"link_url":null,"img_url":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.1.3"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               我的小站
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                
+                                HOME
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                
+                                CATEGORIES
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/"
+                    >HOME</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives"
+                    >ARCHIVES</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags"
+                    >TAGS</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories"
+                    >CATEGORIES</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about"
+                    >ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        打通大内网第三期 固定服务端口
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/avatar.svg">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">qaz741wsd856</span>
+                                
+                                    <span class="author-badge">Lv1</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2023-10-16 15:44:16</span>
+            </span>
+
+            <span class="meta-info-item post-update-date">
+                <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                <span class="datetime" data-updated="Wed May 15 2024 10:55:48 GMT+0000">2024-05-15 18:55:48</span>
+            </span>
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/%E6%95%99%E7%A8%8B/">教程</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E7%BD%91%E7%BB%9C/">网络</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">内网穿透</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+            <span class="meta-info-item post-wordcount">
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>3.4k Words</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-min2read">
+                <i class="icon fas fa-clock"></i>&nbsp;<span>14 Mins</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本教程不适合小白，本人因为水平有限，也无法解决大家遇到的问题，一旦出现问题还得请各位自行摸索。首要条件：NAT 类型为 NAT1，即 fullcone；光猫桥接或开启 dmz；路由器能刷机或者开启 upnp&#x2F;dmz建议：路由器能够控制具体的端口开放与否，而不是只能全开或全关。<br>本文中的操作基于 OpenWrt 上的 Lucky，在其它设备使用或是使用 NATMAP 进行穿透同样可以类比。建议在阅读了第一期与第二期的基础上阅读本文。</p>
+<h1 id="需解决的问题与思路"><a href="#需解决的问题与思路" class="headerlink" title="需解决的问题与思路"></a>需解决的问题与思路</h1><p>STUN穿透的端口不固定，并且更换较为频繁，虽然在第一期中，我们使用Cloudflare页面规则，将域名重定向到了公网端口，解决了web应用的访问；而绝大多数需要连接自建后端的应用程序并不支持重定向，必须指定端口，甚至部分应用程序不允许修改默认端口。</p>
+<p>我们可以借鉴其它内网穿透软件的思路，通过一个端口来转发其他端口的流量，常见的做法有两种：</p>
+<ul>
+<li>通过frp的stcp和sudp，将内网端口一对一的绑定到异地设备的本机端口上。</li>
+<li>通过wireguard或n2n，将内网整个网段转发过去。</li>
+</ul>
+<p>因为我的内网服务比较多，不想让连teamspeak的朋友都来欣赏我的“学习资料”，所以我选择使用frp。</p>
+<p>此处放两个教程供各位参考，不过他们用的是NATMAP。</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://github.com/heiher/natmap/wiki/frp#%E4%BD%BF%E7%94%A8natmap%E5%9C%A8nat-1%E7%A7%81%E7%BD%91ip%E5%AE%BD%E5%B8%A6%E4%B8%8A%E9%83%A8%E7%BD%B2frp%E6%9C%8D%E5%8A%A1" >使用NATMap在NAT-1私网IP宽带上部署FRP服务<i class="fas fa-external-link-alt"></i></a></p>
+<p>​<a class="link"   target="_blank" rel="noopener" href="https://www.right.com.cn/forum/thread-8289365-1-1.html" >natmap内网穿透让内网实现公网IP，远程访问异地组网，做frps，ssh ，web，wireguard..<i class="fas fa-external-link-alt"></i></a>​</p>
+<h1 id="第一步-在内网安装frps和frpc，并配置stcp"><a href="#第一步-在内网安装frps和frpc，并配置stcp" class="headerlink" title="第一步 在内网安装frps和frpc，并配置stcp"></a>第一步 在内网安装frps和frpc，并配置stcp</h1><p>在内网配置的frps和frpc使用官方版即可，此处简单带过。<a class="link"   target="_blank" rel="noopener" href="https://gofrp.org/zh-cn/" >官方文档<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="frps"><a href="#frps" class="headerlink" title="frps"></a>frps</h2><p>在路由器或nas上下载并安装frps，我是在Unraid里用docker安装：</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/pIbKD2YeiudEmCL.png"
+                        alt="image"
+                 >​</p>
+<p>配置frps.ini : </p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">7000</span></span><br><span class="line"><span class="attr">token</span> = your_token</span><br></pre></td></tr></table></figure>
+
+<p>只需配置<code>bind_port</code>​和<code>token</code>​就行，也就是frps的访问端口和令牌，默认采用TCP协议。</p>
+<p>配置完成后运行frps，接下来参考之前的教程，它创建STUN穿透通道、配置端口转发、开启防火墙，在外网能ping通后为它设置开机自启。</p>
+<h2 id="frpc"><a href="#frpc" class="headerlink" title="frpc"></a>frpc</h2><p>为何在内网中也要frpc？这跟stcp与sudp的工作方式有关，官网的描述如下：</p>
+<blockquote>
+<p>STCP 和 SUDP 的 (S) 的含义是 Secret。其作用是为 TCP 和 UDP 类型的服务提供一种安全访问的能力，避免让端口直接暴露在公网上导致任何人都能访问到。</p>
+<p>这两种代理要求在被访问服务的机器上以及要访问的用户的机器上都部署上 frp 的客户端。被访问的服务所在机器叫做服务端，另一端叫做访问端。</p>
+<p>frp 会在访问端监听一个端口和服务端的端口做映射。访问端的用户需要提供相同的密钥才能连接成功，从而保证安全性。</p>
+</blockquote>
+<p><del>参考</del>​<del><a class="link"   target="_blank" rel="noopener" href="https://gofrp.org/zh-cn/docs/examples/xtcp/" >官方的使用示例<i class="fas fa-external-link-alt"></i></a></del>​ <del>，配置时根据需要把</del>​<del>​<code>xtcp</code>​</del>​<del>改成</del>​<del>​<code>stcp</code>​</del>​<del>或</del>​<del>​<code>sdup</code>​</del>​<del>即可。</del> 官方已经不再推荐使用ini配置文件。</p>
+<p>下载安装官方版frpc后，编辑frpc.ini。<code>common</code>​中的<code>token</code>​必须与frps相同。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">server_port</span> = <span class="number">7000</span></span><br><span class="line"><span class="attr">token</span> = your_token</span><br><span class="line"></span><br><span class="line"><span class="comment"># jellyfin</span></span><br><span class="line"><span class="section">[svc_jellyfin]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = B9jNFfUy3hDrmi</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">8096</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"><span class="attr">role</span> = server</span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx</span></span><br><span class="line"><span class="section">[svc_nginx]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = x5Y6f8VBbXQ5NY</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">192.168</span>.<span class="number">0.115</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">18443</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># teamspeak</span></span><br><span class="line"><span class="section">[svc_ts1]</span></span><br><span class="line"><span class="attr">type</span> = sudp</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">9987</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">false</span></span><br><span class="line"><span class="section">[svc_ts2]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">10011</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"><span class="section">[svc_ts3]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">30033</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>我将frpc和frps部署在了同一台机器上，因此<code>server_addr</code>​填的是127.0.0.1，你要改为frps的内网ip。有网友反映将frps和frpc部署在同一台机器上可能会出错，但是我没遇到。</p>
+<p>为你想要在外网访问的所有端口都配置frpc的stcp&#x2F;sudp服务端（如果不指定<code>role</code>​则默认为<code>server</code>​），<code>local_ip</code>​和<code>local_port</code>​为相应服务的内网地址和端口。我这里的添加了本地地址上的jellyfin、nginx和teamspeak。</p>
+<blockquote>
+<p>如果你需要访问的所有服务都经过反向代理，那也可以只为反向代理配置stcp，并在异地机器上修改HOSTS文件。</p>
+</blockquote>
+<h1 id="第二步-解析frps的公网端口"><a href="#第二步-解析frps的公网端口" class="headerlink" title="第二步 解析frps的公网端口"></a>第二步 解析frps的公网端口</h1><p>绕了这么一大圈，还是要面对最头疼的问题：frps的公网访问端口不固定怎么办？</p>
+<h2 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h2><h3 id="ip4p"><a href="#ip4p" class="headerlink" title="ip4p"></a>ip4p</h3><p>NATMAP的作者给出了名为ip4p的方案，也就是将ipv4地址和端口转化成ipv6地址，添加为一条AAAA记录。当公网地址或端口改变时，只要修改该记录，即可实现类似DDNS的效果。作者也对frpc进行了修改，为它添加了解析ip4p的功能。<a class="link"   target="_blank" rel="noopener" href="https://github.com/heiher/frp" >支持ip4p的frp <i class="fas fa-external-link-alt"></i></a></p>
+<blockquote>
+<p>The IP4P address format uses IPv6 special addresses to encode IPv4 addresses and ports for easy distribution through DNS AAAA records.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2001::&#123;port&#125;:&#123;ipv4-hi16&#125;:&#123;ipv4-lo16&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="ip4p存在的问题"><a href="#ip4p存在的问题" class="headerlink" title="ip4p存在的问题"></a>ip4p存在的问题</h4><p>在windows平台和安卓平台上，如果没有外网ipv6环境，那么他程序里使用的LookupIP函数不会获取AAAA记录。虽然调用nslookup可以解析AAAA记录，但是我懒……</p>
+<p>也就是说，你连不上外网ipv6，就解析不了ip4p，但是如果你连得上ipv6，为什么不用ipv6直连呢……</p>
+<h3 id="TXT记录"><a href="#TXT记录" class="headerlink" title="TXT记录"></a>TXT记录</h3><p>我进交流群向带佬求助后，带佬建议我直接把公网ip和端口放进TXT记录里。于是我花了俩小时自学了一下golang，添加了解析TXT记录的功能。我的做法是，假设公网地址是<code>183.6.66.666:6666</code>​，将其用BASE64编码，变成<code>MTgzLjYuNjYuNjY2OjY2NjY=</code>​放进TXT记录里，供frpc解析。如果你觉得不安全，那可以考虑加个AES加密之类的。</p>
+<h2 id="创建TXT记录"><a href="#创建TXT记录" class="headerlink" title="创建TXT记录"></a>创建TXT记录</h2><p>进入Cloudflare后台，在dns - 记录中创建一条TXT记录，TTL我设为了一分钟，不确定是否生效。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/fZkhdSTMVvFjQyR.png"
+                        alt="image"
+                 >​</p>
+<p>将你刚才创建的TXT记录的域名、Cloudflare的邮箱、Global API Key和域名的区域id填入下面的指令里（忘记的可以看看第一期第四步和第五步），并在命令行里执行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X GET <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/区域id/dns_records?type=TXT&amp;name=ip4p.s*******n.online&quot;</span> -H <span class="string">&quot;X-Auth-Email:****@qq.com&quot;</span> -H <span class="string">&quot;X-Auth-Key:f9*****************1b&quot;</span> -H <span class="string">&quot;Content-Type: application/json&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>把结果里<code>&quot;id&quot;:</code>​后面的那一串数字+字母复制下来，这就是这条记录的id。</p>
+<p>把包括刚才id在内的信息替换到下一行指令里执行，尝试对刚才添加的TXT记录进行修改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/区域id/dns_records/记录id&quot;</span> -H <span class="string">&quot;X-Auth-Email:****@qq.com&quot;</span> -H <span class="string">&quot;X-Auth-Key:f9*****************1b&quot;</span> -H <span class="string">&quot;Content-Type: application/json&quot;</span> --data <span class="string">&#x27;&#123;&quot;type&quot;:&quot;TXT&quot;,&quot;name&quot;:&quot;ip4p.s********.online&quot;,&quot;content&quot;:&quot;changed&quot;,&quot;ttl&quot;:60,&quot;proxied&quot;:false&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>再回到Cloudflare后台，应该就能看到这条记录更改了。</p>
+<blockquote>
+<p>部分免费域名无法使用API修改。</p>
+</blockquote>
+<p>‍</p>
+<h2 id="配置脚本"><a href="#配置脚本" class="headerlink" title="配置脚本"></a>配置脚本</h2><p>在以下脚本中填入域名、Cloudflare的邮箱、Global API key、区域id、txt记录的id。我的<code>ip4p.s******n.online</code>​​域名除了txt记录外，还添加了ip4p的aaaa记录；如果你需要，请仿照上一步手动添加一条aaaa记录，并填入这条记录的id，如果不需要那就把对应的部分注释掉。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">domain=<span class="string">&quot;ip4p.s******n.online&quot;</span></span><br><span class="line">zone=<span class="string">&quot;e7***************************fb&quot;</span></span><br><span class="line">txt_id=<span class="string">&quot;a19***********************8a06&quot;</span></span><br><span class="line">email=<span class="string">&quot;****@qq.com&quot;</span></span><br><span class="line">key=<span class="string">&quot;f9*****************1b&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;change txt record&quot;</span></span><br><span class="line"><span class="comment">#base64 encode</span></span><br><span class="line">addr_64=$(<span class="built_in">echo</span> -n <span class="variable">$&#123;ipAddr&#125;</span> | <span class="built_in">base64</span>)</span><br><span class="line">curl -s -X PUT <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/<span class="variable">$zone</span>/dns_records/<span class="variable">$txt_id</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;X-Auth-Email: <span class="variable">$email</span>&quot;</span> -H <span class="string">&quot;X-Auth-Key: <span class="variable">$key</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">--data <span class="string">&#x27;&#123;&quot;type&quot;:&quot;TXT&quot;,&quot;name&quot;:&quot;&#x27;</span><span class="variable">$domain</span><span class="string">&#x27;&quot;,&quot;content&quot;:&quot;&#x27;</span><span class="variable">$addr_64</span><span class="string">&#x27;&quot;,&quot;ttl&quot;:60,&quot;proxied&quot;:false&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后编辑穿透规则，开启自定义脚本触发，把它粘贴到自定义脚本中。</p>
+<hr>
+<h2 id="配置脚本-1"><a href="#配置脚本-1" class="headerlink" title="配置脚本"></a><del>配置脚本</del></h2><p>Lucky从2.5.1起，支持STUN地址改变时调用脚本，本节内容失效。​</p>
+<p>在第二期创建的webhook服务器的脚本目录下创建frp.sh，并填入Cloudflare的邮箱、Global API key、区域id、txt记录的id。我的<code>ip4p.s******n.online</code>​域名除了txt记录外，还添加了ip4p的aaaa记录；如果你需要，请仿照上一步手动添加一条aaaa记录，并填入这条记录的id，如果不需要那就把对应的部分注释掉。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># param is ip,port,addr</span></span><br><span class="line"></span><br><span class="line">domain=<span class="string">&quot;ip4p.s******n.online&quot;</span></span><br><span class="line">zone=<span class="string">&quot;e7***************************fb&quot;</span></span><br><span class="line">ip4p_id=<span class="string">&quot;96************************1b93&quot;</span></span><br><span class="line">txt_id=<span class="string">&quot;a19***********************8a06&quot;</span></span><br><span class="line">email=<span class="string">&quot;****@qq.com&quot;</span></span><br><span class="line">key=<span class="string">&quot;f9*****************1b&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;change ip4p record&quot;</span></span><br><span class="line">array=(<span class="variable">$&#123;ip//./ &#125;</span>)</span><br><span class="line">ip4p=2001::$(<span class="built_in">printf</span> <span class="string">&#x27;%x:%x%x:%x%x\n&#x27;</span> <span class="variable">$port</span> <span class="variable">$&#123;array[0]&#125;</span> <span class="variable">$&#123;array[1]&#125;</span> <span class="variable">$&#123;array[2]&#125;</span> <span class="variable">$&#123;array[3]&#125;</span>)</span><br><span class="line">curl -s -X PUT <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/<span class="variable">$zone</span>/dns_records/<span class="variable">$ip4p_id</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;X-Auth-Email:<span class="variable">$email</span>&quot;</span> -H <span class="string">&quot;X-Auth-Key:<span class="variable">$key</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">--data <span class="string">&#x27;&#123;&quot;type&quot;:&quot;AAAA&quot;,&quot;name&quot;:&quot;&#x27;</span><span class="variable">$domain</span><span class="string">&#x27;&quot;,&quot;content&quot;:&quot;&#x27;</span><span class="variable">$ip4p</span><span class="string">&#x27;&quot;,&quot;ttl&quot;:60,&quot;proxied&quot;:false&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;change txt record&quot;</span></span><br><span class="line"><span class="comment"># base64 encode</span></span><br><span class="line">addr_64=$(<span class="built_in">echo</span> -n <span class="variable">$addr</span> | <span class="built_in">base64</span>)</span><br><span class="line">curl -s -X PUT <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/<span class="variable">$zone</span>/dns_records/<span class="variable">$txt_id</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;X-Auth-Email:<span class="variable">$email</span>&quot;</span> -H <span class="string">&quot;X-Auth-Key:<span class="variable">$key</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">--data <span class="string">&#x27;&#123;&quot;type&quot;:&quot;TXT&quot;,&quot;name&quot;:&quot;&#x27;</span><span class="variable">$domain</span><span class="string">&#x27;&quot;,&quot;content&quot;:&quot;&#x27;</span><span class="variable">$addr_64</span><span class="string">&#x27;&quot;,&quot;ttl&quot;:60,&quot;proxied&quot;:false&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="在Lucky中设置webhook"><a href="#在Lucky中设置webhook" class="headerlink" title="在Lucky中设置webhook"></a><del>在Lucky中设置webhook</del></h2><p>Lucky从2.5.1起，支持STUN地址改变时调用脚本，本节内容失效。​</p>
+<p>打开Lucky后台，编辑stun的穿透规则，打开webhook，将接口地址设置为<code>http://webhookd的ip地址:wenhookd的端口/frp?ip=#&#123;ip&#125;&amp;port=#&#123;port&#125;&amp;addr=#&#123;ipAddr&#125;</code>​（webhook服务器地址、端口和脚本名称根据实际情况来），接口调用成功包含的字符串填<code>&quot;success&quot;:true</code>​。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/yk3Z5BlRjcVneTa.png"
+                        alt="image"
+                 >​</p>
+<hr>
+<h1 id="第三步-在异地电脑上配置frpc"><a href="#第三步-在异地电脑上配置frpc" class="headerlink" title="第三步 在异地电脑上配置frpc"></a>第三步 在异地电脑上配置frpc</h1><p>异地电脑上的frpc必须使用魔改版，如需解析txt记录，可以使用<a class="link"   target="_blank" rel="noopener" href="https://github.com/qaz741wsd856/frp" >我改的版本<i class="fas fa-external-link-alt"></i></a>，但我只在Windows上编译过，其它平台请自行编译。</p>
+<h2 id="配置frpc-ini"><a href="#配置frpc-ini" class="headerlink" title="配置frpc.ini"></a>配置frpc.ini</h2><p>修改<code>frpc.ini</code>​，<code>server_addr</code>​填添加了ip4p或TXT记录的域名，<code>server_port</code>​不用填，建议指定<code>dns_server</code>​。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = ip4p.s******n.<span class="literal">on</span>line</span><br><span class="line"><span class="attr">token</span> = your_token</span><br><span class="line"><span class="attr">dns_server</span> = <span class="number">8.8</span>.<span class="number">8.8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># jellyfin</span></span><br><span class="line"><span class="section">[vst_jellyfin]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_jellyfin</span><br><span class="line"><span class="attr">sk</span> = B9jNFfUy3hDrmi</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">38096</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx</span></span><br><span class="line"><span class="section">[vst_nginx]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_nginx</span><br><span class="line"><span class="attr">sk</span> = x5Y6f8VBbXQ5NY</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">18443</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># teamspeak</span></span><br><span class="line"><span class="section">[vst_ts1]</span></span><br><span class="line"><span class="attr">type</span> = sudp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_ts1</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">9987</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">false</span></span><br><span class="line"><span class="section">[vst_ts2]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_ts2</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">10011</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"><span class="section">[vst_ts3]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_ts3</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">30033</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>访问端必须手动指定<code>role</code>​​为<code>visitor</code>​​，必须指定连接的服务端名称<code>server_name</code>​​，并且<code>sk</code>​​应与服务端相同。</p>
+<p>如果<code>bind_ip</code>​填为<code>127.0.0.1</code>​，则仅有本设备能访问。若想让其它设备访问，则填为<code>0.0.0.0</code>​。</p>
+<h2 id="在Windows上将frpc注册为服务"><a href="#在Windows上将frpc注册为服务" class="headerlink" title="在Windows上将frpc注册为服务"></a>在Windows上将frpc注册为服务</h2><p>这一步面向零基础使用者。（也就是你的小白朋友）</p>
+<h3 id="先尝试运行一次"><a href="#先尝试运行一次" class="headerlink" title="先尝试运行一次"></a>先尝试运行一次</h3><p>打开frpc.exe所在文件夹，在资源管理器空白处<code>右键</code>​ - <code>打开命令提示符</code>​。</p>
+<p>输入<code>.\frpc.exe</code>​并按下回车。如果没有出现错误，可以尝试访问所有的服务。</p>
+<p>如果发现有的服务访问不上，打开<code>frpc.ini</code>​，找那个服务到对应的<code>bind_port</code>​，记下这个数字。</p>
+<p>创建文件<code>检查端口是否占用.ps1</code>​，代码如下。​<code>右键</code>​ - <code>使用PowerShell运行</code>​</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)  </span><br><span class="line">&#123;  </span><br><span class="line">	<span class="variable">$port</span> = <span class="built_in">Read-Host</span> <span class="string">&quot;请输入需要查询的端口,输入0退出：&quot;</span></span><br><span class="line">	<span class="keyword">IF</span> (<span class="variable">$port</span> <span class="operator">-eq</span> <span class="number">0</span>) &#123;<span class="keyword">exit</span>&#125;</span><br><span class="line">	<span class="variable">$res</span>=<span class="variable">$</span>(<span class="built_in">Get-NetTCPConnection</span> | ? &#123;<span class="variable">$_</span>.LocalPort <span class="operator">-eq</span> <span class="variable">$port</span>&#125;)</span><br><span class="line">	<span class="keyword">if</span> (<span class="variable">$res</span>)&#123;</span><br><span class="line">		<span class="built_in">echo</span> <span class="variable">$res</span></span><br><span class="line">		<span class="built_in">Get-Process</span> <span class="literal">-Id</span> (<span class="built_in">Get-NetTCPConnection</span> <span class="literal">-LocalPort</span> <span class="variable">$port</span>).OwningProcess</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;<span class="built_in">echo</span> <span class="string">&quot;未被占用&quot;</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你可以输入刚才记下的数字，查看该端口是否被占用、被什么程序占用，然后选择关闭该程序或者选择另一个没有被占用的端口（1025-65535之间）。</p>
+<p>一旦关闭命令提示符窗口，frpc就会关闭。</p>
+<h3 id="注册服务"><a href="#注册服务" class="headerlink" title="注册服务"></a>注册服务</h3><p>可以使用<a class="link"   target="_blank" rel="noopener" href="https://nssm.cc/download" >nssm<i class="fas fa-external-link-alt"></i></a>将程序注册为服务。</p>
+<p>先将frpc关闭。在资源管理器中打开<code>nssm.exe</code>​所在目录。32位系统打开<code>win32</code>​目录，64位系统打开<code>win64</code>​目录。</p>
+<p>在资源管理器空白处<code>右键</code>​ - <code>打开命令提示符</code>​，输入<code>.\nssm.exe install frpc</code>​。</p>
+<p>会弹出NSSM service installer窗口，<code>Application Path</code>​选择<code>frpc.exe</code>​，<code>Startup directory</code>选择frpc.exe所在目录，Arugments不填，点击Install service。</p>
+<p>在<code>任务管理器</code>​ - <code>服务</code>​ - <code>打开服务</code>​弹出窗口中找到frpc。右键frpc，点击<code>属性</code>​，将启动类型改为自动，并点击<code>确定</code>​。再右键frpc，点击<code>启动</code>​。</p>
+<h1 id="魔改版frp使用问题总结"><a href="#魔改版frp使用问题总结" class="headerlink" title="魔改版frp使用问题总结"></a>魔改版frp使用问题总结</h1><p>如果你的应用强制要求https连接（如BitWarden），可以在frp中添加反向代理的端口，并在异地电脑上修改hosts劫持域名。</p>
+<p>我尚未解决的问题记录如下：</p>
+<ul>
+<li><p>我尝试让frp使用QUIC协议，访问端可以连接到服务端，可以ping通，但是几乎收不到包；</p>
+</li>
+<li><p>部分常用第三方远程桌面无法正常使用（moonlight可以）</p>
+<ul>
+<li>RustDesk的ID服务器可以连接，但是中继服务器无法连接；</li>
+<li>parsec无法打洞（不过我也不觉得能成功）。</li>
+</ul>
+</li>
+<li><p>安卓手机若无root，开了穿透软件就无法魔法上网。</p>
+</li>
+</ul>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>至此，我们补上了STUN内网穿透的最后一块拼图，基本解决了大内网环境下的所有痛点，近似达到了拥有公网ip的效果。但使用体验仍不能称得上完美，期待之后能有更好的方案出现。</p>
+
+                </div>
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                打通大内网第三期 固定服务端口
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                /post/open-the-third-phase-of-the-big-inner-network-fixed-service-port-1lusqz.html
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    Author
+                </div>
+                <div class="content">qaz741wsd856</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    Published
+                </div>
+                <div class="content">2023-10-16 15:44</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    License
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="Copy copyright info" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E7%BD%91%E7%BB%9C/">网络</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">内网穿透</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="Share to WeChat"
+            data-tooltip-img-tip="Scan by WeChat"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to WeiBo"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/post/open-the-great-inner-net-fanwai-there-is-no-need-for-a-public-network-setting-up-rustdesk-remote-desktop-z2rcelk.html"
+                                   title="打通大内网番外篇 无需公网，搭建RustDesk远程桌面"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">打通大内网番外篇 无需公网，搭建RustDesk远程桌面</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/post/open-the-second-phase-of-da-inner-network-to-make-bt-download-unimpeded-1mhpdn.html"
+                                   title="打通大内网第二期 让BT下载畅通无阻"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">打通大内网第二期 让BT下载畅通无阻</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <!-- use hexo-blog-encrypt -->
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9C%80%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98%E4%B8%8E%E6%80%9D%E8%B7%AF"><span class="nav-text">需解决的问题与思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%9C%A8%E5%86%85%E7%BD%91%E5%AE%89%E8%A3%85frps%E5%92%8Cfrpc%EF%BC%8C%E5%B9%B6%E9%85%8D%E7%BD%AEstcp"><span class="nav-text">第一步 在内网安装frps和frpc，并配置stcp</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#frps"><span class="nav-text">frps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#frpc"><span class="nav-text">frpc</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E8%A7%A3%E6%9E%90frps%E7%9A%84%E5%85%AC%E7%BD%91%E7%AB%AF%E5%8F%A3"><span class="nav-text">第二步 解析frps的公网端口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-text">解决思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ip4p"><span class="nav-text">ip4p</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ip4p%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">ip4p存在的问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TXT%E8%AE%B0%E5%BD%95"><span class="nav-text">TXT记录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BATXT%E8%AE%B0%E5%BD%95"><span class="nav-text">创建TXT记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%84%9A%E6%9C%AC"><span class="nav-text">配置脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%84%9A%E6%9C%AC-1"><span class="nav-text">配置脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8Lucky%E4%B8%AD%E8%AE%BE%E7%BD%AEwebhook"><span class="nav-text">在Lucky中设置webhook</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5-%E5%9C%A8%E5%BC%82%E5%9C%B0%E7%94%B5%E8%84%91%E4%B8%8A%E9%85%8D%E7%BD%AEfrpc"><span class="nav-text">第三步 在异地电脑上配置frpc</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEfrpc-ini"><span class="nav-text">配置frpc.ini</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8Windows%E4%B8%8A%E5%B0%86frpc%E6%B3%A8%E5%86%8C%E4%B8%BA%E6%9C%8D%E5%8A%A1"><span class="nav-text">在Windows上将frpc注册为服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E5%B0%9D%E8%AF%95%E8%BF%90%E8%A1%8C%E4%B8%80%E6%AC%A1"><span class="nav-text">先尝试运行一次</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E6%9C%8D%E5%8A%A1"><span class="nav-text">注册服务</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AD%94%E6%94%B9%E7%89%88frp%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93"><span class="nav-text">魔改版frp使用问题总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-text">结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+        &copy;&nbsp;<span>2020</span>&nbsp;-&nbsp;2024
+        
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">qaz741wsd856</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+        <div class="count-info info-item">
+            
+
+            
+                <span class="count-item border-box uv">
+                    <span class="item-type border-box">Unique Visitor</span>
+                    <span class="item-value border-box uv" id="busuanzi_value_site_uv"></span>
+                </span>
+            
+
+            
+                <span class="count-item border-box pv">
+                    <span class="item-type border-box">Page View</span>
+                    <span class="item-value border-box pv" id="busuanzi_value_site_pv"></span>
+                </span>
+            
+        </div>
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="tools-list border-box">
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-toggle-theme-mode flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <!-- use hexo-blog-encrypt -->
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9C%80%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98%E4%B8%8E%E6%80%9D%E8%B7%AF"><span class="nav-text">需解决的问题与思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%9C%A8%E5%86%85%E7%BD%91%E5%AE%89%E8%A3%85frps%E5%92%8Cfrpc%EF%BC%8C%E5%B9%B6%E9%85%8D%E7%BD%AEstcp"><span class="nav-text">第一步 在内网安装frps和frpc，并配置stcp</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#frps"><span class="nav-text">frps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#frpc"><span class="nav-text">frpc</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E8%A7%A3%E6%9E%90frps%E7%9A%84%E5%85%AC%E7%BD%91%E7%AB%AF%E5%8F%A3"><span class="nav-text">第二步 解析frps的公网端口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%80%9D%E8%B7%AF"><span class="nav-text">解决思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ip4p"><span class="nav-text">ip4p</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ip4p%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">ip4p存在的问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TXT%E8%AE%B0%E5%BD%95"><span class="nav-text">TXT记录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BATXT%E8%AE%B0%E5%BD%95"><span class="nav-text">创建TXT记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%84%9A%E6%9C%AC"><span class="nav-text">配置脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%84%9A%E6%9C%AC-1"><span class="nav-text">配置脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8Lucky%E4%B8%AD%E8%AE%BE%E7%BD%AEwebhook"><span class="nav-text">在Lucky中设置webhook</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5-%E5%9C%A8%E5%BC%82%E5%9C%B0%E7%94%B5%E8%84%91%E4%B8%8A%E9%85%8D%E7%BD%AEfrpc"><span class="nav-text">第三步 在异地电脑上配置frpc</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEfrpc-ini"><span class="nav-text">配置frpc.ini</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8Windows%E4%B8%8A%E5%B0%86frpc%E6%B3%A8%E5%86%8C%E4%B8%BA%E6%9C%8D%E5%8A%A1"><span class="nav-text">在Windows上将frpc注册为服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E5%B0%9D%E8%AF%95%E8%BF%90%E8%A1%8C%E4%B8%80%E6%AC%A1"><span class="nav-text">先尝试运行一次</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E6%9C%8D%E5%8A%A1"><span class="nav-text">注册服务</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AD%94%E6%94%B9%E7%89%88frp%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93"><span class="nav-text">魔改版frp使用问题总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-text">结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+<!-- common -->
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/toggle-theme.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/code-block.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/libs/anime.min.js"></script>
+
+<!-- local-search -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/local-search.js"></script>
+
+
+<!-- lazyload -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/lazyload.js"></script>
+
+
+<div class="pjax">
+    
+        <!-- post-helper -->
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/post-helper.js"></script>
+
+        <!-- toc -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/toc.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/copyright-info.js"></script>
+        
+
+        <!-- share -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/share.js"></script>
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>

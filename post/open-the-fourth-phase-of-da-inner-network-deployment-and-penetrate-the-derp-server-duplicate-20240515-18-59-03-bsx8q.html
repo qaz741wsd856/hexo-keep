@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="qaz741wsd856">
+    
+    <title>
+        
+            打通大内网第四期 部署并穿透DERP服务器 |
+        
+        我的小站
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"我的小站","author":"qaz741wsd856","avatar":"/images/avatar.svg","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":"enable","background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"生命在于折腾！","hitokoto":false},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":null,"category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":false,"img_link":null,"text":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":false,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":true,"site_pv":true,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"valine","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.21"},"waline":{"server_url":null,"reaction":false,"version":2},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":true,"provider":"jsdelivr"},"pjax":{"enable":true},"footer":{"since":2020,"word_count":false,"icp":{"enable":false,"record_code":null,"url":"https://beian.miit.gov.cn"},"site_deploy":{"enable":false,"provider":"github","url":null},"shields_style":{"enable":false,"custom":[{"link_url":null,"img_url":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.1.3"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               我的小站
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                
+                                HOME
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                
+                                CATEGORIES
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/"
+                    >HOME</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives"
+                    >ARCHIVES</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags"
+                    >TAGS</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories"
+                    >CATEGORIES</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about"
+                    >ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        打通大内网第四期 部署并穿透DERP服务器
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/avatar.svg">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">qaz741wsd856</span>
+                                
+                                    <span class="author-badge">Lv1</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2024-05-15 18:59:03</span>
+            </span>
+
+            <span class="meta-info-item post-update-date">
+                <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                <span class="datetime" data-updated="Wed May 15 2024 11:03:08 GMT+0000">2024-05-15 19:03:08</span>
+            </span>
+        
+
+        
+
+        
+
+        
+        
+            <span class="meta-info-item post-wordcount">
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>2.7k Words</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-min2read">
+                <i class="icon fas fa-clock"></i>&nbsp;<span>10 Mins</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    <p>​#网络#​ ​#OpenWrt#​</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>上一期介绍了如何通过frp的<code>stcp/sudp</code>​来固定访问端口，虽然可靠性和安全性都得到了保障，配置还是麻烦了一点，每添加一个服务都要修改两处frpc的配置文件，并需要每个访问者都手动更新。并且对于访问者而言，处理端口冲突、注册服务也需要一点知识储备，显然不如无脑安装软件来的方便。如果你只打算小范围内共享，那么直接使用tailscale也是个不错的选择。</p>
+<p>理论上只要有一方为NAT1，是一定能直连的，但由于tailscale的服务器都在墙外，内陆的网络环境也比较复杂，偶尔会出现打不通的情况。然而我们可以另辟蹊径，在本地自建DERP中继服务器，并通过LUCKY穿透到公网上。</p>
+<h1 id="第一步-安装并配置Tailscale"><a href="#第一步-安装并配置Tailscale" class="headerlink" title="第一步 安装并配置Tailscale"></a>第一步 安装并配置Tailscale</h1><p>Tailscale官网：<a class="link"   target="_blank" rel="noopener" href="https://tailscale.com/" >https://tailscale.com/<i class="fas fa-external-link-alt"></i></a></p>
+<p>关于Tailscale基本的安装、配置在此不多赘述，教程非常多，在此贴一篇OpenWrt的教程：<br><a class="link"   target="_blank" rel="noopener" href="https://www.right.com.cn/forum/thread-8288573-1-1.html" >openwrt使用tailscale组建网对网的一些补充<i class="fas fa-external-link-alt"></i></a><br>如果你需要在外访问整个内网，请正确配置子网路由。  </p>
+<blockquote>
+<p>如果可能的话，尽量将Tailscale和DERP安装在同一台机器上。即使不行，最好也在部署DERP的机器上安装Tailscale，用于身份验证。<br>如果用于验证的Tailscale客户端是通过docker安装的，为了让DERP能够与Tailscale交互，请添加路径映射<br>-v &#x2F;run&#x2F;tailscale:&#x2F;var&#x2F;run&#x2F;tailscale</p>
+<p>我将Tailscale装在路由器上，DERP安装在路由器下面的Unraid上。如果以插件的形式直接安装，则无法使用本地局域网地址访问Unraid，只能使用Tailscale的100开头的地址，因此我最后用Docker安装，网络选择br0并指定了另外一个ip。</p>
+</blockquote>
+<p>当配置完成，已经可以在外网通过Tailscale访问后，再注册一个用于共享的小号，并将其加入大号的Tailscale网络，理由有以下两点：</p>
+<ol>
+<li>Tailscale免费计划只允许3个用户，但是允许100台设备。通过共享账户的方式，可以允许更多人连接。</li>
+<li>DERP服务器若不开启验证，那么谁都可以白嫖；但一旦开启验证，只有本机当前登录Tailscale的账户有权访问，其他用户均无法访问。</li>
+</ol>
+<p>然后将所有Tailscale客户端上登录的账号换成小号，加入大号的网络（也就是在最后一步，选择connect device的时候，点击大号邮箱）。</p>
+<h2 id="第二步-安装并配置DERP服务器"><a href="#第二步-安装并配置DERP服务器" class="headerlink" title="第二步 安装并配置DERP服务器"></a>第二步 安装并配置DERP服务器</h2><p>首先先给DERP服务器准备一个域名，并解析到STUN穿透的ipv4公网地址，如果你之前没有用过ddns，直接使用Lucky的DDNS，通过接口获取ipv4即可。</p>
+<p>接着申请证书，使用Lucky申请非常方便，并且可以映射证书路径供其它服务使用，以及在证书更新时调用自定义脚本；如果Lucky和DERP没有部署在同一个机器上，可以用Lucky的webdav功能将映射证书的路径分享出来，或者通过自定义脚本运行scp和ssh命令，上传证书并重启DERP。具体过程略过不表。</p>
+<p>接下来安装DERP，我使用docker安装，记得修改证书的映射路径、端口映射和域名。我这里将8051作为derp端口，3478作为stun端口。如果不想开启身份验证，请将第七行的<code>true</code>​改为<code>false</code>​。</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="language-bash"> --restart always \</span></span><br><span class="line"><span class="language-bash">  -p 8051:443 -p 3478:3478/udp \</span></span><br><span class="line"><span class="language-bash">  -e DERP_CERT_MODE=manual \</span></span><br><span class="line"><span class="language-bash">  -v /your/cert/path:/app/certs \</span></span><br><span class="line"><span class="language-bash">  -e DERP_ADDR=:443 \</span></span><br><span class="line"><span class="language-bash">  -e DERP_DOMAIN=derp.xxxx.com \</span></span><br><span class="line"><span class="language-bash">  -e DERP_VERIFY_CLIENTS=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">  -v /var/run/tailscale:/var/run/tailscale \</span></span><br><span class="line"><span class="language-bash">  fredliang/derper</span></span><br></pre></td></tr></table></figure>
+
+<p>然后为DERP服务器创建STUN穿透规则，需要两条。一条给derp端口，协议选择tcp，一条给stun端口，协议选择udp，不会的朋友可以去看看第一、第二期教程。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/c6WFL7uhkJVRTUw.png"
+                        alt="image"
+                 >​</p>
+<p>如果一切顺利，就可以在浏览器里访问https:&#x2F;&#x2F;<code>derp域名</code>​:<code>derp穿透后的公网端口</code>​。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/Sz6kmcasvTrZlOn.png"
+                        alt="image"
+                 ></p>
+<p>看到以上界面说明成功。</p>
+<h1 id="第三步-将DERP服务器添加至Tailscale中"><a href="#第三步-将DERP服务器添加至Tailscale中" class="headerlink" title="第三步 将DERP服务器添加至Tailscale中"></a>第三步 将DERP服务器添加至Tailscale中</h1><p>用大号进入Tailscale后台，在顶部切换到<code>Access Controls</code>​选项卡，在<code>acls</code>​后添加<code>derpMAP</code>​规则。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">// 前面有一些注释，不修改</span></span><br><span class="line">	<span class="attr">&quot;acls&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="comment">// Allow all connections.</span></span><br><span class="line">		<span class="comment">// Comment this section out if you want to define specific restrictions.</span></span><br><span class="line">		<span class="punctuation">&#123;</span><span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;accept&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;src&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;*&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="attr">&quot;dst&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;*:*&quot;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;derpMap&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;Regions&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;900&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;RegionID&quot;</span><span class="punctuation">:</span>   <span class="number">900</span><span class="punctuation">,</span></span><br><span class="line">				<span class="attr">&quot;RegionCode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;myderp&quot;</span><span class="punctuation">,</span></span><br><span class="line">				<span class="attr">&quot;RegionName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;home&quot;</span><span class="punctuation">,</span></span><br><span class="line">				<span class="attr">&quot;Nodes&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span></span><br><span class="line">					<span class="attr">&quot;Name&quot;</span><span class="punctuation">:</span>             <span class="string">&quot;1&quot;</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;RegionID&quot;</span><span class="punctuation">:</span>         <span class="number">900</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;HostName&quot;</span><span class="punctuation">:</span>         <span class="string">&quot;derp.xxxxx.xxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;DERPPort&quot;</span><span class="punctuation">:</span>         <span class="number">25814</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;STUNPort&quot;</span><span class="punctuation">:</span>         <span class="number">25876</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;InsecureForTests&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">				<span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">			<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="comment">// Define users and devices that can use Tailscale SSH.</span></span><br><span class="line"><span class="comment">//...后面是ssh的内容，不修改</span></span><br></pre></td></tr></table></figure>
+
+<p>修改<code>Hostname</code>​为你DERP服务器的域名，<code>DERPPort</code>​和<code>STUNPort</code>​分别改为对应的公网端口（不知道改成哪个端口就把我的规则和我之前的Lucky截图对比一下）。确认无误后点击保存。</p>
+<p>在安装了Tailscale的机器（或容器）上执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tailscale netcheck</span><br></pre></td></tr></table></figure>
+
+<p>如果没有出现测速结果里没有出现<code>myderp</code>​，请检查规则是否编写正确，如果没有这个节点没有测速结果，可以稍等一会儿再试。当看到<code>myderp</code>​节点的延迟后，证明配置成功。</p>
+<h1 id="第四步-自动更新DERP服务器端口"><a href="#第四步-自动更新DERP服务器端口" class="headerlink" title="第四步 自动更新DERP服务器端口"></a>第四步 自动更新DERP服务器端口</h1><p>Tailscale支持通过网页后台面板、GitOps和api更新acl规则。使用GitOps可以清晰的看到每一次更新的时间以及是否成功，使用api则更加简单，本文使用api进行更新。</p>
+<ul>
+<li>生成OAuth client并获取id和secret</li>
+</ul>
+<p>使用大号登录Tailscale后台，在<code>Settings</code>​ - <code>OAuth clients</code>​中点击<code>Generate OAuth client</code>​。OAuth client的名称随便填，勾选对<code>ACL</code>​的read和write权限。然后点击<code>Generate client</code>​，并复制生成的id和secret。</p>
+<blockquote>
+<p>不同于最大有效期为90天的api key，OAuth clients不会过期，免去了手动更新key的麻烦。</p>
+</blockquote>
+<ul>
+<li>配置更新脚本</li>
+</ul>
+<p>回到Lucky后台，编辑derp端口的穿透规则，将以下脚本填入<code>自定义脚本</code>​中。<br>记得修改<code>client_id</code>​和<code>client_secret</code>​为你刚才获取到的值。</p>
+<p>考虑到可能会存在多个derp服务器，使用<code>&quot;DERPPort&quot;:</code>​后面的空格个数来区分。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#set your oauth client here</span></span><br><span class="line">client_id=</span><br><span class="line">client_secret=</span><br><span class="line"></span><br><span class="line">api_key=`curl -d <span class="string">&quot;client_id=<span class="variable">$client_id</span>&quot;</span> \</span><br><span class="line">  -d <span class="string">&quot;client_secret=<span class="variable">$client_secret</span>&quot;</span> \</span><br><span class="line">  <span class="string">&quot;https://api.tailscale.com/api/v2/oauth/token&quot;</span>`</span><br><span class="line">tskey=`<span class="built_in">echo</span> <span class="variable">$api_key</span> | awk -F <span class="string">&quot;\&quot;&quot;</span> <span class="string">&#x27;&#123;print $4&#125;&#x27;</span>`</span><br><span class="line"></span><br><span class="line">DERPPort=<span class="variable">$&#123;port&#125;</span></span><br><span class="line">tmp=<span class="string">&#x27;/tmp/tailscale.hujson&#x27;</span></span><br><span class="line">curl <span class="string">&quot;https://api.tailscale.com/api/v2/tailnet/-/acl&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Authorization: Bearer <span class="variable">$tskey</span>&quot;</span> &gt; <span class="variable">$tmp</span></span><br><span class="line">sed -i -r <span class="string">&#x27;s/&quot;DERPPort&quot;:\s&#123;8,9&#125;[0-9]+/&quot;DERPPort&quot;:         &#x27;</span><span class="variable">$DERPPort</span><span class="string">&#x27;/&#x27;</span> <span class="variable">$tmp</span></span><br><span class="line">curl <span class="string">&quot;https://api.tailscale.com/api/v2/tailnet/-/acl&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Authorization: Bearer <span class="variable">$tskey</span>&quot;</span> --data-binary @<span class="variable">$tmp</span></span><br></pre></td></tr></table></figure>
+
+<p>编辑STUN端口的穿透规则，将以下脚本填入<code>自定义脚本</code>​中。<br>记得修改<code>client_id</code>​和<code>client_secret</code>​。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#set your oauth client here</span></span><br><span class="line">client_id=</span><br><span class="line">client_secret=</span><br><span class="line"></span><br><span class="line">api_key=`curl -d <span class="string">&quot;client_id=<span class="variable">$client_id</span>&quot;</span> \</span><br><span class="line">  -d <span class="string">&quot;client_secret=<span class="variable">$client_secret</span>&quot;</span> \</span><br><span class="line">  <span class="string">&quot;https://api.tailscale.com/api/v2/oauth/token&quot;</span>`</span><br><span class="line">tskey=`<span class="built_in">echo</span> <span class="variable">$api_key</span> | awk -F <span class="string">&quot;\&quot;&quot;</span> <span class="string">&#x27;&#123;print $4&#125;&#x27;</span>`</span><br><span class="line"></span><br><span class="line">STUNPort=<span class="variable">$&#123;port&#125;</span></span><br><span class="line">tmp=<span class="string">&#x27;/tmp/tailscale.hujson&#x27;</span></span><br><span class="line">curl <span class="string">&quot;https://api.tailscale.com/api/v2/tailnet/-/acl&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Authorization: Bearer <span class="variable">$tskey</span>&quot;</span> &gt; <span class="variable">$tmp</span></span><br><span class="line">sed -i -r <span class="string">&#x27;s/&quot;STUNPort&quot;:\s&#123;8,9&#125;[0-9]+/&quot;STUNPort&quot;:         &#x27;</span><span class="variable">$STUNPort</span><span class="string">&#x27;/&#x27;</span> <span class="variable">$tmp</span></span><br><span class="line">curl <span class="string">&quot;https://api.tailscale.com/api/v2/tailnet/-/acl&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Authorization: Bearer <span class="variable">$tskey</span>&quot;</span> --data-binary @<span class="variable">$tmp</span></span><br></pre></td></tr></table></figure>
+
+<p>目前Lucky并未提供自定义脚本的测试功能，不过只是填写两个变量而已，应该不会出什么幺蛾子…吧。</p>
+<hr>
+<p>经过实测，在晚高峰时，于NAT4的电脑上开启Tailscale，会出现无法跨运营商直连NAT1的另一客户端的情况；然而此时可以通过STUN穿透出去的自建DERP中继来建立连接。</p>
+<h1 id="第五步-为Tailscale添加本地DNS并劫持域名"><a href="#第五步-为Tailscale添加本地DNS并劫持域名" class="headerlink" title="第五步 为Tailscale添加本地DNS并劫持域名"></a>第五步 为Tailscale添加本地DNS并劫持域名</h1><p>愿意折腾到这一步的朋友，有很大概率已经开启了ipv6，并配置好了反向代理。如果想要实现“一个域名，在内网&#x2F;Tailscale中用内网ipv4，在外网中用ipv6”的效果，可以尝试一下添加本地DNS。如果不想配置反向代理，那么可以跳过这步。</p>
+<h2 id="本地劫持泛域名"><a href="#本地劫持泛域名" class="headerlink" title="本地劫持泛域名"></a>本地劫持泛域名</h2><p>首先在你是用的dns服务中添加HOSTS，劫持你要访问的泛域名。如果不想在内网劫持，仅想在Tailscale中劫持，可以用Docker再装一个SmartDNS，记得用网桥（如br0）把容器IP绑定到与宿主机同网段，并使用53端口。</p>
+<ul>
+<li><p>对于dnsmasq（也就是OpenWrt的默认dns）</p>
+<p>打开<code>/etc/dnsmasq.conf</code>​，添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">address = /mydomain.com/192.168.0.1</span><br></pre></td></tr></table></figure>
+
+<p>并重启dnsmasq，这会劫持<code>mydomain.com</code>​和它的所有子域名到192.168.0.1。</p>
+</li>
+<li><p>对于SmartDNS<br>在<code>自定义规则</code>​或<code>域名地址</code>​中添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">address /mydomain.com/192.168.0.1</span><br></pre></td></tr></table></figure>
+
+<p>并重启SmartDNS，这会劫持<code>mydomain.com</code>​和它的所有子域名到192.168.0.1。</p>
+</li>
+</ul>
+<p>然后在内网机器上清除dns缓存，使用<code>nslookup</code>​查询刚才劫持的域名。</p>
+<p>由于OpenWrt会默认劫持所有访问53端口的流量到OpenWrt的53端口，因此如果你是用OpenWrt作为主路由，但自定义DNS不在OpenWrt的ip上，则需要在<code>网络</code>​ - <code>防火墙</code>​ - <code>自定义规则</code>​中注释掉所有跟53端口相关的规则。</p>
+<p>如果还不成功，大概率是某些科学插件修改或劫持dns导致的，请关闭劫持功能或者直接在科学插件中设置DNS劫持。</p>
+<h2 id="在Tailscale中添加本地DNS"><a href="#在Tailscale中添加本地DNS" class="headerlink" title="在Tailscale中添加本地DNS"></a>在Tailscale中添加本地DNS</h2><p>进入Tailscale后台，进入<code>DNS</code>​，点击<code>Add nameserver</code>​ - <code>Custom</code>​，输入你内网DNS的IP地址，可以为Tailscale的100开头的地址，也可以是添加进Tailscale的子网地址，并开启<code>Restrict to domain</code>​，填入需要劫持的顶级域名。（如填入<code>mydomain.com</code>​，会使用自定义DNS解析该域名及其子域名）请注意，Tailscale不支持指定协议和端口，默认使用53端口、udp协议。</p>
+<p>可能部分DNS服务默认拒绝外网请求，需要手动开启。以OpenWrt为例，需要在<code>网络</code>​​ - <code>DHCP/DNS</code>​​ - <code>基本设置</code>​​中取消勾选<code>仅本地服务</code>​​。</p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>至此Tailscale和DERP服务器的配置就结束了，经过这一番折腾，我们实现了100%直连率，并统一了内网、Tailscale、ipv6的使用体验。在SVCB&#x2F;HTTPS记录普及之前，对STUN穿透的折腾大约就止步如此了吧。</p>
+<p>如果你仍对安全性抱有担忧，可以自行修改acl规则，默认拒绝共享账户访问子网，仅允许访问特定的ip和端口。如果你想让特定的设备不受用户权限的限制，可以给它打上tag，再对该tag单独设置权限。</p>
+<p>‍</p>
+<p>‍</p>
+
+                </div>
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                打通大内网第四期 部署并穿透DERP服务器
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                /post/open-the-fourth-phase-of-da-inner-network-deployment-and-penetrate-the-derp-server-duplicate-20240515-18-59-03-bsx8q.html
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    Author
+                </div>
+                <div class="content">qaz741wsd856</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    Published
+                </div>
+                <div class="content">2024-05-15 18:59</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    License
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="Copy copyright info" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="Share to WeChat"
+            data-tooltip-img-tip="Scan by WeChat"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to WeiBo"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/post/open-the-great-inner-net-fanwai-there-is-no-need-for-a-public-network-setting-up-rustdesk-remote-desktop-z2rcelk.html"
+                                   title="打通大内网番外篇 无需公网，搭建RustDesk远程桌面"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">打通大内网番外篇 无需公网，搭建RustDesk远程桌面</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <!-- use hexo-blog-encrypt -->
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AETailscale"><span class="nav-text">第一步 安装并配置Tailscale</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AEDERP%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-text">第二步 安装并配置DERP服务器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5-%E5%B0%86DERP%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%B7%BB%E5%8A%A0%E8%87%B3Tailscale%E4%B8%AD"><span class="nav-text">第三步 将DERP服务器添加至Tailscale中</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5-%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0DERP%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%8F%A3"><span class="nav-text">第四步 自动更新DERP服务器端口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5-%E4%B8%BATailscale%E6%B7%BB%E5%8A%A0%E6%9C%AC%E5%9C%B0DNS%E5%B9%B6%E5%8A%AB%E6%8C%81%E5%9F%9F%E5%90%8D"><span class="nav-text">第五步 为Tailscale添加本地DNS并劫持域名</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E5%8A%AB%E6%8C%81%E6%B3%9B%E5%9F%9F%E5%90%8D"><span class="nav-text">本地劫持泛域名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8Tailscale%E4%B8%AD%E6%B7%BB%E5%8A%A0%E6%9C%AC%E5%9C%B0DNS"><span class="nav-text">在Tailscale中添加本地DNS</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-text">结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+        &copy;&nbsp;<span>2020</span>&nbsp;-&nbsp;2024
+        
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">qaz741wsd856</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+        <div class="count-info info-item">
+            
+
+            
+                <span class="count-item border-box uv">
+                    <span class="item-type border-box">Unique Visitor</span>
+                    <span class="item-value border-box uv" id="busuanzi_value_site_uv"></span>
+                </span>
+            
+
+            
+                <span class="count-item border-box pv">
+                    <span class="item-type border-box">Page View</span>
+                    <span class="item-value border-box pv" id="busuanzi_value_site_pv"></span>
+                </span>
+            
+        </div>
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="tools-list border-box">
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-toggle-theme-mode flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <!-- use hexo-blog-encrypt -->
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AETailscale"><span class="nav-text">第一步 安装并配置Tailscale</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AEDERP%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-text">第二步 安装并配置DERP服务器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5-%E5%B0%86DERP%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%B7%BB%E5%8A%A0%E8%87%B3Tailscale%E4%B8%AD"><span class="nav-text">第三步 将DERP服务器添加至Tailscale中</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5-%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0DERP%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%8F%A3"><span class="nav-text">第四步 自动更新DERP服务器端口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5-%E4%B8%BATailscale%E6%B7%BB%E5%8A%A0%E6%9C%AC%E5%9C%B0DNS%E5%B9%B6%E5%8A%AB%E6%8C%81%E5%9F%9F%E5%90%8D"><span class="nav-text">第五步 为Tailscale添加本地DNS并劫持域名</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E5%8A%AB%E6%8C%81%E6%B3%9B%E5%9F%9F%E5%90%8D"><span class="nav-text">本地劫持泛域名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8Tailscale%E4%B8%AD%E6%B7%BB%E5%8A%A0%E6%9C%AC%E5%9C%B0DNS"><span class="nav-text">在Tailscale中添加本地DNS</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-text">结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+<!-- common -->
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/toggle-theme.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/code-block.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/libs/anime.min.js"></script>
+
+<!-- local-search -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/local-search.js"></script>
+
+
+<!-- lazyload -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/lazyload.js"></script>
+
+
+<div class="pjax">
+    
+        <!-- post-helper -->
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/post-helper.js"></script>
+
+        <!-- toc -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/toc.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/copyright-info.js"></script>
+        
+
+        <!-- share -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/share.js"></script>
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,692 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>打通大内网第一期 无公网部署https和反向代理</title>
+    <url>//post/open-the-first-phase-of-the-dayecom-without-public-network-deployment-of-https-and-reverse-proxy-4onkq.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本教程不适合小白，本人因为水平有限，也无法解决大家遇到的问题，一旦出现问题还得请各位自行摸索。</p>
+<p>首要条件：NAT类型为NAT1，即fullcone；光猫桥接或开启dmz；路由器能刷机或者开启upnp&#x2F;dmz<br>建议：路由器能够控制具体的端口开放与否，而不是只能全开或全关。</p>
+<h2 id="温馨提示："><a href="#温馨提示：" class="headerlink" title="温馨提示："></a>温馨提示：</h2><p>本方案不保证成功率和稳定性，而且操作比较繁琐，如果你可以通过社会工程学的方式获取公网ipv4，请尽量尝试；如果你在外访问时可以使用ipv6，请尝试ipv6方案。如果你对以上概念完全没有印象，建议学习基本的网络知识后再来看本教程，再次提醒，本教程不适合小白，我也没有能力解决各位的问题。</p>
+<h2 id="常见穿透方案及其局限性"><a href="#常见穿透方案及其局限性" class="headerlink" title="常见穿透方案及其局限性"></a>常见穿透方案及其局限性</h2><p>我的需求很简单，能随时随地访问家里的nas，我部署的服务既有需要大带宽的alist、jellyfin等，也有对延迟敏感的teamspeak、远程桌面。目前常见的内网穿透方案有如下几种：</p>
+<ol>
+<li>公网ip<br> 首选方案肯定是向运营商要公网IP，如果是是电信和联通可能还有希望，其它运营商或是校园网基本没戏。<br> 虽然现在家庭宽带的ipv6基本普及，但例如公司、出租屋、酒店等场景基本没有覆盖，况且我的小白朋友压根不会也不想开启。</li>
+<li>frp或vpn<br> 如果自己租服务器搭建，那么同时能满足我对带宽和延迟需求的服务器价格实在太感人；<br> 使用别人搭建好的服务，的确能找到价格很低的，但是稳定性堪忧。</li>
+<li>各种P2P打洞组网软件<br> 访问者既要下软件、又要注册账号，对于小白朋友还是太麻烦了；<br> 部分访问场景是NAT4，没法直连，走代理的体验不佳。</li>
+</ol>
+<p>那么有没有一种方案，既能满足大带宽、低延迟的需求，同时还免费，甚至稳定性也还可以呢？我经过苦苦搜寻，发现STUN穿透能完美满足我的需求，唯一的缺点就是…非常非常折腾。</p>
+<h2 id="NATMAP与lucky："><a href="#NATMAP与lucky：" class="headerlink" title="NATMAP与lucky："></a>NATMAP与lucky：</h2><p>目前有STUN穿透功能的软件主要有<a class="link"   href="https://github.com/heiher/natmap" >NATMAP<i class="fas fa-external-link-alt"></i></a>和<a class="link"   href="https://lucky666.cn/" >lucky<i class="fas fa-external-link-alt"></i></a>。在这两款软件都能正常运行的前提下，如果只需通过浏览器访问nas上的服务，那么lucky使用起来容易的多；如果需要实现更加复杂的玩法，那么NATMAP更加灵活。然而NATMAP的web ui仅支持官方OpenWrt固件，其他固件、平台只能通过命令行调用，如果要建立多个隧道，还得手动管理各个实例，较为繁琐，而lucky在各个平台都有web ui；同时lucky除了STUN穿透之外，还有各种实用功能，可以省去安装一堆软件的麻烦，故本教程使用lucky。</p>
+<p>教程以OpenWrt为例，其它平台请参考<a class="link"   href="https://lucky666.cn/" >官方文档<i class="fas fa-external-link-alt"></i></a>。<br>如果在路由器以外的设备安装，需要开启路由器的upnp或者dmz。<br>请参考<a class="link"   href="https://www.xrgzs.top/posts/lucky-stun-upnp-nat1.html" >使用Lucky的STUN内网穿透利用UPNP和NAT1在公网打洞并配置伪DDNS<i class="fas fa-external-link-alt"></i></a> 使用Lucky的STUN内网穿透利用UPNP和NAT1在公网打洞并配置伪DDNS</p>
+<h1 id="第一步：安装lucky"><a href="#第一步：安装lucky" class="headerlink" title="第一步：安装lucky"></a>第一步：安装lucky</h1><p>登陆openwrt后台后，依次点击<code>系统</code>​-<code>文件传输</code>​-<code>选择文件</code>​，找到下载的lucky插件，之后点击上传，将lucky和luci-app-lucky上传。之后在下方的<code>上传文件列表</code>​中，先安装lucky，再安装luci-app-lucky。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/GY9h2MoKbi4Orvj.png"
+                        alt="image"
+                 >​</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/6raNFlsnJBPg4ct.png"
+                        alt="image"
+                 >​</p>
+<h1 id="第二步：打开lucky后台并修改用户名和密码"><a href="#第二步：打开lucky后台并修改用户名和密码" class="headerlink" title="第二步：打开lucky后台并修改用户名和密码"></a>第二步：打开lucky后台并修改用户名和密码</h1><p>点击<code>服务</code>​ - <code>lucky</code>​ - <code>admin panel</code>​右侧的网址，打开后台，初次使用时，默认用户名密码均为666。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/odaJ54Ivqiyp6Un.png"
+                        alt="image"
+                 >​</p>
+<p>之后记得在设置里修改账号密码。</p>
+<h1 id="第三步，开启STUN内网穿透"><a href="#第三步，开启STUN内网穿透" class="headerlink" title="第三步，开启STUN内网穿透"></a>第三步，开启STUN内网穿透</h1><p>点击<code>STUN内网穿透</code>​ - <code>穿透规则列表</code>​ - <code>添加穿透规则</code>​具体设置如下</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/PMiFwtaEGhmysX6.png"
+                        alt="image"
+                 >​​</p>
+<p>请注意，如果在路由器之外的设备上安装，需要开启<code>nat-pmp</code>​。<br>点击保存，稍等一会儿应该就能看见公网ip和端口了，点击公网地址即可复制。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/OCjflRmZa7ULqh9.png"
+                        alt="image"
+                 >​​</p>
+<p>如果不出意外，在在外网设备的浏览器地址栏中粘贴所复制的公网地址（ip:端口），应该就能访问成功了。如果无法访问成功，请编辑刚才创建的穿透规则，手动指定穿透通道监听端口，并在防火墙设置里开启<code>穿透通道监听端口</code>​的端口。至此我们便初步完成了内网穿透的基本操作，在外网环境中，只要输入此公网地址，即可访问绑定的内网服务。</p>
+<h1 id="第四步，将公网地址绑定到域名"><a href="#第四步，将公网地址绑定到域名" class="headerlink" title="第四步，将公网地址绑定到域名"></a>第四步，将公网地址绑定到域名</h1><h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>使用STUN穿透时，不光ip地址会变，端口也会变，这使得我们无法通过传统ddns来绑定地址，所幸我们可以利用Cloudflare回源和跳转规则。</p>
+<h3 id="回源"><a href="#回源" class="headerlink" title="回源"></a>回源</h3><p>我们可以设置一条回源规则，令外网设备访问规则内的域名时，Cloudflare的cdn服务器会将流量转发到我们指定的地址和端口，并且这一切对于访问者来说是不可见的，他在浏览器地址栏里只能看到域名。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/C9m4fquGWbEz2vs.png"
+                        alt="image"
+                 >​​</p>
+<p>这个方案看起来很完美，只可惜存在一个致命的缺陷：当我们在通过域名访问时，所有流量都会从CloudFlare的cdn服务器中转，而免费计划中，只能使用海外的cdn服务器，从国内访问速度非常感人。</p>
+<h3 id="跳转"><a href="#跳转" class="headerlink" title="跳转"></a>跳转</h3><p>本教程中选择使用重定向规则进行跳转。在我们设置里跳转规则后，外网设备通过域名访问时，会先从Cloudflare的cdn上得到一条跳转响应，然后浏览器会自动跳转到规则中设定的地址。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/M3IzybluESN27hT.png"
+                        alt="image"
+                 >​​</p>
+<p>使用这种方法，流量不会经过cdn服务器，访问者在浏览器地址栏里看到的是跳转后的地址。</p>
+<p><strong>Cloudflare 的页面规则即将弃用，建议考虑替代方案</strong></p>
+<hr>
+<h2 id="替代方案"><a href="#替代方案" class="headerlink" title="替代方案"></a>替代方案</h2><p>Cloudflare的页面规则即将弃用，需要考虑其他替代方案了，我目前想到的有：</p>
+<ol>
+<li>通过短链接平台跳转<br> 只适合需穿透服务较少、无需ssl的场景。</li>
+<li>在服务器上部署Lucky的跳转服务<br> 前提是你得有一个服务器，参考<a class="link"   href="https://www.bilibili.com/read/cv28590960" >使用Lucky在公网IPv4环境自建重定向和中转服务，固定STUN的反代端口<i class="fas fa-external-link-alt"></i></a>。</li>
+<li>在本地端Lucky上配置跳转，再用传统方法穿透出去<br> 直接用cf tunnel或者给ipv6套cf的cdn，速度可能较慢；<br> 白嫖公益frp的速度会比较快，但如不备案则需要输入端口号，如果备案后用HTTP隧道，则只能用路径跳转；<br> 使用国内cdn的ipv6回源也行，不过也需要备案。</li>
+<li>使用cf的重定向规则<br> 使用上跟页面规则差不多，但免费计划用不了正则表达式，所以没页面规则灵活。</li>
+<li>使用cf worker跳转<br> 使用上相比重定向规则更简单，但速度慢很多，不建议。</li>
+</ol>
+<p>如果有条件，建议选择前三种，跳转的速度会快一些，国内访问Cloudflare的速度还是不太理想。<br>本文以cf的重定向规则为演示。</p>
+<hr>
+<h2 id="使用重定向规则进行跳转"><a href="#使用重定向规则进行跳转" class="headerlink" title="使用重定向规则进行跳转"></a>使用重定向规则进行跳转</h2><h3 id="解析域名到Cloudflare"><a href="#解析域名到Cloudflare" class="headerlink" title="解析域名到Cloudflare"></a>解析域名到Cloudflare</h3><p>首先需要将你的域名解析到Cloudflare，网上的教程很多，开头的链接里也有教，在此不做赘述。</p>
+<p>在网站概览界面向下翻，在右侧可以看到<code>区域id</code>​，将其保存下来备用。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/NqidtLKj7CyxBaY.png"
+                        alt="image"
+                 >​</p>
+<p>添加一条a类型的记录到你需要访问的域名，本教程里名称填入*，代表所有的未指定的二级域名都会返回这条记录，ipv4地址随便填一个有效的即可，代理状态勾选，ttl保持自动，填写完成后保存。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/4xtQbNVYLFUIfJ1.png"
+                        alt="image"
+                 >​</p>
+<h3 id="配置重定向规则"><a href="#配置重定向规则" class="headerlink" title="配置重定向规则"></a>配置重定向规则</h3><p>点击左侧菜单的<code>规则</code>​-<code>重定向规则</code>​，在<code>单一重定向</code>​页面下点击<code>创建规则</code>​，规则名称随意设置。</p>
+<p>​<code>当传入请求匹配时...</code>​处选择<code>自定义筛选表达式</code>​，字段选择<code>主机名</code>​，运算符选择<code>等于</code>​，<code>值</code>​需填入自行设置的用于跳转的域名；示例为<code>test.yourdomain.com</code>​，<code>test</code>​为自定义的二级域名前缀，<code>yourdomain.com</code>​换成你的顶级域名。</p>
+<p>​<code>URL 重定向</code>​处选择类型为<code>动态</code>​并勾选<code>保留查询字符串</code>​，状态码选择<code>302</code>​或<code>307</code>​均可；表达式填<code>concat(&quot;http://STUN的公网ip:公网端口&quot;, http.request.uri.path)</code>​，即将示例中的<code>183.6.66.666:6666</code>​替换为在lucky中复制的地址。</p>
+<p><strong>请先不要点击部署</strong></p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/28/o5MUascLRyZJ9VP.png"
+                        alt="image"
+                 >​</p>
+<p>在保存之前先按下F12打开开发者工具，点击右侧开发者工具的<code>网络</code>​或者<code>network</code>​选项卡，再点击左侧Cloudflare页面中的<code>部署</code>​。<br> 接下来可以在开发者工具中看到一串数字+字母的项，点击它，在<code>标头</code>​选项卡下复制并保存下它的<code>请求网址</code>​；然后切换到<code>载荷</code>​选项卡，右键第一行复制并保存它的值。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/28/ALYqb31XUOT95t7.png"
+                        alt="image"
+                 >​</p>
+<p>请求网址形如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://dash.cloudflare.com/api/v4/zones/区域id/rulesets/规则集id/rules/规则id</span><br></pre></td></tr></table></figure>
+
+<p>将<code>区域id</code>​、<code>规则集id</code>​、<code>规则id</code>​保存下来备用。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/28/KNi2ILRcHMJOnGP.png"
+                        alt="image"
+                 >​</p>
+<p>保存的请求载荷形如：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;(http.host eq \&quot;test.yourdomain.com\&quot;)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;last_updated&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2024-05-28T08:14:45.555123Z&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;ref&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action_parameters&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;from_value&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span> <span class="number">307</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;target_url&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;concat(\&quot;http://183.6.66.666:6666\&quot;, http.request.uri.path)&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;preserve_query_string&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>你的<code>id</code>​、<code>ref</code>​应该与规则id一致，<code>description</code>​就是之前设置的规则名称。<br>删去其中<code>version</code>​和<code>last_updated</code>​变量（也就是示例中的第3、5行）保存备用。</p>
+<h2 id="使用页面规则进行跳转"><a href="#使用页面规则进行跳转" class="headerlink" title="使用页面规则进行跳转"></a><del>使用页面规则进行跳转</del></h2><p><strong>页面规则即将被弃用，建议考虑替代方案。</strong></p>
+<p>首先需要将你的域名解析到Cloudflare，网上的教程很多，开头的链接里也有教，在此不做赘述。</p>
+<p>在网站概览界面向下翻，在右侧可以看到<code>区域id</code>​，将其保存下来备用。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/NqidtLKj7CyxBaY.png"
+                        alt="image"
+                 >​​</p>
+<p>添加一条a类型的记录到你需要访问的域名，本教程里名称填入*，代表所有的未指定的二级域名都会返回这条记录，ipv4地址随便填一个有效的即可，代理状态勾选，ttl保持自动，填写完成后保存。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/4xtQbNVYLFUIfJ1.png"
+                        alt="image"
+                 >​​</p>
+<p>接下来开始配置页面规则：</p>
+<p>点击左侧的<code>规则</code>​ - <code>页面规则</code>​，点击右侧的<code>创建页面规则</code>​</p>
+<p>url填入 <code>你的域名/*</code>​，注意不能有http或https。<br>示例为<code>test.yourdomain.com/*</code>​，<code>test</code>​为自定义的二级域名前缀，<code>yourdomain.com</code>​换成你的顶级域名。<br>选取设置选为<code>转发URL</code>​，状态代码选择<code>301</code>​。<br>目标URL填入<code>http://STUN的公网ip:公网端口/$1</code>​，即将示例中的<code>183.6.66.666:6666</code>​替换为在lucky中复制的地址。</p>
+<p><strong>请先不要点击保存</strong></p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/PrmMWt5Cas9qEIV.png"
+                        alt="image"
+                 >​​</p>
+<p>在保存之前先按下F12打开开发者工具，点击右侧开发者工具的<code>网络</code>​​或者<code>network</code>​​选项卡，再点击左侧Cloudflare页面中的<code>保存和部署页面规则</code>​​。<br> 接下来可以在开发者工具中看到一串数字+字母的项，点击它，复制它的请求网址。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/b68DCZgISpuXNaW.png"
+                        alt="4-8"
+                 >​</p>
+<p>该请求网址形如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://dash.cloudflare.com/api/v4/zones/区域id/pagerules/规则id</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>区域id</code>​应该与之前保存的相同，请把<code>规则id</code>​保存备用。如果你在打开开发者工具前已经点击了保存，请编辑刚才创建的页面规则，重复上述步骤。</p>
+<h1 id="第五步，利用webhook自动更新页面规则"><a href="#第五步，利用webhook自动更新页面规则" class="headerlink" title="第五步，利用webhook自动更新页面规则"></a>第五步，利用webhook自动更新页面规则</h1><p>lucky提供了webhook接口，可以在ip和端口发生变化时发送一条网络请求，调用Cloudflare的api来更改页面规则或是dns记录。</p>
+<p>让我们返回lucky后台，找到刚才创建的STUN穿透规则，点击编辑，开启webhook（而不是全局webhook），按如下方式配置：</p>
+<h2 id="更新重定向规则"><a href="#更新重定向规则" class="headerlink" title="更新重定向规则"></a>更新重定向规则</h2><p>接口地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://api.cloudflare.com/client/v4/zones/区域id/rulesets/规则集id/rules/规则id</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>请注意：这不是上一步抓到的请求网址，请用之前保存的<code>区域id</code>​、<code>规则集id</code>​、<code>规则id</code>​对以上链接进行替换。</p>
+</blockquote>
+<p>请求方法：<code>PATCH</code>​</p>
+<p>请求头：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Authorization:Bearer API 令牌</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>要创建API令牌，点击Cloudflare控制台右上角-<code>我的个人资料</code>​，在左侧菜单点击<code>API令牌</code>​，页面中点击<code>创建令牌</code>​。</p>
+<p>在令牌创建页面选择<code>创建自定义令牌</code>​。</p>
+<p>权限和区域资源如图设置，区域资源第三列选择你要用于跳转的域名。<br>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/06/19/escNIVOjoE5BWG6.png"
+                        alt="image"
+                 ><br>点击<code>继续</code>​-<code>创建令牌</code>​，直至出现以下界面：</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/06/19/aHSj8WJ3IMnGmD6.png"
+                        alt="image"
+                 >​</p>
+<p>复制第二行双引号里的内容（不带引号），粘贴到Lucky的Webhook的请求头中。</p>
+<hr>
+<p>请求主体：<br>把之前保存的请求载荷删去<code>last_updated</code>​和<code>version</code>​后，将<code>expression</code>​中的<code>ip:端口</code>​替换为<code>#&#123;ipAddr&#125;</code>​<br>你的<code>id</code>​、<code>ref</code>​应该与规则id一致，<code>description</code>​就是之前设置的规则名称。</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;(http.host eq \&quot;test.yourdomain.com\&quot;)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;ref&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action_parameters&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;from_value&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span> <span class="number">307</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;target_url&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;concat(\&quot;http://#&#123;ipAddr&#125;\&quot;, http.request.uri.path)&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;preserve_query_string&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>接口调用成功包含的字符串：<code>&quot;success&quot;: true</code>​。</p>
+<p>这些全部完成后点击<code>Webhook手动触发测试</code>​。<strong>注意：测试时的数据均为虚拟数据。</strong> 如果不成功，请先查看webhook里返回的内容是否很长且包含<code>&quot;success&quot;: true</code>​，如果包含，那么复制那行并替换<code>接口调用成功包含的字符串</code>​里的内容；然后多试几次排查网络问题，再检查各参数设置，配置正确后点击保存。</p>
+<p>等待lucky执行成功webhook后，在浏览器无痕模式中输入在重定向规则中设定的域名，即可跳转至对应的公网地址。如需收藏或分享链接，只需将浏览器中的<code>ip:端口</code>​ 部分重新替换回域名即可。</p>
+<h2 id="更新页面规则"><a href="#更新页面规则" class="headerlink" title="更新页面规则"></a><del>更新页面规则</del></h2><p><strong>页面规则即将弃用，请考虑替代方案</strong><br>接口地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://api.cloudflare.com/client/v4/zones/区域id/pagerules/规则id</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>请注意：这不是上一步抓到的请求网址，请用之前保存的<code>区域id</code>​和<code>规则id</code>​对以上链接进行替换。</p>
+</blockquote>
+<p>请求方法：<code>PUT</code>​​</p>
+<p>请求头：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">X-Auth-Email: 你注册CF的邮箱</span><br><span class="line">X-Auth-Key: Global API Key </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>请注意：Global API Key 在<code>我的个人资料</code>​- <code>API令牌</code>​中查看，这不是自己创建的api令牌，而是在下方的<code>API密钥</code>​中点击<code>查看</code>​</p>
+</blockquote>
+<p>也可自行创建API令牌，点击<code>创建令牌</code>​</p>
+<p>编辑权限和区域规则如下图所示，其中区域资源第三列选择你用于跳转到域名。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/uzD9RgAE4ZBmjHC.png"
+                        alt="image"
+                 ></p>
+<p>点击<code>继续</code>​-<code>创建令牌</code>​，直至出现以下界面：</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/haDc4JAwZyV9FNv.png"
+                        alt="image"
+                 >​</p>
+<p>复制第二行双引号里的内容（不带引号），粘贴到Lucky的Webhook的请求头中。</p>
+<p>请求主体：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;targets&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;target&quot;</span><span class="punctuation">:</span><span class="string">&quot;url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;constraint&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;operator&quot;</span><span class="punctuation">:</span><span class="string">&quot;matches&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="string">&quot;你的域名/*&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;actions&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;forwarding_url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span><span class="string">&quot;http://#&#123;ipAddr&#125;/$1&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span><span class="number">301</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;priority&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span><span class="string">&quot;active&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中<code>targets</code>​的<code>value</code>​填入的内容跟页面规则里的URL保持一致，该示例中为<code>test.yourdomain.com/*</code>​<br>​<code>actions</code>​ 中的<code>url</code>​为目标URL，通过lucky提供的参数构造，填为<code>http://#&#123;ipAddr&#125;/$1</code>​ ，接口调用成功包含的字符串：<code>&quot;success&quot;:true</code>​。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/Bw3aIUrFdDLeOZ2.png"
+                        alt="image"
+                 >​​</p>
+<p>这些全部完成后点击<code>Webhook手动触发测试</code>​，如果不成功，请检查各参数设置，配置正确后点击保存。</p>
+<p>等待lucky执行成功webhook后，在浏览器中输入在页面规则中设定的域名，即可跳转至对应的公网地址。如需收藏或分享链接，只需将浏览器中的<code>ip:port</code>​ 部分重新替换回域名即可。</p>
+<h1 id="第六步-将反向代理服务器暴露至公网"><a href="#第六步-将反向代理服务器暴露至公网" class="headerlink" title="第六步 将反向代理服务器暴露至公网"></a>第六步 将反向代理服务器暴露至公网</h1><p>经过之前的步骤已经可以方便地通过域名访问内网服务，但倘若有多个服务，则需配置多个页面规则和穿透隧道，然而Cloudflare免费计划只允许创建3个页面规则和10个重定向规则，部分地区的宽带甚至只能打通一个隧道。因此我们可以类比有公网地址的情况，通过反向代理服务，在只开启一个端口的情况下通过不同的二级域名来访问不同的内网服务。</p>
+<h2 id="基本思路"><a href="#基本思路" class="headerlink" title="基本思路"></a>基本思路</h2><p>有公网IP时，我们只需通过DDNS将泛域名解析到宽带的公网IP，并将反向代理的端口暴露在公网下即可。<br>使用STUN穿透时，解析IP很容易，stun穿透得到的公网ip跟DDNS通过接口获取的ip一致，这部分操作可以照搬有公网的情况。<br>端口号不固定这点依旧利用重定向规则来实现跳转，目的是让最后跳转到<code>前缀.顶级域名:端口号/...</code>​的形式，再将所有二级域名指向公网ip。</p>
+<p>首先搭建好反向代理，将泛域名通过DDNS解析到接口获取的ipv4地址，将stun穿透的目标地址和端口设置为反向代理的本地地址和https端口，并通过<code>https://域名:公网端口</code>​的形式进行访问，测试没问题之后再进行下一步。如果不配置证书，就把穿透目标端口设为反向代理的http端口，并通过http访问。</p>
+<blockquote>
+<p>如果你还没有配置过DDNS、SSL续签、反向代理，请自行搜索配置方法，相关教程非常多。如果你只有简单的需求，那么可以考虑使用Lucky一站式解决。配置方式可参考<a class="link"   href="https://www.bilibili.com/video/BV1Uh4y1p7sd/" >winnas进阶篇之 lucky插件的使用<i class="fas fa-external-link-alt"></i></a> 和 <a class="link"   href="https://www.bilibili.com/video/BV1394y1y7Nv/" >也许是目前最通俗易懂的Lucky反向代理演示？<i class="fas fa-external-link-alt"></i></a> ，注意协议要选择ipv4。</p>
+</blockquote>
+<h2 id="期望中的效果"><a href="#期望中的效果" class="headerlink" title="期望中的效果"></a>期望中的效果</h2><p>我希望只是用一条规则，就能让泛域名<code>*.bbb.com</code>​匹配到的所有域名跳转到<code>*.aaa.com</code>​对应的子域名去。比如<code>alist.bbb.com</code>​-&gt;<code>alist.aaa.com</code>​、<code>emby.bbb.com</code>​-&gt;<code>emby.aaa.com</code>​。在此，我姑且将<code>bbb.com</code>​称为用于跳转的主域名，<code>aaa.com</code>​称为跳转后的域名。</p>
+<p>这样当你想要访问域名前缀为sv1的服务，只需在浏览器中输入<code>sv1.bbb.com/</code>​，会自动跳转到<code>https://sv1.aaa.com:[port]/</code>​ ；如果要指定访问路径，输入<code>sv1.bbb.com/path1/path2/path3</code>​，会自动跳转到<code>https://sv1.aaa.com:[port]/path1/path2/path3。</code>​</p>
+<p>如果想要收藏或分享链接，只需把地址栏中的aaa改回bbb，并删除端口即可。</p>
+<p>如果你想采用同一个域名下，二级域名向三级域名跳转的方案，如<code>alist.example.com</code>​-&gt;<code>alist.4.example.com</code>​，那么<code>example.com</code>​为主域名，<code>4.example.com</code>​为跳转后的域名。</p>
+<h2 id="配置重定向规则-1"><a href="#配置重定向规则-1" class="headerlink" title="配置重定向规则"></a>配置重定向规则</h2><p>首先确保你用于跳转的主域名下的泛域名（即<code>*.bbb.com</code>​）已解析到Cloudflare并开启小云朵；本地的反向代理使用跳转后的域名，且该域名下的泛域名（<code>*.aaa.com</code>​）已通过DDNS解析到解析到stun的公网ip。</p>
+<p>接下来数出用于跳转的主域名有多少个字符，上文例子里<code>bbb.com</code>​就是7个字符，<code>example.com</code>​是11个字符，我们将其记作<code>参数2</code>​，给它加一个比你设置的域名前缀长度更大的数（比如10），可以得到<code>参数1</code>​。</p>
+<p>参考第4、5步配置页面规则，webhook请求主体中的第一个expression改成<code>&quot;true&quot;</code>​（也就是所有传入连接都跳转），target_url的expression改成<code>&quot;concat(\&quot;https://\&quot;,substring(http.host , -参数1,-参数2), \&quot;跳转后域名:#&#123;port&#125;\&quot;, http.request.uri)&quot;</code>​</p>
+<blockquote>
+<p>如果你想通过http访问，请把target url的expression中的https改为http。</p>
+</blockquote>
+<p>即现在的请求主体为</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;true&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;ref&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action_parameters&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;from_value&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span> <span class="number">307</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;target_url&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;concat(\&quot;https://\&quot;,substring(http.host , -17,-7), \&quot;aaa.com:#&#123;port&#125;\&quot;, http.request.uri)&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;preserve_query_string&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="配置页面规则"><a href="#配置页面规则" class="headerlink" title="配置页面规则"></a><del>配置页面规则</del></h2><p><strong>页面规则即将被弃用，建议考虑替代方案。</strong></p>
+<p>如果你有两个域名，配置起来会容易一些，不容易出奇奇怪怪的问题，当然只有一个域名也不是不能用，根据情况任意选择一个方案即可。</p>
+<blockquote>
+<p>如果你想通过http访问，请把actions中的https改为http。</p>
+</blockquote>
+<h3 id="1-通过另一域名跳转"><a href="#1-通过另一域名跳转" class="headerlink" title="1. 通过另一域名跳转"></a>1. 通过另一域名跳转</h3><p>如果你有两个域名<code>aaa.com</code>​和<code>bbb.com</code>​，可以将<code>bbb.com</code>​解析到Cloudflare，添加<code>*.bbb.com</code>​ 的a记录并开启代理、添加页面规则。而本地的反向代理使用aaa.com，并将 *.aaa.com通过DDNS解析到stun的公网ip。<br>参考第4、5步配置页面规则，webhook请求主体中的target的url改成<code>*.bbb.com/*</code>​，actions的url改成<code>https://$1.aaa.com:#&#123;port&#125;/$2</code>​</p>
+<p>即现在的请求主体为</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;targets&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;target&quot;</span><span class="punctuation">:</span><span class="string">&quot;url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;constraint&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;operator&quot;</span><span class="punctuation">:</span><span class="string">&quot;matches&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="string">&quot;*.bbb.com/*&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;actions&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;forwarding_url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span><span class="string">&quot;https://$1.aaa.com:#&#123;port&#125;/$2&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span><span class="number">301</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;priority&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span><span class="string">&quot;active&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-仅使用一个域名跳转"><a href="#2-仅使用一个域名跳转" class="headerlink" title="2. 仅使用一个域名跳转"></a>2. 仅使用一个域名跳转</h3><p>毕竟好用的域名也是要花钱的，本着能省一点是一点的精神，一个域名也不是不能用，可以使用三级域名跳转。</p>
+<p>首先将你配置了反向代理的域名（假设为example.com）托管至Cloudflare，将*.example.com通过DDNS解析到STUN穿透的公网IP（选择接口获取的ipv4地址）。</p>
+<p>为了白嫖cf的证书，我们使用三级域名向二级域名跳转的方式：</p>
+<p>添加一条<code>*.a.example.com</code>​的a记录（ip随便填）并开启代理，其中<code>a</code>​随便填。<br>将webhook请求主体中的target的url改为<code>*.a.example.com/*</code>​，actions的url改成<code>https://$1.example.com:#&#123;port&#125;/$2</code>​。即现在的请求主体为：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;targets&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;target&quot;</span><span class="punctuation">:</span><span class="string">&quot;url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;constraint&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;operator&quot;</span><span class="punctuation">:</span><span class="string">&quot;matches&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="string">&quot;*.a.example.com/*&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;actions&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;forwarding_url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span><span class="string">&quot;https://$1.example.com:#&#123;port&#125;/$2&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span><span class="number">301</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;priority&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span><span class="string">&quot;active&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>还没完，由于Cloudflare的免费计划不允许上传证书，也不为三级域名提供免费证书，直接访问可能会出现关于SSL的奇奇怪怪的问题，建议直接删除Cloudflare的SSL证书。<br>回到Cloudflare，在<code>SSL/TLS</code>​ - <code>边缘证书</code>​中删除证书并禁用SSL。由于我们只需要利用Cloudflare来跳转，并没有数据经过，所以大约是不会影响安全性。</p>
+<blockquote>
+<p>请注意：该方式只能从http跳转，而多数现代浏览器默认使用https访问且不显示，因此在访问时务必确认地址栏的协议不是https。</p>
+</blockquote>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>本文简单介绍了lucky的STUN穿透功能的使用方法，成功将反向代理服务暴露至公网。通过配置Cloudflare重定向规则实现了直接通过域名访问，近似达到了拥有公网IP的效果，同时满足了低延迟、大带宽、免费的需求，并且相对公益frp要稳定的多。</p>
+<p>当然本期只实现了web应用的穿透，并未覆盖到大内网的全部痛点。下一期将利用STUN穿透解决大内网环境BT&#x2F;PT上传下载难的问题，至于部分应用必须指定端口号的问题，我们放到第三期说。</p>
+<hr>
+<h1 id="Extra-使用经验"><a href="#Extra-使用经验" class="headerlink" title="Extra 使用经验"></a>Extra 使用经验</h1><h2 id="优化跳转速度"><a href="#优化跳转速度" class="headerlink" title="优化跳转速度"></a>优化跳转速度</h2><p>经过一段时间的使用，我发现双域名跳转的速度明显快于单域名跳转，有条件的情况下尽量使用双域名跳转，其中ClouDNS提供的免费域名不但可以挂到Cloudflare，而且可以使用API访问，功能甚至强于一众免费域名，缺点是Cloudflare无法接管DNS记录，需要手动续签证书，且不便于DDNS，因此只适合跳转和挂CDN。</p>
+<h2 id="支持301-302跳转的应用"><a href="#支持301-302跳转的应用" class="headerlink" title="支持301&#x2F;302跳转的应用"></a>支持301&#x2F;302跳转的应用</h2><ul>
+<li>Only Office的http api 支持跳转，但最好是从HTTPS到HTTPS，也就是需要双域名。</li>
+<li>Mountainduck 支持挂载使用跳转的webdav，甚至支持从HTTP跳转至HTTPS，端口填80或443即可，但单域名跳转的延迟很高，每次请求应该都会单独跳转，建议使用双域名跳转。<a class="link"   href="https://mountainduck.io/" >官网<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   href="https://www.skyjos.cn/owlfiles/index.html" >猫头鹰文件<i class="fas fa-external-link-alt"></i></a>支持在移动平台上挂载使用跳转的webdav，安卓电视则可以使用<a class="link"   href="https://github.com/nova-video-player/aos-AVP" >NOVA Video Player<i class="fas fa-external-link-alt"></i></a>。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>内网穿透</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>打通大内网第四期 部署并穿透DERP服务器</title>
+    <url>//post/open-the-fourth-phase-of-da-inner-network-deployment-and-penetrate-the-derp-server-duplicate-20240515-18-59-03-bsx8q.html</url>
+    <content><![CDATA[<p>​#网络#​ ​#OpenWrt#​</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>上一期介绍了如何通过frp的<code>stcp/sudp</code>​来固定访问端口，虽然可靠性和安全性都得到了保障，配置还是麻烦了一点，每添加一个服务都要修改两处frpc的配置文件，并需要每个访问者都手动更新。并且对于访问者而言，处理端口冲突、注册服务也需要一点知识储备，显然不如无脑安装软件来的方便。如果你只打算小范围内共享，那么直接使用tailscale也是个不错的选择。</p>
+<p>理论上只要有一方为NAT1，是一定能直连的，但由于tailscale的服务器都在墙外，内陆的网络环境也比较复杂，偶尔会出现打不通的情况。然而我们可以另辟蹊径，在本地自建DERP中继服务器，并通过LUCKY穿透到公网上。</p>
+<h1 id="第一步-安装并配置Tailscale"><a href="#第一步-安装并配置Tailscale" class="headerlink" title="第一步 安装并配置Tailscale"></a>第一步 安装并配置Tailscale</h1><p>Tailscale官网：<a class="link"   href="https://tailscale.com/" >https://tailscale.com/<i class="fas fa-external-link-alt"></i></a></p>
+<p>关于Tailscale基本的安装、配置在此不多赘述，教程非常多，在此贴一篇OpenWrt的教程：<br><a class="link"   href="https://www.right.com.cn/forum/thread-8288573-1-1.html" >openwrt使用tailscale组建网对网的一些补充<i class="fas fa-external-link-alt"></i></a><br>如果你需要在外访问整个内网，请正确配置子网路由。  </p>
+<blockquote>
+<p>如果可能的话，尽量将Tailscale和DERP安装在同一台机器上。即使不行，最好也在部署DERP的机器上安装Tailscale，用于身份验证。<br>如果用于验证的Tailscale客户端是通过docker安装的，为了让DERP能够与Tailscale交互，请添加路径映射<br>-v &#x2F;run&#x2F;tailscale:&#x2F;var&#x2F;run&#x2F;tailscale</p>
+<p>我将Tailscale装在路由器上，DERP安装在路由器下面的Unraid上。如果以插件的形式直接安装，则无法使用本地局域网地址访问Unraid，只能使用Tailscale的100开头的地址，因此我最后用Docker安装，网络选择br0并指定了另外一个ip。</p>
+</blockquote>
+<p>当配置完成，已经可以在外网通过Tailscale访问后，再注册一个用于共享的小号，并将其加入大号的Tailscale网络，理由有以下两点：</p>
+<ol>
+<li>Tailscale免费计划只允许3个用户，但是允许100台设备。通过共享账户的方式，可以允许更多人连接。</li>
+<li>DERP服务器若不开启验证，那么谁都可以白嫖；但一旦开启验证，只有本机当前登录Tailscale的账户有权访问，其他用户均无法访问。</li>
+</ol>
+<p>然后将所有Tailscale客户端上登录的账号换成小号，加入大号的网络（也就是在最后一步，选择connect device的时候，点击大号邮箱）。</p>
+<h2 id="第二步-安装并配置DERP服务器"><a href="#第二步-安装并配置DERP服务器" class="headerlink" title="第二步 安装并配置DERP服务器"></a>第二步 安装并配置DERP服务器</h2><p>首先先给DERP服务器准备一个域名，并解析到STUN穿透的ipv4公网地址，如果你之前没有用过ddns，直接使用Lucky的DDNS，通过接口获取ipv4即可。</p>
+<p>接着申请证书，使用Lucky申请非常方便，并且可以映射证书路径供其它服务使用，以及在证书更新时调用自定义脚本；如果Lucky和DERP没有部署在同一个机器上，可以用Lucky的webdav功能将映射证书的路径分享出来，或者通过自定义脚本运行scp和ssh命令，上传证书并重启DERP。具体过程略过不表。</p>
+<p>接下来安装DERP，我使用docker安装，记得修改证书的映射路径、端口映射和域名。我这里将8051作为derp端口，3478作为stun端口。如果不想开启身份验证，请将第七行的<code>true</code>​改为<code>false</code>​。</p>
+<figure class="highlight docker"><table><tr><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="language-bash"> --restart always \</span></span><br><span class="line"><span class="language-bash">  -p 8051:443 -p 3478:3478/udp \</span></span><br><span class="line"><span class="language-bash">  -e DERP_CERT_MODE=manual \</span></span><br><span class="line"><span class="language-bash">  -v /your/cert/path:/app/certs \</span></span><br><span class="line"><span class="language-bash">  -e DERP_ADDR=:443 \</span></span><br><span class="line"><span class="language-bash">  -e DERP_DOMAIN=derp.xxxx.com \</span></span><br><span class="line"><span class="language-bash">  -e DERP_VERIFY_CLIENTS=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">  -v /var/run/tailscale:/var/run/tailscale \</span></span><br><span class="line"><span class="language-bash">  fredliang/derper</span></span><br></pre></td></tr></table></figure>
+
+<p>然后为DERP服务器创建STUN穿透规则，需要两条。一条给derp端口，协议选择tcp，一条给stun端口，协议选择udp，不会的朋友可以去看看第一、第二期教程。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/c6WFL7uhkJVRTUw.png"
+                        alt="image"
+                 >​</p>
+<p>如果一切顺利，就可以在浏览器里访问https:&#x2F;&#x2F;<code>derp域名</code>​:<code>derp穿透后的公网端口</code>​。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/Sz6kmcasvTrZlOn.png"
+                        alt="image"
+                 ></p>
+<p>看到以上界面说明成功。</p>
+<h1 id="第三步-将DERP服务器添加至Tailscale中"><a href="#第三步-将DERP服务器添加至Tailscale中" class="headerlink" title="第三步 将DERP服务器添加至Tailscale中"></a>第三步 将DERP服务器添加至Tailscale中</h1><p>用大号进入Tailscale后台，在顶部切换到<code>Access Controls</code>​选项卡，在<code>acls</code>​后添加<code>derpMAP</code>​规则。</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">	<span class="comment">// 前面有一些注释，不修改</span></span><br><span class="line">	<span class="attr">&quot;acls&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">		<span class="comment">// Allow all connections.</span></span><br><span class="line">		<span class="comment">// Comment this section out if you want to define specific restrictions.</span></span><br><span class="line">		<span class="punctuation">&#123;</span><span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;accept&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;src&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;*&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="attr">&quot;dst&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;*:*&quot;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">	<span class="attr">&quot;derpMap&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">		<span class="attr">&quot;Regions&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">			<span class="attr">&quot;900&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">				<span class="attr">&quot;RegionID&quot;</span><span class="punctuation">:</span>   <span class="number">900</span><span class="punctuation">,</span></span><br><span class="line">				<span class="attr">&quot;RegionCode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;myderp&quot;</span><span class="punctuation">,</span></span><br><span class="line">				<span class="attr">&quot;RegionName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;home&quot;</span><span class="punctuation">,</span></span><br><span class="line">				<span class="attr">&quot;Nodes&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">&#123;</span></span><br><span class="line">					<span class="attr">&quot;Name&quot;</span><span class="punctuation">:</span>             <span class="string">&quot;1&quot;</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;RegionID&quot;</span><span class="punctuation">:</span>         <span class="number">900</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;HostName&quot;</span><span class="punctuation">:</span>         <span class="string">&quot;derp.xxxxx.xxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;DERPPort&quot;</span><span class="punctuation">:</span>         <span class="number">25814</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;STUNPort&quot;</span><span class="punctuation">:</span>         <span class="number">25876</span><span class="punctuation">,</span></span><br><span class="line">					<span class="attr">&quot;InsecureForTests&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">				<span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">			<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">		<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">	<span class="comment">// Define users and devices that can use Tailscale SSH.</span></span><br><span class="line"><span class="comment">//...后面是ssh的内容，不修改</span></span><br></pre></td></tr></table></figure>
+
+<p>修改<code>Hostname</code>​为你DERP服务器的域名，<code>DERPPort</code>​和<code>STUNPort</code>​分别改为对应的公网端口（不知道改成哪个端口就把我的规则和我之前的Lucky截图对比一下）。确认无误后点击保存。</p>
+<p>在安装了Tailscale的机器（或容器）上执行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tailscale netcheck</span><br></pre></td></tr></table></figure>
+
+<p>如果没有出现测速结果里没有出现<code>myderp</code>​，请检查规则是否编写正确，如果没有这个节点没有测速结果，可以稍等一会儿再试。当看到<code>myderp</code>​节点的延迟后，证明配置成功。</p>
+<h1 id="第四步-自动更新DERP服务器端口"><a href="#第四步-自动更新DERP服务器端口" class="headerlink" title="第四步 自动更新DERP服务器端口"></a>第四步 自动更新DERP服务器端口</h1><p>Tailscale支持通过网页后台面板、GitOps和api更新acl规则。使用GitOps可以清晰的看到每一次更新的时间以及是否成功，使用api则更加简单，本文使用api进行更新。</p>
+<ul>
+<li>生成OAuth client并获取id和secret</li>
+</ul>
+<p>使用大号登录Tailscale后台，在<code>Settings</code>​ - <code>OAuth clients</code>​中点击<code>Generate OAuth client</code>​。OAuth client的名称随便填，勾选对<code>ACL</code>​的read和write权限。然后点击<code>Generate client</code>​，并复制生成的id和secret。</p>
+<blockquote>
+<p>不同于最大有效期为90天的api key，OAuth clients不会过期，免去了手动更新key的麻烦。</p>
+</blockquote>
+<ul>
+<li>配置更新脚本</li>
+</ul>
+<p>回到Lucky后台，编辑derp端口的穿透规则，将以下脚本填入<code>自定义脚本</code>​中。<br>记得修改<code>client_id</code>​和<code>client_secret</code>​为你刚才获取到的值。</p>
+<p>考虑到可能会存在多个derp服务器，使用<code>&quot;DERPPort&quot;:</code>​后面的空格个数来区分。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#set your oauth client here</span></span><br><span class="line">client_id=</span><br><span class="line">client_secret=</span><br><span class="line"></span><br><span class="line">api_key=`curl -d <span class="string">&quot;client_id=<span class="variable">$client_id</span>&quot;</span> \</span><br><span class="line">  -d <span class="string">&quot;client_secret=<span class="variable">$client_secret</span>&quot;</span> \</span><br><span class="line">  <span class="string">&quot;https://api.tailscale.com/api/v2/oauth/token&quot;</span>`</span><br><span class="line">tskey=`<span class="built_in">echo</span> <span class="variable">$api_key</span> | awk -F <span class="string">&quot;\&quot;&quot;</span> <span class="string">&#x27;&#123;print $4&#125;&#x27;</span>`</span><br><span class="line"></span><br><span class="line">DERPPort=<span class="variable">$&#123;port&#125;</span></span><br><span class="line">tmp=<span class="string">&#x27;/tmp/tailscale.hujson&#x27;</span></span><br><span class="line">curl <span class="string">&quot;https://api.tailscale.com/api/v2/tailnet/-/acl&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Authorization: Bearer <span class="variable">$tskey</span>&quot;</span> &gt; <span class="variable">$tmp</span></span><br><span class="line">sed -i -r <span class="string">&#x27;s/&quot;DERPPort&quot;:\s&#123;8,9&#125;[0-9]+/&quot;DERPPort&quot;:         &#x27;</span><span class="variable">$DERPPort</span><span class="string">&#x27;/&#x27;</span> <span class="variable">$tmp</span></span><br><span class="line">curl <span class="string">&quot;https://api.tailscale.com/api/v2/tailnet/-/acl&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Authorization: Bearer <span class="variable">$tskey</span>&quot;</span> --data-binary @<span class="variable">$tmp</span></span><br></pre></td></tr></table></figure>
+
+<p>编辑STUN端口的穿透规则，将以下脚本填入<code>自定义脚本</code>​中。<br>记得修改<code>client_id</code>​和<code>client_secret</code>​。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#set your oauth client here</span></span><br><span class="line">client_id=</span><br><span class="line">client_secret=</span><br><span class="line"></span><br><span class="line">api_key=`curl -d <span class="string">&quot;client_id=<span class="variable">$client_id</span>&quot;</span> \</span><br><span class="line">  -d <span class="string">&quot;client_secret=<span class="variable">$client_secret</span>&quot;</span> \</span><br><span class="line">  <span class="string">&quot;https://api.tailscale.com/api/v2/oauth/token&quot;</span>`</span><br><span class="line">tskey=`<span class="built_in">echo</span> <span class="variable">$api_key</span> | awk -F <span class="string">&quot;\&quot;&quot;</span> <span class="string">&#x27;&#123;print $4&#125;&#x27;</span>`</span><br><span class="line"></span><br><span class="line">STUNPort=<span class="variable">$&#123;port&#125;</span></span><br><span class="line">tmp=<span class="string">&#x27;/tmp/tailscale.hujson&#x27;</span></span><br><span class="line">curl <span class="string">&quot;https://api.tailscale.com/api/v2/tailnet/-/acl&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Authorization: Bearer <span class="variable">$tskey</span>&quot;</span> &gt; <span class="variable">$tmp</span></span><br><span class="line">sed -i -r <span class="string">&#x27;s/&quot;STUNPort&quot;:\s&#123;8,9&#125;[0-9]+/&quot;STUNPort&quot;:         &#x27;</span><span class="variable">$STUNPort</span><span class="string">&#x27;/&#x27;</span> <span class="variable">$tmp</span></span><br><span class="line">curl <span class="string">&quot;https://api.tailscale.com/api/v2/tailnet/-/acl&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Authorization: Bearer <span class="variable">$tskey</span>&quot;</span> --data-binary @<span class="variable">$tmp</span></span><br></pre></td></tr></table></figure>
+
+<p>目前Lucky并未提供自定义脚本的测试功能，不过只是填写两个变量而已，应该不会出什么幺蛾子…吧。</p>
+<hr>
+<p>经过实测，在晚高峰时，于NAT4的电脑上开启Tailscale，会出现无法跨运营商直连NAT1的另一客户端的情况；然而此时可以通过STUN穿透出去的自建DERP中继来建立连接。</p>
+<h1 id="第五步-为Tailscale添加本地DNS并劫持域名"><a href="#第五步-为Tailscale添加本地DNS并劫持域名" class="headerlink" title="第五步 为Tailscale添加本地DNS并劫持域名"></a>第五步 为Tailscale添加本地DNS并劫持域名</h1><p>愿意折腾到这一步的朋友，有很大概率已经开启了ipv6，并配置好了反向代理。如果想要实现“一个域名，在内网&#x2F;Tailscale中用内网ipv4，在外网中用ipv6”的效果，可以尝试一下添加本地DNS。如果不想配置反向代理，那么可以跳过这步。</p>
+<h2 id="本地劫持泛域名"><a href="#本地劫持泛域名" class="headerlink" title="本地劫持泛域名"></a>本地劫持泛域名</h2><p>首先在你是用的dns服务中添加HOSTS，劫持你要访问的泛域名。如果不想在内网劫持，仅想在Tailscale中劫持，可以用Docker再装一个SmartDNS，记得用网桥（如br0）把容器IP绑定到与宿主机同网段，并使用53端口。</p>
+<ul>
+<li><p>对于dnsmasq（也就是OpenWrt的默认dns）</p>
+<p>打开<code>/etc/dnsmasq.conf</code>​，添加</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">address = /mydomain.com/192.168.0.1</span><br></pre></td></tr></table></figure>
+
+<p>并重启dnsmasq，这会劫持<code>mydomain.com</code>​和它的所有子域名到192.168.0.1。</p>
+</li>
+<li><p>对于SmartDNS<br>在<code>自定义规则</code>​或<code>域名地址</code>​中添加</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">address /mydomain.com/192.168.0.1</span><br></pre></td></tr></table></figure>
+
+<p>并重启SmartDNS，这会劫持<code>mydomain.com</code>​和它的所有子域名到192.168.0.1。</p>
+</li>
+</ul>
+<p>然后在内网机器上清除dns缓存，使用<code>nslookup</code>​查询刚才劫持的域名。</p>
+<p>由于OpenWrt会默认劫持所有访问53端口的流量到OpenWrt的53端口，因此如果你是用OpenWrt作为主路由，但自定义DNS不在OpenWrt的ip上，则需要在<code>网络</code>​ - <code>防火墙</code>​ - <code>自定义规则</code>​中注释掉所有跟53端口相关的规则。</p>
+<p>如果还不成功，大概率是某些科学插件修改或劫持dns导致的，请关闭劫持功能或者直接在科学插件中设置DNS劫持。</p>
+<h2 id="在Tailscale中添加本地DNS"><a href="#在Tailscale中添加本地DNS" class="headerlink" title="在Tailscale中添加本地DNS"></a>在Tailscale中添加本地DNS</h2><p>进入Tailscale后台，进入<code>DNS</code>​，点击<code>Add nameserver</code>​ - <code>Custom</code>​，输入你内网DNS的IP地址，可以为Tailscale的100开头的地址，也可以是添加进Tailscale的子网地址，并开启<code>Restrict to domain</code>​，填入需要劫持的顶级域名。（如填入<code>mydomain.com</code>​，会使用自定义DNS解析该域名及其子域名）请注意，Tailscale不支持指定协议和端口，默认使用53端口、udp协议。</p>
+<p>可能部分DNS服务默认拒绝外网请求，需要手动开启。以OpenWrt为例，需要在<code>网络</code>​​ - <code>DHCP/DNS</code>​​ - <code>基本设置</code>​​中取消勾选<code>仅本地服务</code>​​。</p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>至此Tailscale和DERP服务器的配置就结束了，经过这一番折腾，我们实现了100%直连率，并统一了内网、Tailscale、ipv6的使用体验。在SVCB&#x2F;HTTPS记录普及之前，对STUN穿透的折腾大约就止步如此了吧。</p>
+<p>如果你仍对安全性抱有担忧，可以自行修改acl规则，默认拒绝共享账户访问子网，仅允许访问特定的ip和端口。如果你想让特定的设备不受用户权限的限制，可以给它打上tag，再对该tag单独设置权限。</p>
+<p>‍</p>
+<p>‍</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>打通大内网番外篇 无需公网，搭建RustDesk远程桌面</title>
+    <url>//post/open-the-great-inner-net-fanwai-there-is-no-need-for-a-public-network-setting-up-rustdesk-remote-desktop-z2rcelk.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我折腾STUN穿透的初衷就是为了搭建远程桌面，它同时对带宽、延迟和流量都提出了要求，如果使用常规的穿透服务，费用相当感人，最近群里也有很多群友在问如何穿透远程桌面，我就想着简单记录一下我的折腾过程。</p>
+<p>我原本的方案是：简单使用，就在内网搭建Next Terminal，通过STUN穿透+反向代理+301跳转来穿透出去，通过网页使用RDP；需要高性能的场合就用frp或Tailscale组网，连接moonlight。然而当我了解了RustDesk的工作方式后，我发现这种id服务器（以下简称服务器）和中继服务器（以下简称中继）分离的设计非常适合STUN穿透：当客户端不填写中继地址时，会使用服务器配置的默认中继，因此只要在STUN穿透的端口变化时更新服务器的默认中继，客户端在连接时也会自动更新。</p>
+<p>当然，标题的“无需公网”指的是中继无需公网，服务器还是要有公网的，但id服务器只负责NAT检测、鉴权、客户端发现、在线判断等，只要能连接即可，对带宽、延迟和流量都没有需求。因此服务器不论是挂在海外低价VPS上还是白嫖frp都能满足需求，串流的流量都会从STUN穿透的中继走，连接时的带宽也延迟都是取决于STUN穿透的中继。</p>
+<h1 id="第一步：在本地部署中继服务器并穿透"><a href="#第一步：在本地部署中继服务器并穿透" class="headerlink" title="第一步：在本地部署中继服务器并穿透"></a>第一步：在本地部署中继服务器并穿透</h1><p>本教程中使用Docker部署，请自行将<code>/path/to/config</code>​替换为宿主机中用于存放RustDesk配置文件的路径，<code>LIMIT_SPEED</code>​和<code>SINGLE_BANDWIDTH</code>​根据自己的实际情况配置，单位为Mbps。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --name hbbr \</span><br><span class="line">-v /path/to/config:/root \</span><br><span class="line">-e <span class="string">&#x27;LIMIT_SPEED&#x27;</span>=<span class="string">&#x27;70&#x27;</span> \</span><br><span class="line">-e <span class="string">&#x27;SINGLE_BANDWIDTH&#x27;</span>=<span class="string">&#x27;100&#x27;</span> \</span><br><span class="line">-td --net=host \</span><br><span class="line">rustdesk/rustdesk-server hbbr </span><br></pre></td></tr></table></figure>
+
+<p>容器启动后去Lucky中配置STUN穿透和端口转发（详细过程见第一、二期），RustDesk中继的默认端口为21117，协议为TCP。<br>使用端口扫描工具检测穿透的公网端口，若检测结果为开放，再进行后续操作。</p>
+<h1 id="第二步：部署id服务器"><a href="#第二步：部署id服务器" class="headerlink" title="第二步：部署id服务器"></a>第二步：部署id服务器</h1><p>id服务器可直接部署在廉价VPS上，也可部署在本地，之后用免费的frp穿透，本教程同样用docker部署。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --name hbbs \</span><br><span class="line">-v /path/to/config:/root \</span><br><span class="line">-td --net=host \</span><br><span class="line">rustdesk/rustdesk-server hbbs \</span><br><span class="line">-r &lt;your relay ip:port&gt;</span><br></pre></td></tr></table></figure>
+
+<p>​<code>/path/to/config</code>​同样需要替换为RustDesk的配置文件存放路径，如果服务器跟中继部署在同一台机器上，那么路径应当相同。<code>&lt;your relay ip:port&gt;</code>​替换为中继通过STUN穿透后的公网ip:端口，如果配置了DDNS，也可填写域名:端口。</p>
+<p>服务器启动后，会在映射路径下生成形如<code>id_ed25519</code>​和<code>id_ed25519.pub</code>​的两个文件（不确定是否都是这个数字），如果中继部署在其他机器上，需要将这两个文件复制到中继的配置文件存放路径中去。</p>
+<p>如果使用frp穿透，且frp使用Docker安装，那么需要将网络模式选为<code>host</code>​，id服务器需要穿透的端口为21115&#x2F;TCP、21116&#x2F;TCP、21116&#x2F;UDP，其中21116端口的TCP和UDP穿透后的公网端口也应当为同一个。</p>
+<p>配置完成后，便可以用客户端连接了。id服务器填为自建的id服务器的21116端口对应的公网ip:端口（或者frp穿透后的端口），中继服务器和API服务器不填，启动服务后就可以正常使用了。</p>
+<h1 id="第三步：加密连接并仅允许公钥连接"><a href="#第三步：加密连接并仅允许公钥连接" class="headerlink" title="第三步：加密连接并仅允许公钥连接"></a>第三步：加密连接并仅允许公钥连接</h1><p>打开上一步生成的<code>id_ed25519.pub</code>​，将文件内容复制到客户端网络设置的<code>key</code>​中，这样连接就可以被加密了。</p>
+<p>在服务器和中级的部署命令末尾加上<code>-k _</code>​，仅允许设置了<code>key</code>​的客户端连接。</p>
+<p>即现在的中继服务器部署命令形如</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --name hbbr \</span><br><span class="line">-v /path/to/config:/root \</span><br><span class="line">-e <span class="string">&#x27;LIMIT_SPEED&#x27;</span>=<span class="string">&#x27;70&#x27;</span> \</span><br><span class="line">-e <span class="string">&#x27;SINGLE_BANDWIDTH&#x27;</span>=<span class="string">&#x27;100&#x27;</span> \</span><br><span class="line">-td --net=host \</span><br><span class="line">rustdesk/rustdesk-server hbbr -k _</span><br></pre></td></tr></table></figure>
+
+<p>id服务器的部署命令形如</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --name hbbs \</span><br><span class="line">-v /path/to/config:/root \</span><br><span class="line">-td --net=host \</span><br><span class="line">rustdesk/rustdesk-server hbbs \</span><br><span class="line">-r 39.156.66.10:21116 -k _</span><br></pre></td></tr></table></figure>
+
+<h1 id="第四步：自动更新中继端口"><a href="#第四步：自动更新中继端口" class="headerlink" title="第四步：自动更新中继端口"></a>第四步：自动更新中继端口</h1><p>回到Lucky后台，编辑中继对应的穿透规则，启用<code>自定义脚本触发</code>​，并填写自定义脚本。其实只要把id服务器的容器停止并删除，修改中继的地址后再重新部署即可，同样需要将<code>/path/to/config</code>​替换为你自己的路径。如果Lucky部署在容器里，或者id服务器跟Lucky没有部署在同一台机器上，可以用ssh执行命令。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker stop hbbs</span><br><span class="line">docker <span class="built_in">rm</span> hbbs</span><br><span class="line">docker run --name hbbs \</span><br><span class="line">-v /path/to/config:/root \</span><br><span class="line">-td --net=host \</span><br><span class="line">rustdesk/rustdesk-server hbbs \</span><br><span class="line">-r <span class="variable">$&#123;ipAddr&#125;</span> -k _</span><br></pre></td></tr></table></figure>
+
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>经过这样一番设置，RustDesk就能跟有公网一样使用了，不过NAT检测和TCP打洞的功能我并没有测试过。</p>
+<p>另外近期端口时不时会更新失败，我排查了一下，发现通过ssh连接海外VPS经常会断或者压根连不上，但其他大部分服务是能正常连接的，所以我目前在VPS上部署了<a class="link"   href="https://github.com/ncarlier/webhookd" >webhookd<i class="fas fa-external-link-alt"></i></a>，在Lucky中用webhook的方式更新端口，遇到同样问题的朋友可以试一试。</p>
+<p>‍</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>内网穿透</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>打通大内网第二期 让BT下载畅通无阻</title>
+    <url>//post/open-the-second-phase-of-da-inner-network-to-make-bt-download-unimpeded-1mhpdn.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本教程不适合小白，本人因为水平有限，也无法解决大家遇到的问题，一旦出现问题还得请各位自行摸索。</p>
+<p>首要条件：NAT 类型为 NAT1，即 fullcone；光猫桥接或开启 dmz；路由器能刷机或者开启 upnp&#x2F;dmz<br>建议：路由器能够控制具体的端口开放与否，而不是只能全开或全关。</p>
+<p>本文中的操作基于 OpenWrt 上的 Lucky，在其它设备使用或是使用 NATMAP 进行穿透同样可以类比。建议在阅读了第一期的基础上阅读本文。</p>
+<h1 id="第一步-配置硬件端口转发"><a href="#第一步-配置硬件端口转发" class="headerlink" title="第一步  配置硬件端口转发"></a>第一步  配置硬件端口转发</h1><p>首先我们解决上一期埋下的坑：Lucky 使用 CPU 进行端口转发，性能较差，如果只是单纯访问网页还好，进行大文件传输时路由的 CPU 占用较高。如果你的固件带有硬件加速功能，可以用路由器防火墙转发来代替 Lucky 内置转发，从而大大提升性能。即使你的固件不支持硬件转发，也可以尝试一下，该步骤后面会用到。</p>
+<p>打开 <code>Lucky</code>​ - <code>STUN内网穿透</code>​，编辑上一期建好的规则，手动指定 <code>穿透通道监听端口</code>​ 为任意未占用端口，并勾选 <code>不使用Lucky内置端口转发</code>​。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/JlKOFxLznqV3gQ7.png"
+                        alt="image"
+                 >​</p>
+<p>进入 OpenWrt 后台，找到 <code>网络</code>​ - <code>防火墙</code>​ - <code>端口转发</code>​，建立一条转发规则。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/3JxT1clRh95dUSj.png"
+                        alt="image"
+                 >​</p>
+<p>其中 <code>外部端口</code> ​设置与上一步的 <code>穿透通道监听端口</code> ​相同，<code>内部IP地址</code> ​与 <code>内部端口</code> ​则是内网服务器的 IP 与端口，其它同我设置一样，点击添加。NAT 环回个人测试没有影响，大家根据需要设置。</p>
+<p>如果你的固件为 OpenWrt，但在防火墙这一栏中没有端口转发，可以在 <code>/etc/config/firewall</code> ​中添加</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">config redirect <span class="string">&#x27;nginx&#x27;</span></span><br><span class="line">	option target <span class="string">&#x27;DNAT&#x27;</span></span><br><span class="line">	option src <span class="string">&#x27;wan&#x27;</span></span><br><span class="line">	option dest <span class="string">&#x27;lan&#x27;</span></span><br><span class="line">	option proto <span class="string">&#x27;tcp&#x27;</span></span><br><span class="line">	option src_dport <span class="string">&#x27;25681&#x27;</span></span><br><span class="line">	option dest_ip <span class="string">&#x27;192.168.0.115&#x27;</span></span><br><span class="line">	option dest_port <span class="string">&#x27;18443&#x27;</span></span><br><span class="line">	option name <span class="string">&#x27;nginx&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>第 1 行的 ‘nginx’ 为自定义识别名称，不可重复<br>第 6 行改为穿透通道监听的端口<br>第 7、8 行改为内网服务器的 IP 和端口</p>
+</blockquote>
+<p>之后在 <code>网络</code>​ - <code>防火墙</code>​ - <code>通信规则</code> ​中打开路由器端口，与穿透通道监听的端口一致。</p>
+<p>设置完成后点击 <code>保存＆应用</code> ​或执行 <code>service firewall restart</code>​。</p>
+<p>如果你是用的是其它 Linux 系统，可以使用 <code>iptables</code> ​指令来配置端口转发。</p>
+<p>配置完成后访问上一期设置的域名进行测试，如果失败，可能需要关闭网络加速中的流量分载，一般位于 <code>网络</code>​ - <code>Turbo ACC 网络加速</code>​。如果关闭后仍无法连接，且确保设置没有问题，则可能是固件对防火墙转发的支持存在问题，那就只能使用软件转发了。</p>
+<h1 id="第二步-为-qBittorrent-创建隧道和端口转发"><a href="#第二步-为-qBittorrent-创建隧道和端口转发" class="headerlink" title="第二步 为 qBittorrent 创建隧道和端口转发"></a>第二步 为 qBittorrent 创建隧道和端口转发</h1><p>此处以 qBittorrent 客户端为例。</p>
+<p>参考第一期教程，在 Lucky 中为 qBittorrent 的监听端口创建新的 STUN 穿透隧道，并开启防火墙端口，先使用 Lucky 自带的端口转发测试。</p>
+<p>此时使用端口扫描软件，可以看到公网上的对应端口已经开启，但是 qBittorrent 中看不到传入连接。这与 tracker 记录 BT 客户端 ip 和端口的方式有关。现在的转发关系大约是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[*] -&gt; 公网ip :外部访问</span><br><span class="line">公网ip : 公网端口</span><br><span class="line">公网ip -&gt; 路由器ip : STUN穿透</span><br><span class="line">路由器ip : 穿透通道监听端口</span><br><span class="line">路由器ip -&gt; qb的ip : 端口转发</span><br><span class="line">qb的ip : BT监听端口</span><br></pre></td></tr></table></figure>
+
+<p>BT 客户端会向 tracker 上报自己的监听端口，tracker 则从 tcp 报文中得到 BT 客户端的公网 ip，此时 tracker 记录的地址是 <code>公网ip:BT监听端口</code>​。因此要想成功建立连接，BT 客户端的监听端口需设置的与公网端口一致，再修改端口转发规则，使转发关系变成：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[*] -&gt; 公网ip :外部访问</span><br><span class="line">公网ip :端口a</span><br><span class="line">公网ip -&gt; 路由器ip : STUN穿透</span><br><span class="line">路由器ip : 端口b</span><br><span class="line">路由器ip -&gt; qb的ip : 端口转发</span><br><span class="line">qb的ip : 端口a</span><br></pre></td></tr></table></figure>
+
+<p>操作可参考 基于stun穿透工具LUCKY，使BT客户端绿灯、开放TCP端口的办法（进化版） <a class="link"   href="https://www.bilibili.com/read/cv21198136/" >基于 stun 穿透工具 LUCKY，使 BT 客户端绿灯、开放 TCP 端口的办法（进化版）<i class="fas fa-external-link-alt"></i></a></p>
+<p>此时下载一个热门种子，应该就能看到传入连接了，传入连接的 ip 应该都是 Lucky 的 ip。</p>
+<h1 id="第三步-自动更新-qb-端口和转发规则"><a href="#第三步-自动更新-qb-端口和转发规则" class="headerlink" title="第三步 自动更新 qb 端口和转发规则"></a>第三步 自动更新 qb 端口和转发规则</h1><p>如果你是在自己电脑上安装的 qb 或比特彗星，不用时就关闭，那就不用再往下折腾了，要用的时候再设置就好了。如果你将 qb 部署在 nas 上，想在 stun 穿透端口改变时自动更新 qb 端口和转发规则，那么需要编写更新脚本。</p>
+<h2 id="端口转发"><a href="#端口转发" class="headerlink" title="端口转发"></a>端口转发</h2><p>Lucky 自带的端口转发没有提供 api 文档，不便于使用脚本修改，因此我们要关闭 STUN 穿透中的内置端口转发，并指定穿透通道监听端口，使用其它端口转发方案。</p>
+<p>如果使用 OpenWrt，不使用 web 界面添加转发规则，而是进入OpenWrt的存储目录，直接打开 <code>/etc/config/firewall</code>​，添加</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">config redirect <span class="string">&#x27;qb_rule&#x27;</span></span><br><span class="line">	option target <span class="string">&#x27;DNAT&#x27;</span></span><br><span class="line">	option src <span class="string">&#x27;wan&#x27;</span></span><br><span class="line">	option dest <span class="string">&#x27;lan&#x27;</span></span><br><span class="line">	option proto <span class="string">&#x27;tcp&#x27;</span></span><br><span class="line">	option src_dport <span class="string">&#x27;25680&#x27;</span></span><br><span class="line">	option dest_ip <span class="string">&#x27;192.168.0.112&#x27;</span></span><br><span class="line">	option name <span class="string">&#x27;qb_rule&#x27;</span></span><br><span class="line">	option dest_port <span class="string">&#x27;24624&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>同样需要按照第一步的方式修改规则名称，<code>src_dport</code> ​改为穿透通道监听的端口、<code>dest_ip</code>​、<code>dest_port</code> ​改为 qb 的 ip 和 BT 监听端口。</p>
+<p>至于其它 Linux 系统，请自行搜索 <code>iptables</code> ​或 <code>nftables</code> ​的使用方法。</p>
+<p>如果你的固件的防火墙转发有问题，那么可以考虑使用命令行调用 socat 进行转发。</p>
+<blockquote>
+<p>注意：如果使用软件转发，bt 客户端里看到的传入 ip 全部会变成转发软件的 ip，因此需要打开 <code>允许同一个ip的多个连接</code>​，并根据实际情况关闭反吸血功能（但是我使用的 qBittorrentee 似乎能正常使用反吸血）。</p>
+</blockquote>
+<p>随便添加一个热门磁链看看效果：</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/XnjRv4rzpbKABYk.png"
+                        alt="image"
+                 >​</p>
+<p>看到 <code>标志</code> ​里有 <code>I</code> ​就代表成功了，使用防火墙转发时，可以看到传入连接正确的 IP 地址。</p>
+<h2 id="如何调用更新脚本"><a href="#如何调用更新脚本" class="headerlink" title="如何调用更新脚本"></a><del>如何调用更新脚本</del></h2><p>Lucky从2.5.1起，支持STUN地址改变时调用脚本，本节内容失效。</p>
+<p>Lucky 虽然提供了 webhook，但是并不支持直接调用脚本（真希望作者哪天能把这功能加上），而 NATMAP 支持在 ip 和端口变更时调用脚本。如果你对命令行比较熟悉，不需要 ui 界面，可以考虑使用 <a class="link"   href="https://github.com/heiher/natmap" >NATMAP<i class="fas fa-external-link-alt"></i></a>，关于 qb 和防火墙的设置可以参考 <a class="link"   href="https://myth.cx/p/qbittorrent-nat-tcp-hole-punching/" >通过 NAT TCP 打洞使 qBittorrent 获得公网 IPv4 的连接性体验<i class="fas fa-external-link-alt"></i></a> 通过 NAT TCP 打洞使 qBittorrent 获得公网 IPv4 的连接性体验。</p>
+<p>但是手动管理多个 natmap 进程还是比较麻烦的，如果你跟我一样离不开 Lucky 的 web ui，我们也可以利用 webhook 来迂回一下：在 OpenWrt 上装一个能监听 http 请求并执行脚本的服务器就好了。</p>
+<h3 id="安装-webhook-服务器"><a href="#安装-webhook-服务器" class="headerlink" title="安装 webhook 服务器"></a>安装 webhook 服务器</h3><p>我使用的是 <a class="link"   href="https://github.com/ncarlier/webhookd" >webhookd<i class="fas fa-external-link-alt"></i></a>。</p>
+<p>下载对应的版本之后上传到 OpenWrt 里，我是放到了 <code>/usr/bin</code> ​里，并把权限改成 755</p>
+<p>新建一个存放 webhook 执行脚本的目录，我是 <code>/usr/bin/webhookd_scripts</code>​</p>
+<p>现在里面创建一个测试用的脚本 <code>echo.sh</code>​，把权限改成 755（这个脚本在 github 里能下到）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Usage: http POST :8080/echo msg==hello foo=bar</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;This is a simple echo hook.&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Hook information: name=<span class="variable">$hook_name</span>, id=<span class="variable">$hook_id</span>, method=<span class="variable">$hook_method</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Command result: hostname=`hostname`&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Header variable: User-Agent=<span class="variable">$user_agent</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Query parameter: msg=<span class="variable">$msg</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Body payload: <span class="variable">$1</span>&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行 webhookd，我这里的监听端口设置为 1080</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 使用方法：webhookd -listen-addr &quot;:端口&quot; -scripts &quot;存放脚本的目录&quot;</span></span><br><span class="line">webhookd -listen-addr <span class="string">&quot;:1080&quot;</span> -scripts <span class="string">&quot;/usr/bin/webhookd_scripts&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后直接用浏览器访问 <code>http://webhookd的ip:1080/echo</code>​，如果能看到类似下面的信息就说明配置对了。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">This is a simple echo hook.</span><br><span class="line">Hook information: name=echo, id=15, method=GET</span><br><span class="line">Command result: hostname=</span><br><span class="line">Header variable: User-Agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36</span><br><span class="line">Query parameter: msg=</span><br><span class="line">Body payload: </span><br><span class="line">/usr/bin/webhookd_scripts/echo.sh: line 6: hostname: command not found</span><br></pre></td></tr></table></figure>
+
+<p>如果提示 <code>no such file or directory</code>​，大概是执行脚本时第一行的 <code>#!/bin/bash</code> ​识别错误。用 winscp 打开脚本 <code>echo.sh</code>​，在末尾填个空行再保存就行了，具体原因我没有深究，如果有知道的朋友麻烦在评论区教教我。</p>
+<p>如果要传入参数，那么访问在 url 后面加 <code>?参数名=值</code> 就行​​，比如访问 <code>http://webhookd的ip:1080/echo?msg=mygo</code>​​，第五行就会变成 <code>Query parameter: msg=mygo</code>​​。</p>
+<h3 id="设置-webhookd-自启动"><a href="#设置-webhookd-自启动" class="headerlink" title="设置 webhookd 自启动"></a>设置 webhookd 自启动</h3><p>该操作仅针对 OpenWrt，其它 Linux 可能需要使用 systemctl。</p>
+<p>关闭刚才启动的 webhook 服务，在 <code>/etc/init.d</code> ​下创建 <code>webhookd</code> ​文件，并授予 755 权限，修改为</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh /etc/rc.common</span></span><br><span class="line">USE_PROCD=1</span><br><span class="line">START=80</span><br><span class="line">STOP=15</span><br><span class="line"><span class="function"><span class="title">start_service</span></span>() &#123;</span><br><span class="line"> procd_open_instance webhookd</span><br><span class="line"> procd_set_param <span class="built_in">command</span> webhookd -listen-addr <span class="string">&quot;:1080&quot;</span> -scripts <span class="string">&quot;/usr/bin/webhookd_scripts&quot;</span> <span class="comment"># command for running app</span></span><br><span class="line"> procd_set_param respawn <span class="variable">$&#123;respawn_threshold:-3600&#125;</span> <span class="variable">$&#123;respawn_timeout:-5&#125;</span> <span class="variable">$&#123;respawn_retry:-0&#125;</span> <span class="comment"># restart app for unlimited times</span></span><br><span class="line"> procd_set_param stdout 1 <span class="comment"># forward stdout of the command to logd</span></span><br><span class="line"> procd_set_param stderr 1 <span class="comment"># same for stderr</span></span><br><span class="line"> procd_close_instance</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">stop_service</span></span>()&#123;</span><br><span class="line">	procd_kill webhookd</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>第 7 行 <code>command</code>​ 后改成你自己的 webhook 执行命令。</p>
+<p><strong>别忘了给运行权限！</strong></p>
+<p>回到 OpenWrt 后台，在 <code>系统</code>​ - <code>启动项</code> ​里应该就能看到执行启动优先级为 80 的 webhookd 了，如果优先级不为 80，还是用 winscp 打开刚才创建的文件，添加空行再保存。确认无误后在 <code>启动项</code> ​页面里启用 webhook，并点击启动。</p>
+<h2 id="脚本编写"><a href="#脚本编写" class="headerlink" title="脚本编写"></a><del>脚本编写</del></h2><p>Lucky从2.5.1起，支持STUN地址改变时调用脚本，本节内容失效。​</p>
+<p>我使用的脚本是通过 OpenWrt 的 uci 指令修改名为 <code>qb_rule</code> ​规则的转发目标端口，如果你使用其它方法也可以参考。该脚本需要将公网端口赋值给 port 参数传入，使用时需要修改 <code>qb_username</code>​、<code>qb_password</code> ​和 <code>qb_addr</code>​，如果你转发规则的名称跟我设置的不一样，那么也要修改；如果你的 qb 设置里开启了 https 访问，在脚本里也要对应修改。在 webhookd 的脚本目录下创建 qb.sh 并授予 755 权限，内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 传入的参数为port，代表公网端口。若使用natmap，则将$port改为$2</span></span><br><span class="line">public_port=<span class="string">&quot;<span class="variable">$port</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># qBittorrent.</span></span><br><span class="line">qb_username=<span class="string">&quot;admin&quot;</span></span><br><span class="line">qb_password=<span class="string">&quot;your_pwd&quot;</span></span><br><span class="line">qb_addr=<span class="string">&quot;192.168.0.112:8080&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Update qBittorrent listen port.</span></span><br><span class="line"><span class="comment"># 如果你的qb开启了https，需要把下面两行的http改成https</span></span><br><span class="line">qb_cookie=$(curl -s -i --header <span class="string">&quot;Referer: http://<span class="variable">$qb_addr</span>&quot;</span> --data <span class="string">&quot;username=<span class="variable">$qb_username</span>&amp;password=<span class="variable">$qb_password</span>&quot;</span> http://<span class="variable">$qb_addr</span>/api/v2/auth/login | grep -i set-cookie | <span class="built_in">cut</span> -c13-48)</span><br><span class="line">curl -X POST -b <span class="string">&quot;<span class="variable">$qb_cookie</span>&quot;</span> -d <span class="string">&#x27;json=&#123;&quot;listen_port&quot;:&quot;&#x27;</span><span class="variable">$public_port</span><span class="string">&#x27;&quot;&#125;&#x27;</span> <span class="string">&quot;http://<span class="variable">$qb_addr</span>/api/v2/app/setPreferences&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Use uci to config firewall</span></span><br><span class="line"><span class="comment"># qb_rule 改成你自己的转发规则的名字</span></span><br><span class="line">uci <span class="built_in">set</span> firewall.qb_rule.dest_port=<span class="variable">$public_port</span></span><br><span class="line">uci commit firewall</span><br><span class="line"><span class="comment"># restart firewall in background</span></span><br><span class="line"><span class="built_in">nohup</span> service firewall restart &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;success&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果直接执行<code>service firewall restart</code>​来重启防火墙，偶尔会无效，因此我尝试在后台执行，但也不确定能否稳定成功。</p>
+<h2 id="在-Lucky-中设置-webhook​"><a href="#在-Lucky-中设置-webhook​" class="headerlink" title="在 Lucky 中设置 webhook​"></a><del>在 Lucky 中设置 webhook</del>​</h2><p>Lucky从2.5.1起，支持STUN地址改变时调用脚本，本节内容失效。</p>
+<p>回到 <code>Lucky</code>​ - <code>STUN内网穿透</code>​，编辑 qb 的穿透规则，开启 webhook，接口地址填写 <code>http://webhookd的ip:监听端口/qb?port=#&#123;port&#125;</code>​，我的 webhookd 和 Lucky 都在 OpenWrt 上，所以是 <code>http://localhost:1080/qb?port=#&#123;port&#125;</code>​,请求方法选择 <code>GET</code>​，接口调用成功包含的字符串填 <code>success</code>​。点击手动触发测试。如果一切顺利的话，应该可以看到 qb 的监听端口和防火墙转发的目标端口均发生了改变，点击 <code>确认修改</code>​。</p>
+<p>完成了以上所有操作后，当公网 ip 和端口发生改变之后，qb 和端口转发的端口也会自动更新了。为了继续使用 Lucky 的 web ui 折腾了这么一大通，不知各位觉得值得吗？如果什么时候 Lucky 能够支持调用脚本就好了…</p>
+<h2 id="编写自动更新脚本"><a href="#编写自动更新脚本" class="headerlink" title="编写自动更新脚本"></a>编写自动更新脚本</h2><p>我使用的脚本是通过 OpenWrt 的 uci 指令修改名为 <code>qb_rule</code>​ 规则的转发目标端口，如果你使用其它方法也可以参考。该脚本使用时需要修改 private_port为STUN的穿透通道监听端口，<code>qb_username</code>​、<code>qb_password</code>​ 和 <code>qb_addr</code>​改为你的qb的用户名、密码、访问地址，如果你转发规则的名称跟我设置的不一样，那么也要修改；如果你的 qb 设置里开启了 https 访问，请在脚本里自行替换</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">public_port=<span class="variable">$&#123;port&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># qBittorrent.</span></span><br><span class="line">qb_username=<span class="string">&quot;admin&quot;</span></span><br><span class="line">qb_password=<span class="string">&quot;yourpwd&quot;</span></span><br><span class="line">qb_addr=<span class="string">&quot;192.168.0.112:8080&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Update qBittorrent listen port.</span></span><br><span class="line">qb_cookie=$(curl -s -i --header <span class="string">&quot;Referer: http://<span class="variable">$qb_addr</span>&quot;</span> --data <span class="string">&quot;username=<span class="variable">$qb_username</span>&amp;password=<span class="variable">$qb_password</span>&quot;</span> http://<span class="variable">$qb_addr</span>/api/v2/auth/login | grep -i set-cookie | <span class="built_in">cut</span> -c13-48)</span><br><span class="line">curl -X POST -b <span class="string">&quot;<span class="variable">$qb_cookie</span>&quot;</span> -d <span class="string">&#x27;json=&#123;&quot;listen_port&quot;:&quot;&#x27;</span><span class="variable">$public_port</span><span class="string">&#x27;&quot;&#125;&#x27;</span> <span class="string">&quot;http://<span class="variable">$qb_addr</span>/api/v2/app/setPreferences&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#Use uci to config firewall</span></span><br><span class="line">uci <span class="built_in">set</span> firewall.qb_rule.dest_port=<span class="variable">$public_port</span></span><br><span class="line">uci commit firewall</span><br><span class="line">/etc/init.d/firewall reload &gt;/dev/null 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<p>修改完成后，回到LUCKY的STUN穿透，编辑规则，打开<code>自定义脚本触发</code>​​，将以上脚本粘贴至<code>自定义脚本</code>​​内，再点击<code>确认修改</code>​​。</p>
+<hr>
+<p>补一个从<a class="link"   href="https://github.com/EkkoG/openwrt-natmap" >EkkoG&#x2F;openwrt-natmap<i class="fas fa-external-link-alt"></i></a>中抄来的Transmission的更新脚本。</p>
+<p>首先为Transmission添加一条TCP的STUN穿透规则，并在防火墙里打开STUN的通道监听端口，然后进入OpenWrt的存储目录，打开<code>/etc/config/firewall</code>​，添加以下名为<code>tr_rule</code>​的规则，记得修改<code>src_dport</code>​和<code>dest_ip</code>​，具体操作跟前面完全一样。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">config redirect <span class="string">&#x27;tr_rule&#x27;</span></span><br><span class="line">	option target <span class="string">&#x27;DNAT&#x27;</span></span><br><span class="line">	option src <span class="string">&#x27;wan&#x27;</span></span><br><span class="line">	option dest <span class="string">&#x27;lan&#x27;</span></span><br><span class="line">	option proto <span class="string">&#x27;tcp udp&#x27;</span></span><br><span class="line">	option src_dport <span class="string">&#x27;25683&#x27;</span></span><br><span class="line">	option dest_ip <span class="string">&#x27;192.168.0.117&#x27;</span></span><br><span class="line">	option name <span class="string">&#x27;tr_rule&#x27;</span></span><br><span class="line">	option dest_port <span class="string">&#x27;14830&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>回到LUCKY的STUN穿透，编辑规则，打开<code>自定义脚本触发</code>​，将以下脚本粘贴至<code>自定义脚本</code>​内，修改<code>TR_USERNAME</code>​、<code>TR_PASSWORD</code>​、<code>TR_ADDR</code>​，最后点击<code>确认修改</code>​。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TR_USERNAME=admin</span><br><span class="line">TR_PASSWORD=yourpwd</span><br><span class="line">TR_ADDR=192.168.0.117:9091</span><br><span class="line"></span><br><span class="line">TR_RPC_URL=<span class="string">&#x27;http://&#x27;</span>$(<span class="built_in">echo</span> <span class="variable">$TR_ADDR</span> | sed <span class="string">&#x27;s/\/$//&#x27;</span>)</span><br><span class="line"><span class="comment"># update port</span></span><br><span class="line">trauth=<span class="string">&quot;-u <span class="variable">$TR_USERNAME</span>:<span class="variable">$TR_PASSWORD</span>&quot;</span></span><br><span class="line">trsid=$(curl -s <span class="variable">$trauth</span> <span class="variable">$TR_RPC_URL</span>/transmission/rpc | sed <span class="string">&#x27;s/.*&lt;code&gt;//g;s/&lt;\/code&gt;.*//g&#x27;</span>)</span><br><span class="line">curl -X POST \</span><br><span class="line">    -H <span class="string">&quot;<span class="variable">$&#123;trsid&#125;</span>&quot;</span> <span class="variable">$trauth</span> \</span><br><span class="line">    -d <span class="string">&#x27;&#123;&quot;method&quot;:&quot;session-set&quot;,&quot;arguments&quot;:&#123;&quot;peer-port&quot;:&#x27;</span><span class="variable">$&#123;port&#125;</span><span class="string">&#x27;&#125;&#125;&#x27;</span> \</span><br><span class="line">    <span class="string">&quot;<span class="variable">$TR_RPC_URL</span>/transmission/rpc&quot;</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">#Use uci to config firewall</span></span><br><span class="line">uci <span class="built_in">set</span> firewall.tr_rule.dest_port=<span class="variable">$&#123;port&#125;</span></span><br><span class="line">uci <span class="built_in">set</span> firewall.tr_ipv6.dest_port=<span class="variable">$&#123;port&#125;</span></span><br><span class="line">uci commit firewall</span><br><span class="line">/etc/init.d/firewall reload &gt;/dev/null 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<h1 id="第四步-开启高位端口"><a href="#第四步-开启高位端口" class="headerlink" title="第四步 开启高位端口"></a>第四步 开启高位端口</h1><p>因为 STUN 穿透可能随机到任意高位端口，所以如果你部署 qb 的机器上有防火墙，那可以将未占用的高位端口全部开启，或者通过脚本按需开启。</p>
+<p>如果你希望 qb 也使用 ipv6 连接，那么可以进入路由器的通信规则中，建立转发规则，将 qb 所在机器的未占用的高位端口全部允许 ipv6 访问，或者通过脚本按需开启。</p>
+<p><strong>请务必确保你不想暴露的端口被防火墙阻止。</strong></p>
+<p>如果使用脚本开启，则新建一条名为<code>qb_ipv6</code>​的ipv6转发规则，在<code>commit</code>​前加入</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">uci <span class="built_in">set</span> firewall.qb_ipv6.dest_port=<span class="variable">$public_port</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>经过本期的配置，BT 客户端的使用效果几乎等同于拥有公网 ipv4，不仅更容易上传了，也能提高下载时的连接数。</p>
+<p>目前 STUN 穿透方案还有一个明显痛点：绝大部分应用程序需要填写固定的自部署服务器的端口，而不能依靠重定向，甚至有的应用不支持修改端口，这将在下一期解决，补上内网穿透的最后一块拼图。</p>
+<p>‍</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>内网穿透</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>打通大内网第三期 固定服务端口</title>
+    <url>//post/open-the-third-phase-of-the-big-inner-network-fixed-service-port-1lusqz.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本教程不适合小白，本人因为水平有限，也无法解决大家遇到的问题，一旦出现问题还得请各位自行摸索。首要条件：NAT 类型为 NAT1，即 fullcone；光猫桥接或开启 dmz；路由器能刷机或者开启 upnp&#x2F;dmz建议：路由器能够控制具体的端口开放与否，而不是只能全开或全关。<br>本文中的操作基于 OpenWrt 上的 Lucky，在其它设备使用或是使用 NATMAP 进行穿透同样可以类比。建议在阅读了第一期与第二期的基础上阅读本文。</p>
+<h1 id="需解决的问题与思路"><a href="#需解决的问题与思路" class="headerlink" title="需解决的问题与思路"></a>需解决的问题与思路</h1><p>STUN穿透的端口不固定，并且更换较为频繁，虽然在第一期中，我们使用Cloudflare页面规则，将域名重定向到了公网端口，解决了web应用的访问；而绝大多数需要连接自建后端的应用程序并不支持重定向，必须指定端口，甚至部分应用程序不允许修改默认端口。</p>
+<p>我们可以借鉴其它内网穿透软件的思路，通过一个端口来转发其他端口的流量，常见的做法有两种：</p>
+<ul>
+<li>通过frp的stcp和sudp，将内网端口一对一的绑定到异地设备的本机端口上。</li>
+<li>通过wireguard或n2n，将内网整个网段转发过去。</li>
+</ul>
+<p>因为我的内网服务比较多，不想让连teamspeak的朋友都来欣赏我的“学习资料”，所以我选择使用frp。</p>
+<p>此处放两个教程供各位参考，不过他们用的是NATMAP。</p>
+<p><a class="link"   href="https://github.com/heiher/natmap/wiki/frp#%E4%BD%BF%E7%94%A8natmap%E5%9C%A8nat-1%E7%A7%81%E7%BD%91ip%E5%AE%BD%E5%B8%A6%E4%B8%8A%E9%83%A8%E7%BD%B2frp%E6%9C%8D%E5%8A%A1" >使用NATMap在NAT-1私网IP宽带上部署FRP服务<i class="fas fa-external-link-alt"></i></a></p>
+<p>​<a class="link"   href="https://www.right.com.cn/forum/thread-8289365-1-1.html" >natmap内网穿透让内网实现公网IP，远程访问异地组网，做frps，ssh ，web，wireguard..<i class="fas fa-external-link-alt"></i></a>​</p>
+<h1 id="第一步-在内网安装frps和frpc，并配置stcp"><a href="#第一步-在内网安装frps和frpc，并配置stcp" class="headerlink" title="第一步 在内网安装frps和frpc，并配置stcp"></a>第一步 在内网安装frps和frpc，并配置stcp</h1><p>在内网配置的frps和frpc使用官方版即可，此处简单带过。<a class="link"   href="https://gofrp.org/zh-cn/" >官方文档<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="frps"><a href="#frps" class="headerlink" title="frps"></a>frps</h2><p>在路由器或nas上下载并安装frps，我是在Unraid里用docker安装：</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/pIbKD2YeiudEmCL.png"
+                        alt="image"
+                 >​</p>
+<p>配置frps.ini : </p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">7000</span></span><br><span class="line"><span class="attr">token</span> = your_token</span><br></pre></td></tr></table></figure>
+
+<p>只需配置<code>bind_port</code>​和<code>token</code>​就行，也就是frps的访问端口和令牌，默认采用TCP协议。</p>
+<p>配置完成后运行frps，接下来参考之前的教程，它创建STUN穿透通道、配置端口转发、开启防火墙，在外网能ping通后为它设置开机自启。</p>
+<h2 id="frpc"><a href="#frpc" class="headerlink" title="frpc"></a>frpc</h2><p>为何在内网中也要frpc？这跟stcp与sudp的工作方式有关，官网的描述如下：</p>
+<blockquote>
+<p>STCP 和 SUDP 的 (S) 的含义是 Secret。其作用是为 TCP 和 UDP 类型的服务提供一种安全访问的能力，避免让端口直接暴露在公网上导致任何人都能访问到。</p>
+<p>这两种代理要求在被访问服务的机器上以及要访问的用户的机器上都部署上 frp 的客户端。被访问的服务所在机器叫做服务端，另一端叫做访问端。</p>
+<p>frp 会在访问端监听一个端口和服务端的端口做映射。访问端的用户需要提供相同的密钥才能连接成功，从而保证安全性。</p>
+</blockquote>
+<p><del>参考</del>​<del><a class="link"   href="https://gofrp.org/zh-cn/docs/examples/xtcp/" >官方的使用示例<i class="fas fa-external-link-alt"></i></a></del>​ <del>，配置时根据需要把</del>​<del>​<code>xtcp</code>​</del>​<del>改成</del>​<del>​<code>stcp</code>​</del>​<del>或</del>​<del>​<code>sdup</code>​</del>​<del>即可。</del> 官方已经不再推荐使用ini配置文件。</p>
+<p>下载安装官方版frpc后，编辑frpc.ini。<code>common</code>​中的<code>token</code>​必须与frps相同。</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">server_port</span> = <span class="number">7000</span></span><br><span class="line"><span class="attr">token</span> = your_token</span><br><span class="line"></span><br><span class="line"><span class="comment"># jellyfin</span></span><br><span class="line"><span class="section">[svc_jellyfin]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = B9jNFfUy3hDrmi</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">8096</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"><span class="attr">role</span> = server</span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx</span></span><br><span class="line"><span class="section">[svc_nginx]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = x5Y6f8VBbXQ5NY</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">192.168</span>.<span class="number">0.115</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">18443</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># teamspeak</span></span><br><span class="line"><span class="section">[svc_ts1]</span></span><br><span class="line"><span class="attr">type</span> = sudp</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">9987</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">false</span></span><br><span class="line"><span class="section">[svc_ts2]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">10011</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"><span class="section">[svc_ts3]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">local_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">30033</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>我将frpc和frps部署在了同一台机器上，因此<code>server_addr</code>​填的是127.0.0.1，你要改为frps的内网ip。有网友反映将frps和frpc部署在同一台机器上可能会出错，但是我没遇到。</p>
+<p>为你想要在外网访问的所有端口都配置frpc的stcp&#x2F;sudp服务端（如果不指定<code>role</code>​则默认为<code>server</code>​），<code>local_ip</code>​和<code>local_port</code>​为相应服务的内网地址和端口。我这里的添加了本地地址上的jellyfin、nginx和teamspeak。</p>
+<blockquote>
+<p>如果你需要访问的所有服务都经过反向代理，那也可以只为反向代理配置stcp，并在异地机器上修改HOSTS文件。</p>
+</blockquote>
+<h1 id="第二步-解析frps的公网端口"><a href="#第二步-解析frps的公网端口" class="headerlink" title="第二步 解析frps的公网端口"></a>第二步 解析frps的公网端口</h1><p>绕了这么一大圈，还是要面对最头疼的问题：frps的公网访问端口不固定怎么办？</p>
+<h2 id="解决思路"><a href="#解决思路" class="headerlink" title="解决思路"></a>解决思路</h2><h3 id="ip4p"><a href="#ip4p" class="headerlink" title="ip4p"></a>ip4p</h3><p>NATMAP的作者给出了名为ip4p的方案，也就是将ipv4地址和端口转化成ipv6地址，添加为一条AAAA记录。当公网地址或端口改变时，只要修改该记录，即可实现类似DDNS的效果。作者也对frpc进行了修改，为它添加了解析ip4p的功能。<a class="link"   href="https://github.com/heiher/frp" >支持ip4p的frp <i class="fas fa-external-link-alt"></i></a></p>
+<blockquote>
+<p>The IP4P address format uses IPv6 special addresses to encode IPv4 addresses and ports for easy distribution through DNS AAAA records.</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2001::&#123;port&#125;:&#123;ipv4-hi16&#125;:&#123;ipv4-lo16&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="ip4p存在的问题"><a href="#ip4p存在的问题" class="headerlink" title="ip4p存在的问题"></a>ip4p存在的问题</h4><p>在windows平台和安卓平台上，如果没有外网ipv6环境，那么他程序里使用的LookupIP函数不会获取AAAA记录。虽然调用nslookup可以解析AAAA记录，但是我懒……</p>
+<p>也就是说，你连不上外网ipv6，就解析不了ip4p，但是如果你连得上ipv6，为什么不用ipv6直连呢……</p>
+<h3 id="TXT记录"><a href="#TXT记录" class="headerlink" title="TXT记录"></a>TXT记录</h3><p>我进交流群向带佬求助后，带佬建议我直接把公网ip和端口放进TXT记录里。于是我花了俩小时自学了一下golang，添加了解析TXT记录的功能。我的做法是，假设公网地址是<code>183.6.66.666:6666</code>​，将其用BASE64编码，变成<code>MTgzLjYuNjYuNjY2OjY2NjY=</code>​放进TXT记录里，供frpc解析。如果你觉得不安全，那可以考虑加个AES加密之类的。</p>
+<h2 id="创建TXT记录"><a href="#创建TXT记录" class="headerlink" title="创建TXT记录"></a>创建TXT记录</h2><p>进入Cloudflare后台，在dns - 记录中创建一条TXT记录，TTL我设为了一分钟，不确定是否生效。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/fZkhdSTMVvFjQyR.png"
+                        alt="image"
+                 >​</p>
+<p>将你刚才创建的TXT记录的域名、Cloudflare的邮箱、Global API Key和域名的区域id填入下面的指令里（忘记的可以看看第一期第四步和第五步），并在命令行里执行。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -s -X GET <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/区域id/dns_records?type=TXT&amp;name=ip4p.s*******n.online&quot;</span> -H <span class="string">&quot;X-Auth-Email:****@qq.com&quot;</span> -H <span class="string">&quot;X-Auth-Key:f9*****************1b&quot;</span> -H <span class="string">&quot;Content-Type: application/json&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>把结果里<code>&quot;id&quot;:</code>​后面的那一串数字+字母复制下来，这就是这条记录的id。</p>
+<p>把包括刚才id在内的信息替换到下一行指令里执行，尝试对刚才添加的TXT记录进行修改：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -s -X PUT <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/区域id/dns_records/记录id&quot;</span> -H <span class="string">&quot;X-Auth-Email:****@qq.com&quot;</span> -H <span class="string">&quot;X-Auth-Key:f9*****************1b&quot;</span> -H <span class="string">&quot;Content-Type: application/json&quot;</span> --data <span class="string">&#x27;&#123;&quot;type&quot;:&quot;TXT&quot;,&quot;name&quot;:&quot;ip4p.s********.online&quot;,&quot;content&quot;:&quot;changed&quot;,&quot;ttl&quot;:60,&quot;proxied&quot;:false&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>再回到Cloudflare后台，应该就能看到这条记录更改了。</p>
+<blockquote>
+<p>部分免费域名无法使用API修改。</p>
+</blockquote>
+<p>‍</p>
+<h2 id="配置脚本"><a href="#配置脚本" class="headerlink" title="配置脚本"></a>配置脚本</h2><p>在以下脚本中填入域名、Cloudflare的邮箱、Global API key、区域id、txt记录的id。我的<code>ip4p.s******n.online</code>​​域名除了txt记录外，还添加了ip4p的aaaa记录；如果你需要，请仿照上一步手动添加一条aaaa记录，并填入这条记录的id，如果不需要那就把对应的部分注释掉。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">domain=<span class="string">&quot;ip4p.s******n.online&quot;</span></span><br><span class="line">zone=<span class="string">&quot;e7***************************fb&quot;</span></span><br><span class="line">txt_id=<span class="string">&quot;a19***********************8a06&quot;</span></span><br><span class="line">email=<span class="string">&quot;****@qq.com&quot;</span></span><br><span class="line">key=<span class="string">&quot;f9*****************1b&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;change txt record&quot;</span></span><br><span class="line"><span class="comment">#base64 encode</span></span><br><span class="line">addr_64=$(<span class="built_in">echo</span> -n <span class="variable">$&#123;ipAddr&#125;</span> | <span class="built_in">base64</span>)</span><br><span class="line">curl -s -X PUT <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/<span class="variable">$zone</span>/dns_records/<span class="variable">$txt_id</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;X-Auth-Email: <span class="variable">$email</span>&quot;</span> -H <span class="string">&quot;X-Auth-Key: <span class="variable">$key</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">--data <span class="string">&#x27;&#123;&quot;type&quot;:&quot;TXT&quot;,&quot;name&quot;:&quot;&#x27;</span><span class="variable">$domain</span><span class="string">&#x27;&quot;,&quot;content&quot;:&quot;&#x27;</span><span class="variable">$addr_64</span><span class="string">&#x27;&quot;,&quot;ttl&quot;:60,&quot;proxied&quot;:false&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后编辑穿透规则，开启自定义脚本触发，把它粘贴到自定义脚本中。</p>
+<hr>
+<h2 id="配置脚本-1"><a href="#配置脚本-1" class="headerlink" title="配置脚本"></a><del>配置脚本</del></h2><p>Lucky从2.5.1起，支持STUN地址改变时调用脚本，本节内容失效。​</p>
+<p>在第二期创建的webhook服务器的脚本目录下创建frp.sh，并填入Cloudflare的邮箱、Global API key、区域id、txt记录的id。我的<code>ip4p.s******n.online</code>​域名除了txt记录外，还添加了ip4p的aaaa记录；如果你需要，请仿照上一步手动添加一条aaaa记录，并填入这条记录的id，如果不需要那就把对应的部分注释掉。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># param is ip,port,addr</span></span><br><span class="line"></span><br><span class="line">domain=<span class="string">&quot;ip4p.s******n.online&quot;</span></span><br><span class="line">zone=<span class="string">&quot;e7***************************fb&quot;</span></span><br><span class="line">ip4p_id=<span class="string">&quot;96************************1b93&quot;</span></span><br><span class="line">txt_id=<span class="string">&quot;a19***********************8a06&quot;</span></span><br><span class="line">email=<span class="string">&quot;****@qq.com&quot;</span></span><br><span class="line">key=<span class="string">&quot;f9*****************1b&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;change ip4p record&quot;</span></span><br><span class="line">array=(<span class="variable">$&#123;ip//./ &#125;</span>)</span><br><span class="line">ip4p=2001::$(<span class="built_in">printf</span> <span class="string">&#x27;%x:%x%x:%x%x\n&#x27;</span> <span class="variable">$port</span> <span class="variable">$&#123;array[0]&#125;</span> <span class="variable">$&#123;array[1]&#125;</span> <span class="variable">$&#123;array[2]&#125;</span> <span class="variable">$&#123;array[3]&#125;</span>)</span><br><span class="line">curl -s -X PUT <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/<span class="variable">$zone</span>/dns_records/<span class="variable">$ip4p_id</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;X-Auth-Email:<span class="variable">$email</span>&quot;</span> -H <span class="string">&quot;X-Auth-Key:<span class="variable">$key</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">--data <span class="string">&#x27;&#123;&quot;type&quot;:&quot;AAAA&quot;,&quot;name&quot;:&quot;&#x27;</span><span class="variable">$domain</span><span class="string">&#x27;&quot;,&quot;content&quot;:&quot;&#x27;</span><span class="variable">$ip4p</span><span class="string">&#x27;&quot;,&quot;ttl&quot;:60,&quot;proxied&quot;:false&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;change txt record&quot;</span></span><br><span class="line"><span class="comment"># base64 encode</span></span><br><span class="line">addr_64=$(<span class="built_in">echo</span> -n <span class="variable">$addr</span> | <span class="built_in">base64</span>)</span><br><span class="line">curl -s -X PUT <span class="string">&quot;https://api.cloudflare.com/client/v4/zones/<span class="variable">$zone</span>/dns_records/<span class="variable">$txt_id</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;X-Auth-Email:<span class="variable">$email</span>&quot;</span> -H <span class="string">&quot;X-Auth-Key:<span class="variable">$key</span>&quot;</span> \</span><br><span class="line">-H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">--data <span class="string">&#x27;&#123;&quot;type&quot;:&quot;TXT&quot;,&quot;name&quot;:&quot;&#x27;</span><span class="variable">$domain</span><span class="string">&#x27;&quot;,&quot;content&quot;:&quot;&#x27;</span><span class="variable">$addr_64</span><span class="string">&#x27;&quot;,&quot;ttl&quot;:60,&quot;proxied&quot;:false&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="在Lucky中设置webhook"><a href="#在Lucky中设置webhook" class="headerlink" title="在Lucky中设置webhook"></a><del>在Lucky中设置webhook</del></h2><p>Lucky从2.5.1起，支持STUN地址改变时调用脚本，本节内容失效。​</p>
+<p>打开Lucky后台，编辑stun的穿透规则，打开webhook，将接口地址设置为<code>http://webhookd的ip地址:wenhookd的端口/frp?ip=#&#123;ip&#125;&amp;port=#&#123;port&#125;&amp;addr=#&#123;ipAddr&#125;</code>​（webhook服务器地址、端口和脚本名称根据实际情况来），接口调用成功包含的字符串填<code>&quot;success&quot;:true</code>​。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/yk3Z5BlRjcVneTa.png"
+                        alt="image"
+                 >​</p>
+<hr>
+<h1 id="第三步-在异地电脑上配置frpc"><a href="#第三步-在异地电脑上配置frpc" class="headerlink" title="第三步 在异地电脑上配置frpc"></a>第三步 在异地电脑上配置frpc</h1><p>异地电脑上的frpc必须使用魔改版，如需解析txt记录，可以使用<a class="link"   href="https://github.com/qaz741wsd856/frp" >我改的版本<i class="fas fa-external-link-alt"></i></a>，但我只在Windows上编译过，其它平台请自行编译。</p>
+<h2 id="配置frpc-ini"><a href="#配置frpc-ini" class="headerlink" title="配置frpc.ini"></a>配置frpc.ini</h2><p>修改<code>frpc.ini</code>​，<code>server_addr</code>​填添加了ip4p或TXT记录的域名，<code>server_port</code>​不用填，建议指定<code>dns_server</code>​。</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = ip4p.s******n.<span class="literal">on</span>line</span><br><span class="line"><span class="attr">token</span> = your_token</span><br><span class="line"><span class="attr">dns_server</span> = <span class="number">8.8</span>.<span class="number">8.8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># jellyfin</span></span><br><span class="line"><span class="section">[vst_jellyfin]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_jellyfin</span><br><span class="line"><span class="attr">sk</span> = B9jNFfUy3hDrmi</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">38096</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx</span></span><br><span class="line"><span class="section">[vst_nginx]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_nginx</span><br><span class="line"><span class="attr">sk</span> = x5Y6f8VBbXQ5NY</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">18443</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># teamspeak</span></span><br><span class="line"><span class="section">[vst_ts1]</span></span><br><span class="line"><span class="attr">type</span> = sudp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_ts1</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">9987</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">false</span></span><br><span class="line"><span class="section">[vst_ts2]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_ts2</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">10011</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br><span class="line"><span class="section">[vst_ts3]</span></span><br><span class="line"><span class="attr">type</span> = stcp</span><br><span class="line"><span class="attr">role</span> = visitor</span><br><span class="line"><span class="attr">server_name</span> = svc_ts3</span><br><span class="line"><span class="attr">sk</span> = khgtqgyCk3u3JZ</span><br><span class="line"><span class="attr">bind_ip</span> = <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">30033</span></span><br><span class="line"><span class="attr">use_compression</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>访问端必须手动指定<code>role</code>​​为<code>visitor</code>​​，必须指定连接的服务端名称<code>server_name</code>​​，并且<code>sk</code>​​应与服务端相同。</p>
+<p>如果<code>bind_ip</code>​填为<code>127.0.0.1</code>​，则仅有本设备能访问。若想让其它设备访问，则填为<code>0.0.0.0</code>​。</p>
+<h2 id="在Windows上将frpc注册为服务"><a href="#在Windows上将frpc注册为服务" class="headerlink" title="在Windows上将frpc注册为服务"></a>在Windows上将frpc注册为服务</h2><p>这一步面向零基础使用者。（也就是你的小白朋友）</p>
+<h3 id="先尝试运行一次"><a href="#先尝试运行一次" class="headerlink" title="先尝试运行一次"></a>先尝试运行一次</h3><p>打开frpc.exe所在文件夹，在资源管理器空白处<code>右键</code>​ - <code>打开命令提示符</code>​。</p>
+<p>输入<code>.\frpc.exe</code>​并按下回车。如果没有出现错误，可以尝试访问所有的服务。</p>
+<p>如果发现有的服务访问不上，打开<code>frpc.ini</code>​，找那个服务到对应的<code>bind_port</code>​，记下这个数字。</p>
+<p>创建文件<code>检查端口是否占用.ps1</code>​，代码如下。​<code>右键</code>​ - <code>使用PowerShell运行</code>​</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)  </span><br><span class="line">&#123;  </span><br><span class="line">	<span class="variable">$port</span> = <span class="built_in">Read-Host</span> <span class="string">&quot;请输入需要查询的端口,输入0退出：&quot;</span></span><br><span class="line">	<span class="keyword">IF</span> (<span class="variable">$port</span> <span class="operator">-eq</span> <span class="number">0</span>) &#123;<span class="keyword">exit</span>&#125;</span><br><span class="line">	<span class="variable">$res</span>=<span class="variable">$</span>(<span class="built_in">Get-NetTCPConnection</span> | ? &#123;<span class="variable">$_</span>.LocalPort <span class="operator">-eq</span> <span class="variable">$port</span>&#125;)</span><br><span class="line">	<span class="keyword">if</span> (<span class="variable">$res</span>)&#123;</span><br><span class="line">		<span class="built_in">echo</span> <span class="variable">$res</span></span><br><span class="line">		<span class="built_in">Get-Process</span> <span class="literal">-Id</span> (<span class="built_in">Get-NetTCPConnection</span> <span class="literal">-LocalPort</span> <span class="variable">$port</span>).OwningProcess</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> &#123;<span class="built_in">echo</span> <span class="string">&quot;未被占用&quot;</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你可以输入刚才记下的数字，查看该端口是否被占用、被什么程序占用，然后选择关闭该程序或者选择另一个没有被占用的端口（1025-65535之间）。</p>
+<p>一旦关闭命令提示符窗口，frpc就会关闭。</p>
+<h3 id="注册服务"><a href="#注册服务" class="headerlink" title="注册服务"></a>注册服务</h3><p>可以使用<a class="link"   href="https://nssm.cc/download" >nssm<i class="fas fa-external-link-alt"></i></a>将程序注册为服务。</p>
+<p>先将frpc关闭。在资源管理器中打开<code>nssm.exe</code>​所在目录。32位系统打开<code>win32</code>​目录，64位系统打开<code>win64</code>​目录。</p>
+<p>在资源管理器空白处<code>右键</code>​ - <code>打开命令提示符</code>​，输入<code>.\nssm.exe install frpc</code>​。</p>
+<p>会弹出NSSM service installer窗口，<code>Application Path</code>​选择<code>frpc.exe</code>​，<code>Startup directory</code>选择frpc.exe所在目录，Arugments不填，点击Install service。</p>
+<p>在<code>任务管理器</code>​ - <code>服务</code>​ - <code>打开服务</code>​弹出窗口中找到frpc。右键frpc，点击<code>属性</code>​，将启动类型改为自动，并点击<code>确定</code>​。再右键frpc，点击<code>启动</code>​。</p>
+<h1 id="魔改版frp使用问题总结"><a href="#魔改版frp使用问题总结" class="headerlink" title="魔改版frp使用问题总结"></a>魔改版frp使用问题总结</h1><p>如果你的应用强制要求https连接（如BitWarden），可以在frp中添加反向代理的端口，并在异地电脑上修改hosts劫持域名。</p>
+<p>我尚未解决的问题记录如下：</p>
+<ul>
+<li><p>我尝试让frp使用QUIC协议，访问端可以连接到服务端，可以ping通，但是几乎收不到包；</p>
+</li>
+<li><p>部分常用第三方远程桌面无法正常使用（moonlight可以）</p>
+<ul>
+<li>RustDesk的ID服务器可以连接，但是中继服务器无法连接；</li>
+<li>parsec无法打洞（不过我也不觉得能成功）。</li>
+</ul>
+</li>
+<li><p>安卓手机若无root，开了穿透软件就无法魔法上网。</p>
+</li>
+</ul>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>至此，我们补上了STUN内网穿透的最后一块拼图，基本解决了大内网环境下的所有痛点，近似达到了拥有公网ip的效果。但使用体验仍不能称得上完美，期待之后能有更好的方案出现。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+        <tag>内网穿透</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>欢迎来到我的小站</title>
+    <url>/2022/10/25/welcome/</url>
+    <content><![CDATA[<p>欢迎来到我的小站，我偶尔会在这里发一点教程。</p>
+]]></content>
+  </entry>
+</search>

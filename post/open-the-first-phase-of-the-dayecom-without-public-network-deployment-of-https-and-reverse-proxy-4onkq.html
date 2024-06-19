@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="qaz741wsd856">
+    
+    <title>
+        
+            打通大内网第一期 无公网部署https和反向代理 |
+        
+        我的小站
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"我的小站","author":"qaz741wsd856","avatar":"/images/avatar.svg","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":"enable","background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"生命在于折腾！","hitokoto":false},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":null,"category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":false,"img_link":null,"text":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":false,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":true,"site_pv":true,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"valine","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.21"},"waline":{"server_url":null,"reaction":false,"version":2},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":true,"provider":"jsdelivr"},"pjax":{"enable":true},"footer":{"since":2020,"word_count":false,"icp":{"enable":false,"record_code":null,"url":"https://beian.miit.gov.cn"},"site_deploy":{"enable":false,"provider":"github","url":null},"shields_style":{"enable":false,"custom":[{"link_url":null,"img_url":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.1.3"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               我的小站
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                
+                                HOME
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                
+                                CATEGORIES
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/"
+                    >HOME</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives"
+                    >ARCHIVES</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags"
+                    >TAGS</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories"
+                    >CATEGORIES</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about"
+                    >ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        打通大内网第一期 无公网部署https和反向代理
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/avatar.svg">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">qaz741wsd856</span>
+                                
+                                    <span class="author-badge">Lv1</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2023-10-12 13:17:22</span>
+            </span>
+
+            <span class="meta-info-item post-update-date">
+                <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                <span class="datetime" data-updated="Mon May 27 2024 09:02:37 GMT+0000">2024-05-27 17:02:37</span>
+            </span>
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/%E6%95%99%E7%A8%8B/">教程</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E7%BD%91%E7%BB%9C/">网络</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">内网穿透</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+            <span class="meta-info-item post-wordcount">
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>6.4k Words</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-min2read">
+                <i class="icon fas fa-clock"></i>&nbsp;<span>24 Mins</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本教程不适合小白，本人因为水平有限，也无法解决大家遇到的问题，一旦出现问题还得请各位自行摸索。</p>
+<p>首要条件：NAT类型为NAT1，即fullcone；光猫桥接或开启dmz；路由器能刷机或者开启upnp&#x2F;dmz<br>建议：路由器能够控制具体的端口开放与否，而不是只能全开或全关。</p>
+<h2 id="温馨提示："><a href="#温馨提示：" class="headerlink" title="温馨提示："></a>温馨提示：</h2><p>本方案不保证成功率和稳定性，而且操作比较繁琐，如果你可以通过社会工程学的方式获取公网ipv4，请尽量尝试；如果你在外访问时可以使用ipv6，请尝试ipv6方案。如果你对以上概念完全没有印象，建议学习基本的网络知识后再来看本教程，再次提醒，本教程不适合小白，我也没有能力解决各位的问题。</p>
+<h2 id="常见穿透方案及其局限性"><a href="#常见穿透方案及其局限性" class="headerlink" title="常见穿透方案及其局限性"></a>常见穿透方案及其局限性</h2><p>我的需求很简单，能随时随地访问家里的nas，我部署的服务既有需要大带宽的alist、jellyfin等，也有对延迟敏感的teamspeak、远程桌面。目前常见的内网穿透方案有如下几种：</p>
+<ol>
+<li>公网ip<br> 首选方案肯定是向运营商要公网IP，如果是是电信和联通可能还有希望，其它运营商或是校园网基本没戏。<br> 虽然现在家庭宽带的ipv6基本普及，但例如公司、出租屋、酒店等场景基本没有覆盖，况且我的小白朋友压根不会也不想开启。</li>
+<li>frp或vpn<br> 如果自己租服务器搭建，那么同时能满足我对带宽和延迟需求的服务器价格实在太感人；<br> 使用别人搭建好的服务，的确能找到价格很低的，但是稳定性堪忧。</li>
+<li>各种P2P打洞组网软件<br> 访问者既要下软件、又要注册账号，对于小白朋友还是太麻烦了；<br> 部分访问场景是NAT4，没法直连，走代理的体验不佳。</li>
+</ol>
+<p>那么有没有一种方案，既能满足大带宽、低延迟的需求，同时还免费，甚至稳定性也还可以呢？我经过苦苦搜寻，发现STUN穿透能完美满足我的需求，唯一的缺点就是…非常非常折腾。</p>
+<h2 id="NATMAP与lucky："><a href="#NATMAP与lucky：" class="headerlink" title="NATMAP与lucky："></a>NATMAP与lucky：</h2><p>目前有STUN穿透功能的软件主要有<a class="link"   target="_blank" rel="noopener" href="https://github.com/heiher/natmap" >NATMAP<i class="fas fa-external-link-alt"></i></a>和<a class="link"   target="_blank" rel="noopener" href="https://lucky666.cn/" >lucky<i class="fas fa-external-link-alt"></i></a>。在这两款软件都能正常运行的前提下，如果只需通过浏览器访问nas上的服务，那么lucky使用起来容易的多；如果需要实现更加复杂的玩法，那么NATMAP更加灵活。然而NATMAP的web ui仅支持官方OpenWrt固件，其他固件、平台只能通过命令行调用，如果要建立多个隧道，还得手动管理各个实例，较为繁琐，而lucky在各个平台都有web ui；同时lucky除了STUN穿透之外，还有各种实用功能，可以省去安装一堆软件的麻烦，故本教程使用lucky。</p>
+<p>教程以OpenWrt为例，其它平台请参考<a class="link"   target="_blank" rel="noopener" href="https://lucky666.cn/" >官方文档<i class="fas fa-external-link-alt"></i></a>。<br>如果在路由器以外的设备安装，需要开启路由器的upnp或者dmz。<br>请参考<a class="link"   target="_blank" rel="noopener" href="https://www.xrgzs.top/posts/lucky-stun-upnp-nat1.html" >使用Lucky的STUN内网穿透利用UPNP和NAT1在公网打洞并配置伪DDNS<i class="fas fa-external-link-alt"></i></a> 使用Lucky的STUN内网穿透利用UPNP和NAT1在公网打洞并配置伪DDNS</p>
+<h1 id="第一步：安装lucky"><a href="#第一步：安装lucky" class="headerlink" title="第一步：安装lucky"></a>第一步：安装lucky</h1><p>登陆openwrt后台后，依次点击<code>系统</code>​-<code>文件传输</code>​-<code>选择文件</code>​，找到下载的lucky插件，之后点击上传，将lucky和luci-app-lucky上传。之后在下方的<code>上传文件列表</code>​中，先安装lucky，再安装luci-app-lucky。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/GY9h2MoKbi4Orvj.png"
+                        alt="image"
+                 >​</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/6raNFlsnJBPg4ct.png"
+                        alt="image"
+                 >​</p>
+<h1 id="第二步：打开lucky后台并修改用户名和密码"><a href="#第二步：打开lucky后台并修改用户名和密码" class="headerlink" title="第二步：打开lucky后台并修改用户名和密码"></a>第二步：打开lucky后台并修改用户名和密码</h1><p>点击<code>服务</code>​ - <code>lucky</code>​ - <code>admin panel</code>​右侧的网址，打开后台，初次使用时，默认用户名密码均为666。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/odaJ54Ivqiyp6Un.png"
+                        alt="image"
+                 >​</p>
+<p>之后记得在设置里修改账号密码。</p>
+<h1 id="第三步，开启STUN内网穿透"><a href="#第三步，开启STUN内网穿透" class="headerlink" title="第三步，开启STUN内网穿透"></a>第三步，开启STUN内网穿透</h1><p>点击<code>STUN内网穿透</code>​ - <code>穿透规则列表</code>​ - <code>添加穿透规则</code>​具体设置如下</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/PMiFwtaEGhmysX6.png"
+                        alt="image"
+                 >​​</p>
+<p>请注意，如果在路由器之外的设备上安装，需要开启<code>nat-pmp</code>​。<br>点击保存，稍等一会儿应该就能看见公网ip和端口了，点击公网地址即可复制。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/OCjflRmZa7ULqh9.png"
+                        alt="image"
+                 >​​</p>
+<p>如果不出意外，在在外网设备的浏览器地址栏中粘贴所复制的公网地址（ip:端口），应该就能访问成功了。如果无法访问成功，请编辑刚才创建的穿透规则，手动指定穿透通道监听端口，并在防火墙设置里开启<code>穿透通道监听端口</code>​的端口。至此我们便初步完成了内网穿透的基本操作，在外网环境中，只要输入此公网地址，即可访问绑定的内网服务。</p>
+<h1 id="第四步，将公网地址绑定到域名"><a href="#第四步，将公网地址绑定到域名" class="headerlink" title="第四步，将公网地址绑定到域名"></a>第四步，将公网地址绑定到域名</h1><h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>使用STUN穿透时，不光ip地址会变，端口也会变，这使得我们无法通过传统ddns来绑定地址，所幸我们可以利用Cloudflare回源和跳转规则。</p>
+<h3 id="回源"><a href="#回源" class="headerlink" title="回源"></a>回源</h3><p>我们可以设置一条回源规则，令外网设备访问规则内的域名时，Cloudflare的cdn服务器会将流量转发到我们指定的地址和端口，并且这一切对于访问者来说是不可见的，他在浏览器地址栏里只能看到域名。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/C9m4fquGWbEz2vs.png"
+                        alt="image"
+                 >​​</p>
+<p>这个方案看起来很完美，只可惜存在一个致命的缺陷：当我们在通过域名访问时，所有流量都会从CloudFlare的cdn服务器中转，而免费计划中，只能使用海外的cdn服务器，从国内访问速度非常感人。</p>
+<h3 id="跳转"><a href="#跳转" class="headerlink" title="跳转"></a>跳转</h3><p>本教程中选择使用重定向规则进行跳转。在我们设置里跳转规则后，外网设备通过域名访问时，会先从Cloudflare的cdn上得到一条跳转响应，然后浏览器会自动跳转到规则中设定的地址。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/M3IzybluESN27hT.png"
+                        alt="image"
+                 >​​</p>
+<p>使用这种方法，流量不会经过cdn服务器，访问者在浏览器地址栏里看到的是跳转后的地址。</p>
+<p><strong>Cloudflare 的页面规则即将弃用，建议考虑替代方案</strong></p>
+<hr>
+<h2 id="替代方案"><a href="#替代方案" class="headerlink" title="替代方案"></a>替代方案</h2><p>Cloudflare的页面规则即将弃用，需要考虑其他替代方案了，我目前想到的有：</p>
+<ol>
+<li>通过短链接平台跳转<br> 只适合需穿透服务较少、无需ssl的场景。</li>
+<li>在服务器上部署Lucky的跳转服务<br> 前提是你得有一个服务器，参考<a class="link"   target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv28590960" >使用Lucky在公网IPv4环境自建重定向和中转服务，固定STUN的反代端口<i class="fas fa-external-link-alt"></i></a>。</li>
+<li>在本地端Lucky上配置跳转，再用传统方法穿透出去<br> 直接用cf tunnel或者给ipv6套cf的cdn，速度可能较慢；<br> 白嫖公益frp的速度会比较快，但如不备案则需要输入端口号，如果备案后用HTTP隧道，则只能用路径跳转；<br> 使用国内cdn的ipv6回源也行，不过也需要备案。</li>
+<li>使用cf的重定向规则<br> 使用上跟页面规则差不多，但免费计划用不了正则表达式，所以没页面规则灵活。</li>
+<li>使用cf worker跳转<br> 使用上相比重定向规则更简单，但速度慢很多，不建议。</li>
+</ol>
+<p>如果有条件，建议选择前三种，跳转的速度会快一些，国内访问Cloudflare的速度还是不太理想。<br>本文以cf的重定向规则为演示。</p>
+<hr>
+<h2 id="使用重定向规则进行跳转"><a href="#使用重定向规则进行跳转" class="headerlink" title="使用重定向规则进行跳转"></a>使用重定向规则进行跳转</h2><h3 id="解析域名到Cloudflare"><a href="#解析域名到Cloudflare" class="headerlink" title="解析域名到Cloudflare"></a>解析域名到Cloudflare</h3><p>首先需要将你的域名解析到Cloudflare，网上的教程很多，开头的链接里也有教，在此不做赘述。</p>
+<p>在网站概览界面向下翻，在右侧可以看到<code>区域id</code>​，将其保存下来备用。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/NqidtLKj7CyxBaY.png"
+                        alt="image"
+                 >​</p>
+<p>添加一条a类型的记录到你需要访问的域名，本教程里名称填入*，代表所有的未指定的二级域名都会返回这条记录，ipv4地址随便填一个有效的即可，代理状态勾选，ttl保持自动，填写完成后保存。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/4xtQbNVYLFUIfJ1.png"
+                        alt="image"
+                 >​</p>
+<h3 id="配置重定向规则"><a href="#配置重定向规则" class="headerlink" title="配置重定向规则"></a>配置重定向规则</h3><p>点击左侧菜单的<code>规则</code>​-<code>重定向规则</code>​，在<code>单一重定向</code>​页面下点击<code>创建规则</code>​，规则名称随意设置。</p>
+<p>​<code>当传入请求匹配时...</code>​处选择<code>自定义筛选表达式</code>​，字段选择<code>主机名</code>​，运算符选择<code>等于</code>​，<code>值</code>​需填入自行设置的用于跳转的域名；示例为<code>test.yourdomain.com</code>​，<code>test</code>​为自定义的二级域名前缀，<code>yourdomain.com</code>​换成你的顶级域名。</p>
+<p>​<code>URL 重定向</code>​处选择类型为<code>动态</code>​并勾选<code>保留查询字符串</code>​，状态码选择<code>302</code>​或<code>307</code>​均可；表达式填<code>concat(&quot;http://STUN的公网ip:公网端口&quot;, http.request.uri.path)</code>​，即将示例中的<code>183.6.66.666:6666</code>​替换为在lucky中复制的地址。</p>
+<p><strong>请先不要点击部署</strong></p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/28/o5MUascLRyZJ9VP.png"
+                        alt="image"
+                 >​</p>
+<p>在保存之前先按下F12打开开发者工具，点击右侧开发者工具的<code>网络</code>​或者<code>network</code>​选项卡，再点击左侧Cloudflare页面中的<code>部署</code>​。<br> 接下来可以在开发者工具中看到一串数字+字母的项，点击它，在<code>标头</code>​选项卡下复制并保存下它的<code>请求网址</code>​；然后切换到<code>载荷</code>​选项卡，右键第一行复制并保存它的值。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/28/ALYqb31XUOT95t7.png"
+                        alt="image"
+                 >​</p>
+<p>请求网址形如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://dash.cloudflare.com/api/v4/zones/区域id/rulesets/规则集id/rules/规则id</span><br></pre></td></tr></table></figure>
+
+<p>将<code>区域id</code>​、<code>规则集id</code>​、<code>规则id</code>​保存下来备用。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/28/KNi2ILRcHMJOnGP.png"
+                        alt="image"
+                 >​</p>
+<p>保存的请求载荷形如：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;(http.host eq \&quot;test.yourdomain.com\&quot;)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;last_updated&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2024-05-28T08:14:45.555123Z&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;ref&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action_parameters&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;from_value&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span> <span class="number">307</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;target_url&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;concat(\&quot;http://183.6.66.666:6666\&quot;, http.request.uri.path)&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;preserve_query_string&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>你的<code>id</code>​、<code>ref</code>​应该与规则id一致，<code>description</code>​就是之前设置的规则名称。<br>删去其中<code>version</code>​和<code>last_updated</code>​变量（也就是示例中的第3、5行）保存备用。</p>
+<h2 id="使用页面规则进行跳转"><a href="#使用页面规则进行跳转" class="headerlink" title="使用页面规则进行跳转"></a><del>使用页面规则进行跳转</del></h2><p><strong>页面规则即将被弃用，建议考虑替代方案。</strong></p>
+<p>首先需要将你的域名解析到Cloudflare，网上的教程很多，开头的链接里也有教，在此不做赘述。</p>
+<p>在网站概览界面向下翻，在右侧可以看到<code>区域id</code>​，将其保存下来备用。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/NqidtLKj7CyxBaY.png"
+                        alt="image"
+                 >​​</p>
+<p>添加一条a类型的记录到你需要访问的域名，本教程里名称填入*，代表所有的未指定的二级域名都会返回这条记录，ipv4地址随便填一个有效的即可，代理状态勾选，ttl保持自动，填写完成后保存。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/4xtQbNVYLFUIfJ1.png"
+                        alt="image"
+                 >​​</p>
+<p>接下来开始配置页面规则：</p>
+<p>点击左侧的<code>规则</code>​ - <code>页面规则</code>​，点击右侧的<code>创建页面规则</code>​</p>
+<p>url填入 <code>你的域名/*</code>​，注意不能有http或https。<br>示例为<code>test.yourdomain.com/*</code>​，<code>test</code>​为自定义的二级域名前缀，<code>yourdomain.com</code>​换成你的顶级域名。<br>选取设置选为<code>转发URL</code>​，状态代码选择<code>301</code>​。<br>目标URL填入<code>http://STUN的公网ip:公网端口/$1</code>​，即将示例中的<code>183.6.66.666:6666</code>​替换为在lucky中复制的地址。</p>
+<p><strong>请先不要点击保存</strong></p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/PrmMWt5Cas9qEIV.png"
+                        alt="image"
+                 >​​</p>
+<p>在保存之前先按下F12打开开发者工具，点击右侧开发者工具的<code>网络</code>​​或者<code>network</code>​​选项卡，再点击左侧Cloudflare页面中的<code>保存和部署页面规则</code>​​。<br> 接下来可以在开发者工具中看到一串数字+字母的项，点击它，复制它的请求网址。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/b68DCZgISpuXNaW.png"
+                        alt="4-8"
+                 >​</p>
+<p>该请求网址形如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://dash.cloudflare.com/api/v4/zones/区域id/pagerules/规则id</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>区域id</code>​应该与之前保存的相同，请把<code>规则id</code>​保存备用。如果你在打开开发者工具前已经点击了保存，请编辑刚才创建的页面规则，重复上述步骤。</p>
+<h1 id="第五步，利用webhook自动更新页面规则"><a href="#第五步，利用webhook自动更新页面规则" class="headerlink" title="第五步，利用webhook自动更新页面规则"></a>第五步，利用webhook自动更新页面规则</h1><p>lucky提供了webhook接口，可以在ip和端口发生变化时发送一条网络请求，调用Cloudflare的api来更改页面规则或是dns记录。</p>
+<p>让我们返回lucky后台，找到刚才创建的STUN穿透规则，点击编辑，开启webhook（而不是全局webhook），按如下方式配置：</p>
+<h2 id="更新重定向规则"><a href="#更新重定向规则" class="headerlink" title="更新重定向规则"></a>更新重定向规则</h2><p>接口地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://api.cloudflare.com/client/v4/zones/区域id/rulesets/规则集id/rules/规则id</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>请注意：这不是上一步抓到的请求网址，请用之前保存的<code>区域id</code>​、<code>规则集id</code>​、<code>规则id</code>​对以上链接进行替换。</p>
+</blockquote>
+<p>请求方法：<code>PATCH</code>​</p>
+<p>请求头：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Authorization:Bearer API 令牌</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>要创建API令牌，点击Cloudflare控制台右上角-<code>我的个人资料</code>​，在左侧菜单点击<code>API令牌</code>​，页面中点击<code>创建令牌</code>​。</p>
+<p>在令牌创建页面选择<code>创建自定义令牌</code>​。</p>
+<p>权限和区域资源如图设置，区域资源第三列选择你要用于跳转的域名。<br>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/06/19/escNIVOjoE5BWG6.png"
+                        alt="image"
+                 ><br>点击<code>继续</code>​-<code>创建令牌</code>​，直至出现以下界面：</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/06/19/aHSj8WJ3IMnGmD6.png"
+                        alt="image"
+                 >​</p>
+<p>复制第二行双引号里的内容（不带引号），粘贴到Lucky的Webhook的请求头中。</p>
+<hr>
+<p>请求主体：<br>把之前保存的请求载荷删去<code>last_updated</code>​和<code>version</code>​后，将<code>expression</code>​中的<code>ip:端口</code>​替换为<code>#&#123;ipAddr&#125;</code>​<br>你的<code>id</code>​、<code>ref</code>​应该与规则id一致，<code>description</code>​就是之前设置的规则名称。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;(http.host eq \&quot;test.yourdomain.com\&quot;)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;ref&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action_parameters&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;from_value&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span> <span class="number">307</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;target_url&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;concat(\&quot;http://#&#123;ipAddr&#125;\&quot;, http.request.uri.path)&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;preserve_query_string&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>接口调用成功包含的字符串：<code>&quot;success&quot;: true</code>​。</p>
+<p>这些全部完成后点击<code>Webhook手动触发测试</code>​。<strong>注意：测试时的数据均为虚拟数据。</strong> 如果不成功，请先查看webhook里返回的内容是否很长且包含<code>&quot;success&quot;: true</code>​，如果包含，那么复制那行并替换<code>接口调用成功包含的字符串</code>​里的内容；然后多试几次排查网络问题，再检查各参数设置，配置正确后点击保存。</p>
+<p>等待lucky执行成功webhook后，在浏览器无痕模式中输入在重定向规则中设定的域名，即可跳转至对应的公网地址。如需收藏或分享链接，只需将浏览器中的<code>ip:端口</code>​ 部分重新替换回域名即可。</p>
+<h2 id="更新页面规则"><a href="#更新页面规则" class="headerlink" title="更新页面规则"></a><del>更新页面规则</del></h2><p><strong>页面规则即将弃用，请考虑替代方案</strong><br>接口地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://api.cloudflare.com/client/v4/zones/区域id/pagerules/规则id</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>请注意：这不是上一步抓到的请求网址，请用之前保存的<code>区域id</code>​和<code>规则id</code>​对以上链接进行替换。</p>
+</blockquote>
+<p>请求方法：<code>PUT</code>​​</p>
+<p>请求头：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">X-Auth-Email: 你注册CF的邮箱</span><br><span class="line">X-Auth-Key: Global API Key </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>请注意：Global API Key 在<code>我的个人资料</code>​- <code>API令牌</code>​中查看，这不是自己创建的api令牌，而是在下方的<code>API密钥</code>​中点击<code>查看</code>​</p>
+</blockquote>
+<p>也可自行创建API令牌，点击<code>创建令牌</code>​</p>
+<p>编辑权限和区域规则如下图所示，其中区域资源第三列选择你用于跳转到域名。</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/uzD9RgAE4ZBmjHC.png"
+                        alt="image"
+                 ></p>
+<p>点击<code>继续</code>​-<code>创建令牌</code>​，直至出现以下界面：</p>
+<p>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/haDc4JAwZyV9FNv.png"
+                        alt="image"
+                 >​</p>
+<p>复制第二行双引号里的内容（不带引号），粘贴到Lucky的Webhook的请求头中。</p>
+<p>请求主体：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;targets&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;target&quot;</span><span class="punctuation">:</span><span class="string">&quot;url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;constraint&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;operator&quot;</span><span class="punctuation">:</span><span class="string">&quot;matches&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="string">&quot;你的域名/*&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;actions&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;forwarding_url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span><span class="string">&quot;http://#&#123;ipAddr&#125;/$1&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span><span class="number">301</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;priority&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span><span class="string">&quot;active&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中<code>targets</code>​的<code>value</code>​填入的内容跟页面规则里的URL保持一致，该示例中为<code>test.yourdomain.com/*</code>​<br>​<code>actions</code>​ 中的<code>url</code>​为目标URL，通过lucky提供的参数构造，填为<code>http://#&#123;ipAddr&#125;/$1</code>​ ，接口调用成功包含的字符串：<code>&quot;success&quot;:true</code>​。</p>
+<p>​​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2024/05/23/Bw3aIUrFdDLeOZ2.png"
+                        alt="image"
+                 >​​</p>
+<p>这些全部完成后点击<code>Webhook手动触发测试</code>​，如果不成功，请检查各参数设置，配置正确后点击保存。</p>
+<p>等待lucky执行成功webhook后，在浏览器中输入在页面规则中设定的域名，即可跳转至对应的公网地址。如需收藏或分享链接，只需将浏览器中的<code>ip:port</code>​ 部分重新替换回域名即可。</p>
+<h1 id="第六步-将反向代理服务器暴露至公网"><a href="#第六步-将反向代理服务器暴露至公网" class="headerlink" title="第六步 将反向代理服务器暴露至公网"></a>第六步 将反向代理服务器暴露至公网</h1><p>经过之前的步骤已经可以方便地通过域名访问内网服务，但倘若有多个服务，则需配置多个页面规则和穿透隧道，然而Cloudflare免费计划只允许创建3个页面规则和10个重定向规则，部分地区的宽带甚至只能打通一个隧道。因此我们可以类比有公网地址的情况，通过反向代理服务，在只开启一个端口的情况下通过不同的二级域名来访问不同的内网服务。</p>
+<h2 id="基本思路"><a href="#基本思路" class="headerlink" title="基本思路"></a>基本思路</h2><p>有公网IP时，我们只需通过DDNS将泛域名解析到宽带的公网IP，并将反向代理的端口暴露在公网下即可。<br>使用STUN穿透时，解析IP很容易，stun穿透得到的公网ip跟DDNS通过接口获取的ip一致，这部分操作可以照搬有公网的情况。<br>端口号不固定这点依旧利用重定向规则来实现跳转，目的是让最后跳转到<code>前缀.顶级域名:端口号/...</code>​的形式，再将所有二级域名指向公网ip。</p>
+<p>首先搭建好反向代理，将泛域名通过DDNS解析到接口获取的ipv4地址，将stun穿透的目标地址和端口设置为反向代理的本地地址和https端口，并通过<code>https://域名:公网端口</code>​的形式进行访问，测试没问题之后再进行下一步。如果不配置证书，就把穿透目标端口设为反向代理的http端口，并通过http访问。</p>
+<blockquote>
+<p>如果你还没有配置过DDNS、SSL续签、反向代理，请自行搜索配置方法，相关教程非常多。如果你只有简单的需求，那么可以考虑使用Lucky一站式解决。配置方式可参考<a class="link"   target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Uh4y1p7sd/" >winnas进阶篇之 lucky插件的使用<i class="fas fa-external-link-alt"></i></a> 和 <a class="link"   target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1394y1y7Nv/" >也许是目前最通俗易懂的Lucky反向代理演示？<i class="fas fa-external-link-alt"></i></a> ，注意协议要选择ipv4。</p>
+</blockquote>
+<h2 id="期望中的效果"><a href="#期望中的效果" class="headerlink" title="期望中的效果"></a>期望中的效果</h2><p>我希望只是用一条规则，就能让泛域名<code>*.bbb.com</code>​匹配到的所有域名跳转到<code>*.aaa.com</code>​对应的子域名去。比如<code>alist.bbb.com</code>​-&gt;<code>alist.aaa.com</code>​、<code>emby.bbb.com</code>​-&gt;<code>emby.aaa.com</code>​。在此，我姑且将<code>bbb.com</code>​称为用于跳转的主域名，<code>aaa.com</code>​称为跳转后的域名。</p>
+<p>这样当你想要访问域名前缀为sv1的服务，只需在浏览器中输入<code>sv1.bbb.com/</code>​，会自动跳转到<code>https://sv1.aaa.com:[port]/</code>​ ；如果要指定访问路径，输入<code>sv1.bbb.com/path1/path2/path3</code>​，会自动跳转到<code>https://sv1.aaa.com:[port]/path1/path2/path3。</code>​</p>
+<p>如果想要收藏或分享链接，只需把地址栏中的aaa改回bbb，并删除端口即可。</p>
+<p>如果你想采用同一个域名下，二级域名向三级域名跳转的方案，如<code>alist.example.com</code>​-&gt;<code>alist.4.example.com</code>​，那么<code>example.com</code>​为主域名，<code>4.example.com</code>​为跳转后的域名。</p>
+<h2 id="配置重定向规则-1"><a href="#配置重定向规则-1" class="headerlink" title="配置重定向规则"></a>配置重定向规则</h2><p>首先确保你用于跳转的主域名下的泛域名（即<code>*.bbb.com</code>​）已解析到Cloudflare并开启小云朵；本地的反向代理使用跳转后的域名，且该域名下的泛域名（<code>*.aaa.com</code>​）已通过DDNS解析到解析到stun的公网ip。</p>
+<p>接下来数出用于跳转的主域名有多少个字符，上文例子里<code>bbb.com</code>​就是7个字符，<code>example.com</code>​是11个字符，我们将其记作<code>参数2</code>​，给它加一个比你设置的域名前缀长度更大的数（比如10），可以得到<code>参数1</code>​。</p>
+<p>参考第4、5步配置页面规则，webhook请求主体中的第一个expression改成<code>&quot;true&quot;</code>​（也就是所有传入连接都跳转），target_url的expression改成<code>&quot;concat(\&quot;https://\&quot;,substring(http.host , -参数1,-参数2), \&quot;跳转后域名:#&#123;port&#125;\&quot;, http.request.uri)&quot;</code>​</p>
+<blockquote>
+<p>如果你想通过http访问，请把target url的expression中的https改为http。</p>
+</blockquote>
+<p>即现在的请求主体为</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;true&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redirect&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;ref&quot;</span><span class="punctuation">:</span> <span class="string">&quot;c7087a0fb757480xxxxxxxxxxxxxxxx&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;action_parameters&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;from_value&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span> <span class="number">307</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;target_url&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;expression&quot;</span><span class="punctuation">:</span> <span class="string">&quot;concat(\&quot;https://\&quot;,substring(http.host , -17,-7), \&quot;aaa.com:#&#123;port&#125;\&quot;, http.request.uri)&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;preserve_query_string&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="配置页面规则"><a href="#配置页面规则" class="headerlink" title="配置页面规则"></a><del>配置页面规则</del></h2><p><strong>页面规则即将被弃用，建议考虑替代方案。</strong></p>
+<p>如果你有两个域名，配置起来会容易一些，不容易出奇奇怪怪的问题，当然只有一个域名也不是不能用，根据情况任意选择一个方案即可。</p>
+<blockquote>
+<p>如果你想通过http访问，请把actions中的https改为http。</p>
+</blockquote>
+<h3 id="1-通过另一域名跳转"><a href="#1-通过另一域名跳转" class="headerlink" title="1. 通过另一域名跳转"></a>1. 通过另一域名跳转</h3><p>如果你有两个域名<code>aaa.com</code>​和<code>bbb.com</code>​，可以将<code>bbb.com</code>​解析到Cloudflare，添加<code>*.bbb.com</code>​ 的a记录并开启代理、添加页面规则。而本地的反向代理使用aaa.com，并将 *.aaa.com通过DDNS解析到stun的公网ip。<br>参考第4、5步配置页面规则，webhook请求主体中的target的url改成<code>*.bbb.com/*</code>​，actions的url改成<code>https://$1.aaa.com:#&#123;port&#125;/$2</code>​</p>
+<p>即现在的请求主体为</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;targets&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;target&quot;</span><span class="punctuation">:</span><span class="string">&quot;url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;constraint&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;operator&quot;</span><span class="punctuation">:</span><span class="string">&quot;matches&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="string">&quot;*.bbb.com/*&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;actions&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;forwarding_url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span><span class="string">&quot;https://$1.aaa.com:#&#123;port&#125;/$2&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span><span class="number">301</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;priority&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span><span class="string">&quot;active&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-仅使用一个域名跳转"><a href="#2-仅使用一个域名跳转" class="headerlink" title="2. 仅使用一个域名跳转"></a>2. 仅使用一个域名跳转</h3><p>毕竟好用的域名也是要花钱的，本着能省一点是一点的精神，一个域名也不是不能用，可以使用三级域名跳转。</p>
+<p>首先将你配置了反向代理的域名（假设为example.com）托管至Cloudflare，将*.example.com通过DDNS解析到STUN穿透的公网IP（选择接口获取的ipv4地址）。</p>
+<p>为了白嫖cf的证书，我们使用三级域名向二级域名跳转的方式：</p>
+<p>添加一条<code>*.a.example.com</code>​的a记录（ip随便填）并开启代理，其中<code>a</code>​随便填。<br>将webhook请求主体中的target的url改为<code>*.a.example.com/*</code>​，actions的url改成<code>https://$1.example.com:#&#123;port&#125;/$2</code>​。即现在的请求主体为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;targets&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;target&quot;</span><span class="punctuation">:</span><span class="string">&quot;url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;constraint&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;operator&quot;</span><span class="punctuation">:</span><span class="string">&quot;matches&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="string">&quot;*.a.example.com/*&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;actions&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;forwarding_url&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span><span class="string">&quot;https://$1.example.com:#&#123;port&#125;/$2&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;status_code&quot;</span><span class="punctuation">:</span><span class="number">301</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;priority&quot;</span><span class="punctuation">:</span><span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span><span class="string">&quot;active&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>还没完，由于Cloudflare的免费计划不允许上传证书，也不为三级域名提供免费证书，直接访问可能会出现关于SSL的奇奇怪怪的问题，建议直接删除Cloudflare的SSL证书。<br>回到Cloudflare，在<code>SSL/TLS</code>​ - <code>边缘证书</code>​中删除证书并禁用SSL。由于我们只需要利用Cloudflare来跳转，并没有数据经过，所以大约是不会影响安全性。</p>
+<blockquote>
+<p>请注意：该方式只能从http跳转，而多数现代浏览器默认使用https访问且不显示，因此在访问时务必确认地址栏的协议不是https。</p>
+</blockquote>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><p>本文简单介绍了lucky的STUN穿透功能的使用方法，成功将反向代理服务暴露至公网。通过配置Cloudflare重定向规则实现了直接通过域名访问，近似达到了拥有公网IP的效果，同时满足了低延迟、大带宽、免费的需求，并且相对公益frp要稳定的多。</p>
+<p>当然本期只实现了web应用的穿透，并未覆盖到大内网的全部痛点。下一期将利用STUN穿透解决大内网环境BT&#x2F;PT上传下载难的问题，至于部分应用必须指定端口号的问题，我们放到第三期说。</p>
+<hr>
+<h1 id="Extra-使用经验"><a href="#Extra-使用经验" class="headerlink" title="Extra 使用经验"></a>Extra 使用经验</h1><h2 id="优化跳转速度"><a href="#优化跳转速度" class="headerlink" title="优化跳转速度"></a>优化跳转速度</h2><p>经过一段时间的使用，我发现双域名跳转的速度明显快于单域名跳转，有条件的情况下尽量使用双域名跳转，其中ClouDNS提供的免费域名不但可以挂到Cloudflare，而且可以使用API访问，功能甚至强于一众免费域名，缺点是Cloudflare无法接管DNS记录，需要手动续签证书，且不便于DDNS，因此只适合跳转和挂CDN。</p>
+<h2 id="支持301-302跳转的应用"><a href="#支持301-302跳转的应用" class="headerlink" title="支持301&#x2F;302跳转的应用"></a>支持301&#x2F;302跳转的应用</h2><ul>
+<li>Only Office的http api 支持跳转，但最好是从HTTPS到HTTPS，也就是需要双域名。</li>
+<li>Mountainduck 支持挂载使用跳转的webdav，甚至支持从HTTP跳转至HTTPS，端口填80或443即可，但单域名跳转的延迟很高，每次请求应该都会单独跳转，建议使用双域名跳转。<a class="link"   target="_blank" rel="noopener" href="https://mountainduck.io/" >官网<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://www.skyjos.cn/owlfiles/index.html" >猫头鹰文件<i class="fas fa-external-link-alt"></i></a>支持在移动平台上挂载使用跳转的webdav，安卓电视则可以使用<a class="link"   target="_blank" rel="noopener" href="https://github.com/nova-video-player/aos-AVP" >NOVA Video Player<i class="fas fa-external-link-alt"></i></a>。</li>
+</ul>
+
+                </div>
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                打通大内网第一期 无公网部署https和反向代理
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                /post/open-the-first-phase-of-the-dayecom-without-public-network-deployment-of-https-and-reverse-proxy-4onkq.html
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    Author
+                </div>
+                <div class="content">qaz741wsd856</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    Published
+                </div>
+                <div class="content">2023-10-12 13:17</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    License
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="Copy copyright info" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E7%BD%91%E7%BB%9C/">网络</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">内网穿透</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="Share to WeChat"
+            data-tooltip-img-tip="Scan by WeChat"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to WeiBo"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/post/open-the-second-phase-of-da-inner-network-to-make-bt-download-unimpeded-1mhpdn.html"
+                                   title="打通大内网第二期 让BT下载畅通无阻"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">打通大内网第二期 让BT下载畅通无阻</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2022/10/25/welcome/"
+                                   title="欢迎来到我的小站"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">欢迎来到我的小站</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <!-- use hexo-blog-encrypt -->
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%A9%E9%A6%A8%E6%8F%90%E7%A4%BA%EF%BC%9A"><span class="nav-text">温馨提示：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%A9%BF%E9%80%8F%E6%96%B9%E6%A1%88%E5%8F%8A%E5%85%B6%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-text">常见穿透方案及其局限性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NATMAP%E4%B8%8Elucky%EF%BC%9A"><span class="nav-text">NATMAP与lucky：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%AE%89%E8%A3%85lucky"><span class="nav-text">第一步：安装lucky</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E6%89%93%E5%BC%80lucky%E5%90%8E%E5%8F%B0%E5%B9%B6%E4%BF%AE%E6%94%B9%E7%94%A8%E6%88%B7%E5%90%8D%E5%92%8C%E5%AF%86%E7%A0%81"><span class="nav-text">第二步：打开lucky后台并修改用户名和密码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%8C%E5%BC%80%E5%90%AFSTUN%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F"><span class="nav-text">第三步，开启STUN内网穿透</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%8C%E5%B0%86%E5%85%AC%E7%BD%91%E5%9C%B0%E5%9D%80%E7%BB%91%E5%AE%9A%E5%88%B0%E5%9F%9F%E5%90%8D"><span class="nav-text">第四步，将公网地址绑定到域名</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-text">原理：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E6%BA%90"><span class="nav-text">回源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%B3%E8%BD%AC"><span class="nav-text">跳转</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88"><span class="nav-text">替代方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%87%8D%E5%AE%9A%E5%90%91%E8%A7%84%E5%88%99%E8%BF%9B%E8%A1%8C%E8%B7%B3%E8%BD%AC"><span class="nav-text">使用重定向规则进行跳转</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%9F%9F%E5%90%8D%E5%88%B0Cloudflare"><span class="nav-text">解析域名到Cloudflare</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E9%87%8D%E5%AE%9A%E5%90%91%E8%A7%84%E5%88%99"><span class="nav-text">配置重定向规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%A1%B5%E9%9D%A2%E8%A7%84%E5%88%99%E8%BF%9B%E8%A1%8C%E8%B7%B3%E8%BD%AC"><span class="nav-text">使用页面规则进行跳转</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%8C%E5%88%A9%E7%94%A8webhook%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0%E9%A1%B5%E9%9D%A2%E8%A7%84%E5%88%99"><span class="nav-text">第五步，利用webhook自动更新页面规则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E9%87%8D%E5%AE%9A%E5%90%91%E8%A7%84%E5%88%99"><span class="nav-text">更新重定向规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E9%A1%B5%E9%9D%A2%E8%A7%84%E5%88%99"><span class="nav-text">更新页面规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5-%E5%B0%86%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%9A%B4%E9%9C%B2%E8%87%B3%E5%85%AC%E7%BD%91"><span class="nav-text">第六步 将反向代理服务器暴露至公网</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF"><span class="nav-text">基本思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%9F%E6%9C%9B%E4%B8%AD%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-text">期望中的效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E9%87%8D%E5%AE%9A%E5%90%91%E8%A7%84%E5%88%99-1"><span class="nav-text">配置重定向规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E9%A1%B5%E9%9D%A2%E8%A7%84%E5%88%99"><span class="nav-text">配置页面规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%9A%E8%BF%87%E5%8F%A6%E4%B8%80%E5%9F%9F%E5%90%8D%E8%B7%B3%E8%BD%AC"><span class="nav-text">1. 通过另一域名跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%85%E4%BD%BF%E7%94%A8%E4%B8%80%E4%B8%AA%E5%9F%9F%E5%90%8D%E8%B7%B3%E8%BD%AC"><span class="nav-text">2. 仅使用一个域名跳转</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-text">结语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Extra-%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C"><span class="nav-text">Extra 使用经验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E8%B7%B3%E8%BD%AC%E9%80%9F%E5%BA%A6"><span class="nav-text">优化跳转速度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%AF%E6%8C%81301-302%E8%B7%B3%E8%BD%AC%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-text">支持301&#x2F;302跳转的应用</span></a></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+        &copy;&nbsp;<span>2020</span>&nbsp;-&nbsp;2024
+        
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">qaz741wsd856</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+        <div class="count-info info-item">
+            
+
+            
+                <span class="count-item border-box uv">
+                    <span class="item-type border-box">Unique Visitor</span>
+                    <span class="item-value border-box uv" id="busuanzi_value_site_uv"></span>
+                </span>
+            
+
+            
+                <span class="count-item border-box pv">
+                    <span class="item-type border-box">Page View</span>
+                    <span class="item-value border-box pv" id="busuanzi_value_site_pv"></span>
+                </span>
+            
+        </div>
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="tools-list border-box">
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-toggle-theme-mode flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <!-- use hexo-blog-encrypt -->
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%A9%E9%A6%A8%E6%8F%90%E7%A4%BA%EF%BC%9A"><span class="nav-text">温馨提示：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%A9%BF%E9%80%8F%E6%96%B9%E6%A1%88%E5%8F%8A%E5%85%B6%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-text">常见穿透方案及其局限性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NATMAP%E4%B8%8Elucky%EF%BC%9A"><span class="nav-text">NATMAP与lucky：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%AE%89%E8%A3%85lucky"><span class="nav-text">第一步：安装lucky</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E6%89%93%E5%BC%80lucky%E5%90%8E%E5%8F%B0%E5%B9%B6%E4%BF%AE%E6%94%B9%E7%94%A8%E6%88%B7%E5%90%8D%E5%92%8C%E5%AF%86%E7%A0%81"><span class="nav-text">第二步：打开lucky后台并修改用户名和密码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%8C%E5%BC%80%E5%90%AFSTUN%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F"><span class="nav-text">第三步，开启STUN内网穿透</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%8C%E5%B0%86%E5%85%AC%E7%BD%91%E5%9C%B0%E5%9D%80%E7%BB%91%E5%AE%9A%E5%88%B0%E5%9F%9F%E5%90%8D"><span class="nav-text">第四步，将公网地址绑定到域名</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-text">原理：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E6%BA%90"><span class="nav-text">回源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%B3%E8%BD%AC"><span class="nav-text">跳转</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88"><span class="nav-text">替代方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%87%8D%E5%AE%9A%E5%90%91%E8%A7%84%E5%88%99%E8%BF%9B%E8%A1%8C%E8%B7%B3%E8%BD%AC"><span class="nav-text">使用重定向规则进行跳转</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%9F%9F%E5%90%8D%E5%88%B0Cloudflare"><span class="nav-text">解析域名到Cloudflare</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E9%87%8D%E5%AE%9A%E5%90%91%E8%A7%84%E5%88%99"><span class="nav-text">配置重定向规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%A1%B5%E9%9D%A2%E8%A7%84%E5%88%99%E8%BF%9B%E8%A1%8C%E8%B7%B3%E8%BD%AC"><span class="nav-text">使用页面规则进行跳转</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%8C%E5%88%A9%E7%94%A8webhook%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0%E9%A1%B5%E9%9D%A2%E8%A7%84%E5%88%99"><span class="nav-text">第五步，利用webhook自动更新页面规则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E9%87%8D%E5%AE%9A%E5%90%91%E8%A7%84%E5%88%99"><span class="nav-text">更新重定向规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E9%A1%B5%E9%9D%A2%E8%A7%84%E5%88%99"><span class="nav-text">更新页面规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5-%E5%B0%86%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%9A%B4%E9%9C%B2%E8%87%B3%E5%85%AC%E7%BD%91"><span class="nav-text">第六步 将反向代理服务器暴露至公网</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF"><span class="nav-text">基本思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%9F%E6%9C%9B%E4%B8%AD%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-text">期望中的效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E9%87%8D%E5%AE%9A%E5%90%91%E8%A7%84%E5%88%99-1"><span class="nav-text">配置重定向规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E9%A1%B5%E9%9D%A2%E8%A7%84%E5%88%99"><span class="nav-text">配置页面规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%9A%E8%BF%87%E5%8F%A6%E4%B8%80%E5%9F%9F%E5%90%8D%E8%B7%B3%E8%BD%AC"><span class="nav-text">1. 通过另一域名跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%85%E4%BD%BF%E7%94%A8%E4%B8%80%E4%B8%AA%E5%9F%9F%E5%90%8D%E8%B7%B3%E8%BD%AC"><span class="nav-text">2. 仅使用一个域名跳转</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-text">结语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Extra-%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C"><span class="nav-text">Extra 使用经验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E8%B7%B3%E8%BD%AC%E9%80%9F%E5%BA%A6"><span class="nav-text">优化跳转速度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%AF%E6%8C%81301-302%E8%B7%B3%E8%BD%AC%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-text">支持301&#x2F;302跳转的应用</span></a></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+<!-- common -->
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/toggle-theme.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/code-block.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/libs/anime.min.js"></script>
+
+<!-- local-search -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/local-search.js"></script>
+
+
+<!-- lazyload -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/lazyload.js"></script>
+
+
+<div class="pjax">
+    
+        <!-- post-helper -->
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/post-helper.js"></script>
+
+        <!-- toc -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/toc.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/copyright-info.js"></script>
+        
+
+        <!-- share -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/post/share.js"></script>
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.1.3/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>
