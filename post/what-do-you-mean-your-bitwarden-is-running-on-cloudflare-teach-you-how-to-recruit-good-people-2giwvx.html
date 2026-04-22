@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="qaz741wsd856">
+    
+    <title>
+        
+            什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！ |
+        
+        我的小站
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"我的小站","author":"qaz741wsd856","avatar":"/images/avatar.svg","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":"enable","background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"生命在于折腾！","hitokoto":false},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":null,"category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":false,"img_link":null,"text":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":false,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":true,"site_pv":true,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"valine","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.21"},"waline":{"server_url":null,"reaction":false,"version":2},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":true,"provider":"jsdelivr"},"pjax":{"enable":true},"footer":{"since":2020,"word_count":false,"icp":{"enable":false,"record_code":null,"url":"https://beian.miit.gov.cn"},"site_deploy":{"enable":false,"provider":"github","url":null},"shields_style":{"enable":false,"custom":[{"link_url":null,"img_url":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               我的小站
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/avatar.svg">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">qaz741wsd856</span>
+                                
+                                    <span class="author-badge">Lv2</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2025-12-01 21:38:26</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Wed Jan 28 2026 09:59:04 GMT+0000">2026-01-28 17:59:04</span>
+                </span>
+            
+        
+
+        
+
+        
+
+        
+        
+            <span class="meta-info-item post-wordcount">
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>2.6k Words</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-min2read">
+                <i class="icon fas fa-clock"></i>&nbsp;<span>9 Mins</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <h1 id="什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！"><a href="#什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！" class="headerlink" title="什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！"></a>什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>一直见有网友在纠结密码管理器应该跑在哪。是用官方来的稳定，还是自建来的可控，亦或是各种托管平台上来的廉价（免费）？那如果我说有一个既稳定、又免费的自建方案呢?</p>
+<p>把Rust编译成WASM放浏览器里跑，想必各位已经非常熟悉了，其实同样是基于V8的Worker里也是可以跑的。哎你说巧不巧，服务端有个现成的用Rust写的<a class="link"   target="_blank" rel="noopener" href="https://github.com/dani-garcia/vaultwarden" >vaultwarden<i class="fas fa-external-link-alt"></i></a>可以抄，bitwarden的绝大多数功能都是可以整成无状态的，Cloudflare还正好提供了D1数据库，这还能不薅它？<br><del>虽说Cloudflare最近崩过几次，但CF都崩了，还有几个网站登录得上呢 …</del></p>
+<p>当然这么牛的思路肯定不是我能想出来的，也不是我找到的（看了二叉树树的视频才知道有这么个神必项目），但这并不妨碍我化身为API对齐的牛马，目前是打算长期维护基础功能的。</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://github.com/deep-gaurav/warden-worker" >原项目<i class="fas fa-external-link-alt"></i></a>的端点实现缺的有点多，已经不兼容新版客户端了，批量导入也有点问题，而且好像作者也没有要更新的意思，我这里就放上我二开的版本了。</p>
+<p><strong>项目地址</strong>: <a class="link"   target="_blank" rel="noopener" href="https://github.com/qaz741wsd856/warden-worker" >https://github.com/qaz741wsd856/warden-worker<i class="fas fa-external-link-alt"></i></a></p>
+<p><strong>友情提醒</strong>: 本项目只是Bitwarden的最小兼容服务端，目前只实现基础功能，<del>暂不考虑网页前端</del>。找到了现成的VaultWarden的web端，遂偷之。网页版已通过 <a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/workers/static-assets/" >Static Assets<i class="fas fa-external-link-alt"></i></a> 的方式集成了 <a class="link"   target="_blank" rel="noopener" href="https://github.com/dani-garcia/bw_web_builds" >bw_web_builds<i class="fas fa-external-link-alt"></i></a> ，静态资源不消耗Worker额度。但网页中大部分功能是用不了的，包括但不限于：</p>
+<ul>
+<li>share</li>
+<li>send</li>
+<li>设备管理</li>
+<li>组织</li>
+<li>紧急访问</li>
+<li>除TOTP外的两步验证</li>
+</ul>
+<p>我整这个Web UI主要是为了批量操作、配置TOTP和编辑等效域名的。</p>
+<h1 id="简易部署教程"><a href="#简易部署教程" class="headerlink" title="简易部署教程"></a>简易部署教程</h1><p>该项目的部署方法前半部分基本与二叉树树的教程一致: <a class="link"   target="_blank" rel="noopener" href="https://2x.nz/posts/warden-worker" >你可曾想过，直接将BitWarden部署到Cloudflare Worker？<i class="fas fa-external-link-alt"></i></a><br>因此我在此只做简述并强调关键步骤，详细图文流程请参考上面的博客，<strong>记得要fork我的项目</strong>就行，前两步有修改，请注意。</p>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>你需要准备：</p>
+<ul>
+<li>一个 Cloudflare 账户</li>
+<li>一个 Github 账户</li>
+<li>一个没有被阻断的域名</li>
+</ul>
+<h2 id="第一步：设置-Github-项目"><a href="#第一步：设置-Github-项目" class="headerlink" title="第一步：设置 Github 项目"></a>第一步：设置 Github 项目</h2><p>首先fork<a class="link"   target="_blank" rel="noopener" href="https://github.com/qaz741wsd856/warden-worker" >我的仓库<i class="fas fa-external-link-alt"></i></a>到你的账户（要是能顺手点个星星就好啦），进入Action页面，启用Action。<br>点击 <code>settings</code>​ - <code>Secrets and variables</code>​ - <code>Actions</code>​，准备添加 <code>Repository secrets</code>​，接下来我们一共要添加三个secrets。</p>
+<p>然后进入 Cloudflare 控制台，<a class="link"   target="_blank" rel="noopener" href="https://dash.cloudflare.com/" >https://dash.cloudflare.com/<i class="fas fa-external-link-alt"></i></a><br>在浏览器地址栏中复制你的account id</p>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2025/12/02/u1BkX62AjpLGWDv.png"
+                        alt="image"
+                 ></p>
+<p>回到github页面，点击<code>New repository secret</code>​，名称写<code>CLOUDFLARE_ACCOUNT_ID</code>​，值就写刚才复制的id。</p>
+<p>接着访问<a class="link"   target="_blank" rel="noopener" href="https://dash.cloudflare.com/profile/api-tokens" >https://dash.cloudflare.com/profile/api-tokens<i class="fas fa-external-link-alt"></i></a><br>选择编辑Worker的模板，然后给它再添加<strong>编辑D1和编辑KV的权限</strong>，再创建api令牌，回到github页面添加为<code>CLOUDFLARE_API_TOKEN</code>​。</p>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2026/01/28/qxwty3knviEFArs.png"
+                        alt="image"
+                 ></p>
+<p>最后去Cloudflare控制台的<code>存储与数据库</code>​ - <code>D1 sql 数据库</code>​，创建一个数据库，并复制它的id。</p>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="https://s2.loli.net/2025/12/02/NqvclKSDH2oi9eA.png"
+                        alt="image"
+                 ></p>
+<p>回到github，添加为<code>D1_DATABASE_ID</code>​。</p>
+<h3 id="附件支持（可选）"><a href="#附件支持（可选）" class="headerlink" title="附件支持（可选）"></a>附件支持（可选）</h3><p>本项目的附件功能依赖R2或KV，默认会自动创建用于存储附件的KV。</p>
+<p>KV完全免费不绑卡，单个附件限25MB；<br>启用R2需要绑卡，本项目因为是用Worker转发，受请求体大小限制，单个附件限100MB。</p>
+<p>虽然Cloudflare提供了慷慨的R2免费额度，但可能产生非预期的扣费，参考<a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/r2/pricing/" >Cloudflare R2 pricing<i class="fas fa-external-link-alt"></i></a>，因此该功能默认关闭。</p>
+<p>如果你想启用R2支持，需要先去Cloudflare控制台创建一个R2储存桶，记下它的名称。<br>在github仓库中添加一个名为<code>R2_NAME</code>​的secret，值就填刚才创建的桶名称。</p>
+<p>如果你完全不需要附件支持，可以在<code>wrangler.toml</code>​中删除KV和R2绑定，仍可以正常使用其他功能。</p>
+<hr>
+<p>至此在github上的配置就完毕了，点击上方的<code>Actions</code>​选项卡，选到Build工作流点运行即可。</p>
+<h2 id="第二步：建表"><a href="#第二步：建表" class="headerlink" title="第二步：建表"></a>第二步：建表</h2><p>现在Github Actions会自动在数据库为空时建表，无需手动建表。</p>
+<h2 id="第三步：配置环境变量与自定义域名"><a href="#第三步：配置环境变量与自定义域名" class="headerlink" title="第三步：配置环境变量与自定义域名"></a>第三步：配置环境变量与自定义域名</h2><p>当github的Action执行完毕后，你就能在CF的Workers中找到刚才创建的<code> warden-worker</code>​了，进入这个Worker的设置页面，在<code>变量和机密</code>​栏添加以下三个密钥：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ALLOWED_EMAILS</td>
+<td>允许注册的完整邮箱（支持通配符），用,分隔<br />（例：<code>your-name@example.com,*@xxx.com</code>​）</td>
+</tr>
+<tr>
+<td>JWT_SECRET</td>
+<td>随机长字符串（32字节以上）</td>
+</tr>
+<tr>
+<td>JWT_REFRESH_SECRET</td>
+<td>随机长字符串（32字节以上）</td>
+</tr>
+</tbody></table>
+<p><strong>可选环境变量</strong></p>
+<ul>
+<li>​<code>IMPORT_BATCH_SIZE</code>​：用于控制导入密码库时，每次批操作的数据条数，默认为30，设为0代表一次批操作导入所有数据（不推荐）；如果你需要导入的库特别大，可以适当调大这个值。</li>
+<li>​<code>PASSWORD_ITERATIONS</code>​: 服务端PBKDF2迭代次数，默认600000，最小600000.</li>
+<li>​<code>TRASH_AUTO_DELETE_DAYS</code>​: 配置回收站中的项目多少天后会被清理，默认为30，设为0代表永不清理。</li>
+<li>​<code>DISABLE_USER_REGISTRATION</code>​: 用于控制是否表明服务器不支持注册，默认为true，设为false可以让客户端显示注册按钮；该选项不影响实际注册功能。</li>
+<li>​<code>AUTHENTICATOR_DISABLE_TIME_DRIFT</code>​: 控制是否允许TOTP的时间±1偏移，默认为true。</li>
+<li>​<code>ATTACHMENT_MAX_BYTES</code>​: 单个附件的大小限制，单位字节，默认不限制，填<code>104857600</code>​则代表100MB。</li>
+<li>​<code>ATTACHMENT_TOTAL_LIMIT_KB</code>​: 单个用户的总附件大小限制，单位KB，默认不限制，填<code>1048576</code>​代表1GB。</li>
+<li>​<code>ATTACHMENT_TTL_SECS</code>​: 附件的上传下载链接的有效时间，默认五分钟。</li>
+</ul>
+<p>然后在<code>域和路由</code>​中添加一个路由，区域选择你的域名，路由写你分给这个Worker的子域名 + <code>/*</code>​（如<code>bitwarden.example.com/*</code>​）。</p>
+<p>最后别忘记去给这个子域名添加一条dns记录。<br>如果你想优选IP，那就不开小黄云，把它CNAME到一个优选过的域名。<br>要是不想优选，那就打开小黄云，目标随便填。</p>
+<blockquote>
+<p>建议去域名配置页的 <code>安全性</code>​ - <code>安全规则</code>​ 里给 <code>/identity/*</code>​ 和 <code>/api/accounts/*</code>​ 添加速率限制规则。</p>
+</blockquote>
+<h2 id="第四步：创建账户并导入数据"><a href="#第四步：创建账户并导入数据" class="headerlink" title="第四步：创建账户并导入数据"></a>第四步：创建账户并导入数据</h2><p>这步其实没啥好说的了，如果已有bitwarden库，在电脑上把它导出为JSON即可。</p>
+<p>前端默认隐藏了注册按钮，可以参考上一步的环境变量开启然后清空缓存，或者直接访问<code>https://你的域名/#/register</code>​即可注册。</p>
+<p><strong>注意</strong>: 创建账户时用的密码必须记住，没有任何方式能找回。</p>
+<hr>
+<p>以下开始为我自己加的可选步骤，建议整一下。</p>
+<h2 id="第五步：配置数据库自动备份-S3-Webdav"><a href="#第五步：配置数据库自动备份-S3-Webdav" class="headerlink" title="第五步：配置数据库自动备份(S3&#x2F;Webdav)"></a>第五步：配置数据库自动备份(S3&#x2F;Webdav)</h2><p>我这里是整了一个自动导出D1并上传到S3和webdav的Action，虽然也能用私有仓库备份，但有点怕判定为滥用，所以还是创一个<strong>私有的</strong>S3或者备份到自己的webdav网盘吧。</p>
+<p><strong>注意</strong>：</p>
+<ul>
+<li>千万别像我一样傻fufu的用跟Worker同一个Cloudflare账户的R2来备份，不然你号一被封就全没了；</li>
+<li>千万别用登录或者获取密钥需要依赖Bitwarden的账户，你得自己记着，不然就套娃了；它的恢复邮箱的密码你也得记着。</li>
+</ul>
+<p>如果没什么特殊需求，可以试试 <a class="link"   target="_blank" rel="noopener" href="https://www.backblaze.com/" >backblaze<i class="fas fa-external-link-alt"></i></a>，虽然额度非常少但用来备份也够了，胜在完全免费不绑卡。<br>此处略过注册账户和创建桶的操作。</p>
+<blockquote>
+<p>请确保你之前添加的 <code>CLOUDFLARE_API_TOKEN</code>​ 至少有D1的读取权限。</p>
+</blockquote>
+<p>回到你fork的github仓库，继续添加以下secrets:</p>
+<h4 id="S3"><a href="#S3" class="headerlink" title="S3"></a>S3</h4><table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>​<code>S3_ACCESS_KEY_ID</code>​</td>
+<td>yes</td>
+<td>S3 access key ID</td>
+</tr>
+<tr>
+<td>​<code>S3_SECRET_ACCESS_KEY</code>​</td>
+<td>yes</td>
+<td>S3 secret access key</td>
+</tr>
+<tr>
+<td>​<code>S3_BUCKET</code>​</td>
+<td>yes</td>
+<td>桶名称</td>
+</tr>
+<tr>
+<td>​<code>S3_REGION</code>​</td>
+<td>yes</td>
+<td>S3 区域，有就正常填，不知道就直接填auto</td>
+</tr>
+<tr>
+<td>​<code>S3_ENDPOINT</code>​</td>
+<td>no</td>
+<td>用AWS就不用填，其他填<code>https://your-s3-domain.com</code>​的形式，带协议不带路径</td>
+</tr>
+</tbody></table>
+<h4 id="WebDAV"><a href="#WebDAV" class="headerlink" title="WebDAV"></a>WebDAV</h4><table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>​<code>WEBDAV_URL</code>​</td>
+<td>yes</td>
+<td>webdav对应的url，一般是<code>https://domain.xxx/dav</code>​</td>
+</tr>
+<tr>
+<td>​<code>WEBDAV_USER</code>​</td>
+<td>yes</td>
+<td>用户名</td>
+</tr>
+<tr>
+<td>​<code>WEBDAV_PASSWORD</code>​</td>
+<td>yes</td>
+<td>webdav密码</td>
+</tr>
+<tr>
+<td>​<code>WEBDAV_VENDOR</code>​</td>
+<td>no</td>
+<td>​<code>nextcloud</code>​, <code>owncloud</code>​, 或 <code>other</code>​， 默认 <code>other</code>​</td>
+</tr>
+<tr>
+<td>​<code>WEBDAV_BASE_PATH</code>​</td>
+<td>no</td>
+<td>Base path for backups on the remote. Defaults to <code>warden-worker</code>​</td>
+</tr>
+</tbody></table>
+<h4 id="通用配置"><a href="#通用配置" class="headerlink" title="通用配置"></a>通用配置</h4><table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>​<code>BACKUP_ENCRYPTION_KEY</code>​</td>
+<td>no</td>
+<td>备份的加密密钥，不填就不加密，填了就一定要记住</td>
+</tr>
+<tr>
+<td>​<code>BACKUP_RETENTION_DAYS</code>​</td>
+<td>no</td>
+<td>备份保留多少天，默认30</td>
+</tr>
+</tbody></table>
+<p>Action会分别检查这两种备份的凭据配置情况，如果只需要一种备份方式，可以只填对应的凭据，没填的会自动跳过。</p>
+<p>然后在Action页面中选到<code>Backup D1 Database to S3</code>​，手动触发一次，等待它运行完成，然后检查你的S3中是否有备份文件。成功后，每天都会自动备份一次，每个备份默认保存30天。</p>
+<p>至于恢复操作还是请各位到时去看readme吧，希望这辈子不会用到。</p>
+<hr>
+<h3 id="额外说明"><a href="#额外说明" class="headerlink" title="额外说明"></a>额外说明</h3><p>其实 Cloudflare D1 提供了回滚到30天内的任意时刻的功能：<a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/d1/reference/time-travel/" >Cloudflare D1 Time Travel documentation<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前bookmark</span></span><br><span class="line"><span class="comment"># DATABASE_NAME换成你在Cloudflare控制台里设置的D1名称</span></span><br><span class="line">wrangler d1 time-travel info DATABASE_NAME</span><br><span class="line"></span><br><span class="line"><span class="comment"># 回退到指定时间 (ISO 8601)</span></span><br><span class="line">wrangler d1 time-travel restore DATABASE_NAME --timestamp=2024-01-15T12:00:00Z</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 回退到指定bookmark</span></span><br><span class="line">wrangler d1 time-travel restore DATABASE_NAME --bookmark=&lt;bookmark_id&gt;</span><br></pre></td></tr></table></figure>
+
+<p>通过这个操作，就算库出了问题也能快速回滚，再配上S3备份，是不是感觉这一通操作不那么灵车了？</p>
+<hr>
+<h1 id="其他说明"><a href="#其他说明" class="headerlink" title="其他说明"></a>其他说明</h1><p>本项目<strong>不是</strong>Vaultwarden的兼容层，<strong>不保证</strong>安全性跟Vaultwarden持平，如果你对安全性有疑虑，请使用其他更热门、经过验证的Bitwarden服务端；如果你发现本项目存在安全性问题，请在github中提交(github仓库中的<code>security</code>​ - <code>Report a vulnerability</code>​)，我会尽可能解决。</p>
+<p>本项目不提供设备管理功能，但其相关API均提供了空实现，目前用着没啥问题。如果真有客户端登录完还会拉一遍设备列表确认自己在不在里面的话，请联系我。</p>
+<hr>
+<p>说一句题外话，其实Cloudflare Worker是有官方运行时的: <a class="link"   target="_blank" rel="noopener" href="https://github.com/cloudflare/workerd" >workerd<i class="fas fa-external-link-alt"></i></a>，所以就算CF挂了，也可以临时把数据库备份拉下来本地跑。数据安全、服务稳不稳我倒是不担心的，唯一需要担心的大约是我的编程水平（雾）</p>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                /post/what-do-you-mean-your-bitwarden-is-running-on-cloudflare-teach-you-how-to-recruit-good-people-2giwvx.html
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    Author
+                </div>
+                <div class="content">qaz741wsd856</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    Published
+                </div>
+                <div class="content">2025-12-01 21:38</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    License
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="Copy copyright info" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="Share to WeChat"
+            data-tooltip-img-tip="Scan by WeChat"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to WeiBo"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/post/clever-use-of-do-to-bypass-the-10ms-cpu-time-limit-of-cloudflare-worker-free-plan-zivolc.html"
+                                   title="巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/post/open-the-fourth-phase-of-da-inner-network-deployment-and-penetrate-the-derp-server-duplicate-20240515-18-59-03-bsx8q.html"
+                                   title="打通大内网第四期 部署并穿透DERP服务器"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">打通大内网第四期 部署并穿透DERP服务器</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E5%8F%AB%E4%BD%A0%E7%9A%84BitWarden%E6%98%AF%E8%B7%91%E5%9C%A8Cloudflare%E4%B8%8A%E7%9A%84%EF%BC%9F%E6%95%99%E4%BD%A0%E8%96%85%E5%B9%B2%E5%A4%A7%E5%96%84%E4%BA%BA%EF%BC%81"><span class="nav-text">什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E6%98%93%E9%83%A8%E7%BD%B2%E6%95%99%E7%A8%8B"><span class="nav-text">简易部署教程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E8%AE%BE%E7%BD%AE-Github-%E9%A1%B9%E7%9B%AE"><span class="nav-text">第一步：设置 Github 项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E4%BB%B6%E6%94%AF%E6%8C%81%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-text">附件支持（可选）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%BB%BA%E8%A1%A8"><span class="nav-text">第二步：建表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E4%B8%8E%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D"><span class="nav-text">第三步：配置环境变量与自定义域名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E5%88%9B%E5%BB%BA%E8%B4%A6%E6%88%B7%E5%B9%B6%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-text">第四步：创建账户并导入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD-S3-Webdav"><span class="nav-text">第五步：配置数据库自动备份(S3&#x2F;Webdav)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#S3"><span class="nav-text">S3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#WebDAV"><span class="nav-text">WebDAV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="nav-text">通用配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E8%AF%B4%E6%98%8E"><span class="nav-text">额外说明</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%AF%B4%E6%98%8E"><span class="nav-text">其他说明</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2020</span>&nbsp;-&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">qaz741wsd856</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+        <div class="count-info info-item">
+            
+
+            
+                <span class="count-item border-box uv">
+                    <span class="item-type border-box">Unique Visitor</span>
+                    <span class="item-value border-box uv" id="busuanzi_value_site_uv"></span>
+                </span>
+            
+
+            
+                <span class="count-item border-box pv">
+                    <span class="item-type border-box">Page View</span>
+                    <span class="item-value border-box pv" id="busuanzi_value_site_pv"></span>
+                </span>
+            
+        </div>
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E5%8F%AB%E4%BD%A0%E7%9A%84BitWarden%E6%98%AF%E8%B7%91%E5%9C%A8Cloudflare%E4%B8%8A%E7%9A%84%EF%BC%9F%E6%95%99%E4%BD%A0%E8%96%85%E5%B9%B2%E5%A4%A7%E5%96%84%E4%BA%BA%EF%BC%81"><span class="nav-text">什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E6%98%93%E9%83%A8%E7%BD%B2%E6%95%99%E7%A8%8B"><span class="nav-text">简易部署教程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E8%AE%BE%E7%BD%AE-Github-%E9%A1%B9%E7%9B%AE"><span class="nav-text">第一步：设置 Github 项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E4%BB%B6%E6%94%AF%E6%8C%81%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-text">附件支持（可选）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%BB%BA%E8%A1%A8"><span class="nav-text">第二步：建表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E4%B8%8E%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D"><span class="nav-text">第三步：配置环境变量与自定义域名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E5%88%9B%E5%BB%BA%E8%B4%A6%E6%88%B7%E5%B9%B6%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-text">第四步：创建账户并导入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD-S3-Webdav"><span class="nav-text">第五步：配置数据库自动备份(S3&#x2F;Webdav)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#S3"><span class="nav-text">S3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#WebDAV"><span class="nav-text">WebDAV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="nav-text">通用配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E8%AF%B4%E6%98%8E"><span class="nav-text">额外说明</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%AF%B4%E6%98%8E"><span class="nav-text">其他说明</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/toggle-theme.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/code-block.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/local-search.js"></script>
+
+
+<!-- lazyload -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/lazyload.js"></script>
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/post-helper.js"></script>
+
+        <!-- toc -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/toc.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/copyright-info.js"></script>
+        
+
+        <!-- share -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/share.js"></script>
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>

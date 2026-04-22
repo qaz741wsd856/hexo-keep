@@ -1,0 +1,8 @@
+---
+title: about
+date: 2024-05-15 18:05:56
+---
+
+该博客由Hexo生成，套用了Keep主题。
+
+该博客上的文章是在思源笔记上编写的，通过发布插件将图片和文章发布至github上，通过Github Action自动生成静态页面并发布至Github Page。

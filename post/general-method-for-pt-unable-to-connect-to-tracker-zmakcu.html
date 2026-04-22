@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="qaz741wsd856">
+    
+    <title>
+        
+            PT连不上Tracker的通用方法 |
+        
+        我的小站
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"我的小站","author":"qaz741wsd856","avatar":"/images/avatar.svg","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":"enable","background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"生命在于折腾！","hitokoto":false},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":null,"category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":false,"img_link":null,"text":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":false,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":true,"site_pv":true,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"valine","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.21"},"waline":{"server_url":null,"reaction":false,"version":2},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":true,"provider":"jsdelivr"},"pjax":{"enable":true},"footer":{"since":2020,"word_count":false,"icp":{"enable":false,"record_code":null,"url":"https://beian.miit.gov.cn"},"site_deploy":{"enable":false,"provider":"github","url":null},"shields_style":{"enable":false,"custom":[{"link_url":null,"img_url":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               我的小站
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        PT连不上Tracker的通用方法
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/avatar.svg">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">qaz741wsd856</span>
+                                
+                                    <span class="author-badge">Lv2</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2026-02-19 21:35:03</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Feb 19 2026 13:42:54 GMT+0000">2026-02-19 21:42:54</span>
+                </span>
+            
+        
+
+        
+
+        
+
+        
+        
+            <span class="meta-info-item post-wordcount">
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>2k Words</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-min2read">
+                <i class="icon fas fa-clock"></i>&nbsp;<span>8 Mins</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <h1 id="PT连不上Tracker的通用方法"><a href="#PT连不上Tracker的通用方法" class="headerlink" title="PT连不上Tracker的通用方法"></a>PT连不上Tracker的通用方法</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>因为目前PT站大多套了Cloudflare CDN，默认IP在中国大陆的访问体验不甚友好，我们需要自行选择较为友好的IP。<br>我最推荐的方式是用<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest" >CloudflareSpeedTest<i class="fas fa-external-link-alt"></i></a>检测适合你的优选IP，Windows用户使用3Proxy转发流量，Linux用户使用mosdns自建dns。这样的好处是所有套了cf cdn的站点都会自动被优选，无需手动添加；并且考虑到Transmission不会主动上报ipv6地址，故添加了ipv6优选。</p>
+<h1 id="直接说结论"><a href="#直接说结论" class="headerlink" title="直接说结论"></a>直接说结论</h1><p>用<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest" >CloudflareSpeedTest<i class="fas fa-external-link-alt"></i></a>检测适合你的优选IP，Windows用户使用3Proxy转发流量，Linux用户使用mosdns自建dns。</p>
+<p>因为目前PT站大多套了Cloudflare CDN，默认IP在中国大陆的访问体验不甚友好，我们需要自行选择较为友好的IP。</p>
+<p><strong>注意</strong>：测速时下载速度为零是正常现象，因为默认的测速域名已被封禁，如需按下载速度优选则需要使用自己的域名，<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest/discussions/490" >参考<i class="fas fa-external-link-alt"></i></a>这里，或者直接使用Cloudflare官方的测试连接<code>https://speed.cloudflare.com/__down?bytes=size</code>​，size建议在100MB以下，即104857600以下。</p>
+<h1 id="OpenWrt-透明代理"><a href="#OpenWrt-透明代理" class="headerlink" title="OpenWrt+透明代理"></a>OpenWrt+透明代理</h1><p>如果你在OpenWrt上配置了透明代理，且路由的性能强劲，可以考虑直接安装路由器版的Mosdns，一般都自带CloudflareIP优选功能，然后将代理的dns指向mosdns。</p>
+<p><strong>注意</strong>：测速时需要暂时关闭代理，或者可以考虑以较为靠后的优先级将<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest/raw/refs/heads/master/ip.txt" >ip.txt<i class="fas fa-external-link-alt"></i></a>中的Cloudflare IP设为直连，在靠前的优先级手动添加你希望走代理的域名。</p>
+<p>当然你也可以现在代理规则中设置一个直连IP，然后用脚本自动更新，具体参考我之后贴出的脚本。</p>
+<p>如果你的路由器性能较弱，可以考虑用iptables直接重定向IP，但这样可能会使路由器无法代理其他设备向Cloudflare发起的请求，参考<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest/discussions/302#discussioncomment-5161187" >这里<i class="fas fa-external-link-alt"></i></a>。</p>
+<h1 id="Windows用户"><a href="#Windows用户" class="headerlink" title="Windows用户"></a>Windows用户</h1><p>如果你的PT客户端直接跑在Windows上，仅需要加速pt站的访问，愿意在HOSTS中手动添加域名，可以参考<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest/discussions/312" >这里<i class="fas fa-external-link-alt"></i></a>。<br>如果希望一劳永逸加速所有的Cloudflare网站，请参考这个<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest/discussions/71" >教程<i class="fas fa-external-link-alt"></i></a>。</p>
+<p>如果你使用了代理，考虑以较为靠后的优先级将<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest/raw/refs/heads/master/ip.txt" >ip.txt<i class="fas fa-external-link-alt"></i></a>中的Cloudflare IP设为直连，在靠前的优先级手动添加你希望走代理的域名。</p>
+<p>默认的3Proxy配置似乎会影响IPv6访问，影不影响peers的连接我还没有测试过。</p>
+<p>请注意，3Proxy无法与运行在Windows上的代理直接共存，需要手动设置回落规则和绕过规则。</p>
+<h1 id="Linux用户"><a href="#Linux用户" class="headerlink" title="Linux用户"></a>Linux用户</h1><p>如果你的PT客户端直接跑在Linux上，仅需要加速pt站的访问，愿意在HOSTS中手动添加域名，可以参考<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest/discussions/312#discussioncomment-5161577" >这里<i class="fas fa-external-link-alt"></i></a>。</p>
+<p>如果希望一劳永逸加速所以的Cloudflare网站，参考<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest/discussions/317" >这里<i class="fas fa-external-link-alt"></i></a>以及我下面的更新脚本。</p>
+<p>为了避免出现奇奇怪怪的问题，如果在本机跑mosdns，可以考虑将端口设为53以外的端口；之后在DNSmasq中添加mosdns的地址。</p>
+<h1 id="Docker用户"><a href="#Docker用户" class="headerlink" title="Docker用户"></a>Docker用户</h1><p>如果你的宿主机不支持或者不建议安装软件（部分NAS），或者无法持久化保存<code>/etc</code>​, <code>/opt</code>​等路径，只能使用Docker，可以参考以下流程：</p>
+<ol>
+<li><p>下载软件和脚本<br> 下载对应架构的<a class="link"   target="_blank" rel="noopener" href="https://github.com/XIU2/CloudflareSpeedTest" >CloudflareSpeedTest<i class="fas fa-external-link-alt"></i></a>，将<code>ip.txt</code>​重命名为<code>cf_ip.txt</code>​，<code>ipv6.txt</code>​重命名为<code>cf_ipv6.txt</code>​。。<br> 编辑脚本<code>cfst_mosdns.sh</code>​如下：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line">PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin</span><br><span class="line"><span class="built_in">export</span> PATH</span><br><span class="line"><span class="comment"># --------------------------------------------------------------</span></span><br><span class="line"><span class="comment">#   项目: CloudflareSpeedTest 自动更新 mosdns 配置</span></span><br><span class="line"><span class="comment">#   版本: 1.2.0</span></span><br><span class="line"><span class="comment">#   作者: XIU2,Sving1024</span></span><br><span class="line"><span class="comment">#   项目: https://github.com/XIU2/CloudflareSpeedTest</span></span><br><span class="line"><span class="comment"># --------------------------------------------------------------</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">_UPDATE</span></span>() &#123;</span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;开始测速...&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 这里可以自己添加、修改 CloudflareST 的运行参数</span></span><br><span class="line">    ./CloudflareST -url <span class="string">&quot;https://speed.cloudflare.com/__down?bytes=104857600&quot;</span> -f <span class="string">&quot;cf_ip.txt&quot;</span> -o <span class="string">&quot;result_hosts.txt&quot;</span></span><br><span class="line"></span><br><span class="line">    [[ ! -e <span class="string">&quot;result_hosts.txt&quot;</span> ]] &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;CloudflareST 测速结果 IP 数量为 0，跳过下面步骤...&quot;</span> &amp;&amp; <span class="built_in">exit</span> 0</span><br><span class="line"></span><br><span class="line">    BESTIP=$(sed -n <span class="string">&quot;2,1p&quot;</span> result_hosts.txt | awk -F, <span class="string">&#x27;&#123;print $1&#125;&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> [[ -z <span class="string">&quot;<span class="variable">$&#123;BESTIP&#125;</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;CloudflareST 测速结果 IP 数量为 0，跳过下面步骤...&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 0</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$&#123;BESTIP&#125;</span> &gt; nowip_hosts.txt</span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;最优 IP 为 <span class="variable">$&#123;BESTIP&#125;</span>\n&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#选取最优IPv6</span></span><br><span class="line">    ./CloudflareST -url <span class="string">&quot;https://speed.cloudflare.com/__down?bytes=104857600&quot;</span> -f <span class="string">&quot;cf_ipv6.txt&quot;</span> -o <span class="string">&quot;result_hosts_v6.txt&quot;</span></span><br><span class="line"></span><br><span class="line">    [[ ! -e <span class="string">&quot;result_hosts_v6.txt&quot;</span> ]] &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;CloudflareST 测速结果 IP 数量为 0，跳过下面步骤...&quot;</span> &amp;&amp; <span class="built_in">exit</span> 0</span><br><span class="line"></span><br><span class="line">    BESTIPV6=$(sed -n <span class="string">&quot;2,1p&quot;</span> result_hosts_v6.txt | awk -F, <span class="string">&#x27;&#123;print $1&#125;&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> [[ -z <span class="string">&quot;<span class="variable">$&#123;BESTIPV6&#125;</span>&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;CloudflareST 测速结果 IP 数量为 0，跳过下面步骤...&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 0</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$&#123;BESTIPV6&#125;</span> &gt; nowipv6_hosts.txt</span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;最优 IP 为 <span class="variable">$&#123;BESTIPV6&#125;</span>\n&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 通过模板更新 YAML 文件</span></span><br><span class="line">    <span class="keyword">if</span> [[ -f <span class="string">&quot;config_template.yaml&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        <span class="keyword">if</span> [[ -f <span class="string">&quot;config.yaml&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">            \<span class="built_in">cp</span> -f config.yaml config.bak</span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot;已备份 config.yaml 到 config.bak&quot;</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">        sed -e <span class="string">&quot;s/\$&#123;&#123;CF_IP&#125;&#125;/<span class="variable">$&#123;BESTIP&#125;</span>/g&quot;</span> -e <span class="string">&quot;s/\$&#123;&#123;CF_IPV6&#125;&#125;/<span class="variable">$&#123;BESTIPV6&#125;</span>/g&quot;</span> config_template.yaml &gt; config.yaml</span><br><span class="line">        <span class="built_in">echo</span> -e <span class="string">&quot;已更新 config.yaml 文件，最佳ipv4: <span class="variable">$&#123;BESTIP&#125;</span>, 最佳ipv6: <span class="variable">$&#123;BESTIPV6&#125;</span>\n&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;config_template.yaml 文件不存在，跳过 YAML 文件更新。&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">_UPDATE</span><br></pre></td></tr></table></figure>
+
+<p> 编辑<code>config_template.yaml</code>​如下：</p>
+ <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">log:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line"><span class="attr">plugins:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">tag:</span> <span class="string">query</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">forward</span></span><br><span class="line">    <span class="attr">args:</span></span><br><span class="line">      <span class="attr">concurrent:</span> <span class="number">2</span></span><br><span class="line">      <span class="attr">upstreams:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">addr:</span> <span class="string">&quot;https://1.12.12.12/dns-query&quot;</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">addr:</span> <span class="string">&quot;https://223.6.6.6/dns-query&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">tag:</span> <span class="string">lazy_cache</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">cache</span></span><br><span class="line">    <span class="attr">args:</span></span><br><span class="line">      <span class="attr">size:</span> <span class="number">10240</span></span><br><span class="line">      <span class="attr">lazy_cache_ttl:</span> <span class="number">86400</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">tag:</span> <span class="string">cf_ips</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">ip_set</span></span><br><span class="line">    <span class="attr">args:</span></span><br><span class="line">      <span class="attr">files:</span> <span class="string">&quot;/etc/mosdns/cf_ip.txt&quot;</span> <span class="comment"># 将 ip.txt 重命名放在 /etc 下</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">tag:</span> <span class="string">cf_ipv6s</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">ip_set</span></span><br><span class="line">    <span class="attr">args:</span></span><br><span class="line">      <span class="attr">files:</span> <span class="string">&quot;/etc/mosdns/cf_ipv6.txt&quot;</span> <span class="comment"># 将 ipv6.txt 重命名放在 /etc 下</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">tag:</span> <span class="string">seq</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">sequence</span></span><br><span class="line">    <span class="attr">args:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">exec:</span> <span class="string">$lazy_cache</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">exec:</span> <span class="string">$query</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">matches:</span> </span><br><span class="line">        <span class="bullet">-</span> <span class="string">qtype</span> <span class="number">1</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">resp_ip</span> <span class="string">$cf_ips</span></span><br><span class="line">        <span class="attr">exec:</span> <span class="string">black_hole</span> <span class="string">$&#123;&#123;CF_IP&#125;&#125;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">matches:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">qtype</span> <span class="number">28</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">resp_ip</span> <span class="string">$cf_ipv6s</span></span><br><span class="line">        <span class="attr">exec:</span> <span class="string">blackhole</span> <span class="string">$&#123;&#123;CF_IPV6&#125;&#125;</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">tag:</span> <span class="string">udp_server</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">udp_server</span></span><br><span class="line">    <span class="attr">args:</span></span><br><span class="line">      <span class="attr">entry:</span> <span class="string">seq</span></span><br><span class="line">      <span class="attr">listen:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span><span class="string">:53</span> <span class="comment"># 只给本机用的话，记得改成 127.0.0.1:53</span></span><br></pre></td></tr></table></figure>
+
+<p> 请自行修改forward后的ip为你希望用的dns<br> 如果你希望使用自己的配置，请在cf优选IP的位置填入<code>$&#123;&#123;CF_IP&#125;&#125;</code>​和<code>$&#123;&#123;CF_IPV6&#125;&#125;</code>​。</p>
+</li>
+<li><p>在MACVLAN或者IPVLAN网络中运行bash容器<br> 如果你配置了透明代理，先添加一个未占用的局域网IP至黑名单（不代理）<br> 把第一步中的所有文件放到合适的目录下，映射到容器中<code>/app</code>​；给bash容器分配刚才设置的局域网IP（示例中为<code>10.1.2.125</code>​），注意修改自定义网络名称<code>br0</code>​为你的Docker对应接口。</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --<span class="built_in">rm</span> --name cfst     --network br0     --ip 10.1.2.125     -v /mnt/user/appdata/mosdns:/app     bash     -c <span class="string">&quot;cd /app &amp;&amp; chmod +x cfst_mosdns.sh &amp;&amp; chmod +x CloudflareST &amp;&amp; ./cfst_mosdns.sh&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p> 检查结果和生成的<code>config.yaml</code>​配置文件。</p>
+</li>
+<li><p>在MACVLAN或者IPVLAN网络中运行mosdns容器<br> 别忘了把<code>cf_ip.txt</code>​、<code>cf_ipv6.txt</code>​和<code>config.yaml</code>​映射进容器。<br> 我的命令如下</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">docker run</span><br><span class="line">  -d</span><br><span class="line">  --name=<span class="string">&#x27;mosdns-1&#x27;</span></span><br><span class="line">  --net=<span class="string">&#x27;br0&#x27;</span></span><br><span class="line">  --ip=<span class="string">&#x27;10.1.2.126&#x27;</span></span><br><span class="line">  -e TZ=<span class="string">&quot;Asia/Shanghai&quot;</span></span><br><span class="line">  -e <span class="string">&#x27;TCP_PORT_53&#x27;</span>=<span class="string">&#x27;53&#x27;</span></span><br><span class="line">  -e <span class="string">&#x27;UDP_PORT_53&#x27;</span>=<span class="string">&#x27;53&#x27;</span></span><br><span class="line">  -v <span class="string">&#x27;/mnt/user/appdata/mosdns/config.yaml&#x27;</span>:<span class="string">&#x27;/etc/mosdns/config.yaml&#x27;</span></span><br><span class="line">  -v <span class="string">&#x27;/mnt/user/appdata/mosdns/cf_ip.txt&#x27;</span>:<span class="string">&#x27;/etc/mosdns/cf_ip.txt&#x27;</span></span><br><span class="line">  -v <span class="string">&#x27;/mnt/user/appdata/mosdns/cf_ipv6.txt&#x27;</span>:<span class="string">&#x27;/etc/mosdns/cf_ipv6.txt&#x27;</span> <span class="string">&#x27;601096721/mosdns&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>修改PT客户端的docker命令<br> 在<code>docker run</code>​后、镜像名前加入<code>--dns 10.1.2.125</code>​参数可以指定容器的dns，注意修改为自己的mosdns的ip。<br> 在unraid中，这个参数加在<code>Extra Parameters</code>​里，其他系统和docker-compose请自行探索。</p>
+</li>
+<li><p>配置计划任务</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env bash</span></span><br><span class="line">docker run --<span class="built_in">rm</span> --name cfst     --network br0     --ip 10.1.2.125     -v /mnt/user/appdata/mosdns:/app     bash     -c <span class="string">&quot;cd /app &amp;&amp; chmod +x cfst_mosdns.sh &amp;&amp; chmod +x CloudflareST &amp;&amp; ./cfst_mosdns.sh&quot;</span></span><br><span class="line">docker restart mosdns-1</span><br></pre></td></tr></table></figure></li>
+</ol>
+<blockquote>
+<p><strong>注意</strong>：一般来说ip优选无需特别频繁，如果你经常看的话，建议发现大规模红种再手动优选，不常看的话一周优选一次也够了；只有在晚高峰线路状况明显变差极个别网络情况下，才需要早晚各优选一次。</p>
+</blockquote>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                PT连不上Tracker的通用方法
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                /post/general-method-for-pt-unable-to-connect-to-tracker-zmakcu.html
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    Author
+                </div>
+                <div class="content">qaz741wsd856</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    Published
+                </div>
+                <div class="content">2026-02-19 21:35</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    License
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="Copy copyright info" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="Share to WeChat"
+            data-tooltip-img-tip="Scan by WeChat"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to WeiBo"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/post/clever-use-of-do-to-bypass-the-10ms-cpu-time-limit-of-cloudflare-worker-free-plan-zivolc.html"
+                                   title="巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PT%E8%BF%9E%E4%B8%8D%E4%B8%8ATracker%E7%9A%84%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-text">PT连不上Tracker的通用方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E8%AF%B4%E7%BB%93%E8%AE%BA"><span class="nav-text">直接说结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenWrt-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86"><span class="nav-text">OpenWrt+透明代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Windows%E7%94%A8%E6%88%B7"><span class="nav-text">Windows用户</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux%E7%94%A8%E6%88%B7"><span class="nav-text">Linux用户</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker%E7%94%A8%E6%88%B7"><span class="nav-text">Docker用户</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2020</span>&nbsp;-&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">qaz741wsd856</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+        <div class="count-info info-item">
+            
+
+            
+                <span class="count-item border-box uv">
+                    <span class="item-type border-box">Unique Visitor</span>
+                    <span class="item-value border-box uv" id="busuanzi_value_site_uv"></span>
+                </span>
+            
+
+            
+                <span class="count-item border-box pv">
+                    <span class="item-type border-box">Page View</span>
+                    <span class="item-value border-box pv" id="busuanzi_value_site_pv"></span>
+                </span>
+            
+        </div>
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PT%E8%BF%9E%E4%B8%8D%E4%B8%8ATracker%E7%9A%84%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-text">PT连不上Tracker的通用方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E8%AF%B4%E7%BB%93%E8%AE%BA"><span class="nav-text">直接说结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenWrt-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86"><span class="nav-text">OpenWrt+透明代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Windows%E7%94%A8%E6%88%B7"><span class="nav-text">Windows用户</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux%E7%94%A8%E6%88%B7"><span class="nav-text">Linux用户</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker%E7%94%A8%E6%88%B7"><span class="nav-text">Docker用户</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/toggle-theme.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/code-block.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/local-search.js"></script>
+
+
+<!-- lazyload -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/lazyload.js"></script>
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/post-helper.js"></script>
+
+        <!-- toc -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/toc.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/copyright-info.js"></script>
+        
+
+        <!-- share -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/share.js"></script>
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>

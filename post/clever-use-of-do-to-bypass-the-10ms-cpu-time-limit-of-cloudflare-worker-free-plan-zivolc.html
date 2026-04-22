@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="qaz741wsd856">
+    
+    <title>
+        
+            巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制 |
+        
+        我的小站
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"我的小站","author":"qaz741wsd856","avatar":"/images/avatar.svg","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":"enable","background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"生命在于折腾！","hitokoto":false},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":null,"category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":false,"img_link":null,"text":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":false,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":true,"site_pv":true,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"valine","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.21"},"waline":{"server_url":null,"reaction":false,"version":2},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":true,"provider":"jsdelivr"},"pjax":{"enable":true},"footer":{"since":2020,"word_count":false,"icp":{"enable":false,"record_code":null,"url":"https://beian.miit.gov.cn"},"site_deploy":{"enable":false,"provider":"github","url":null},"shields_style":{"enable":false,"custom":[{"link_url":null,"img_url":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               我的小站
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/avatar.svg">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">qaz741wsd856</span>
+                                
+                                    <span class="author-badge">Lv2</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2025-12-27 14:40:24</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Sat Dec 27 2025 06:53:13 GMT+0000">2025-12-27 14:53:13</span>
+                </span>
+            
+        
+
+        
+
+        
+
+        
+        
+            <span class="meta-info-item post-wordcount">
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>2.5k Words</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-min2read">
+                <i class="icon fas fa-clock"></i>&nbsp;<span>12 Mins</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <h1 id="巧用DO绕过Cloudflare-Worker免费计划的10ms-CPU时间限制"><a href="#巧用DO绕过Cloudflare-Worker免费计划的10ms-CPU时间限制" class="headerlink" title="巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制"></a>巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>一句话总结：将重计算从Worker卸载到DO中。</p>
+<p>我见网络上有零星的讨论提到可以将CPU任务卸载到DO中，但没找到一篇详细介绍的教程（也可能是我太火星了），官方文档里也没有类似的建议，能查到的主流用法都是维持ws长连接。我又问了一圈AI，也没找到什么有价值的线索，它们给出的回答也不一致（甚至前后不一致），故来水一帖。</p>
+<h1 id="为什么-Duration-Object-可以缓解CPU时间限制"><a href="#为什么-Duration-Object-可以缓解CPU时间限制" class="headerlink" title="为什么 Duration Object 可以缓解CPU时间限制"></a>为什么 Duration Object 可以缓解CPU时间限制</h1><h2 id="什么是-Duration-Object"><a href="#什么是-Duration-Object" class="headerlink" title="什么是 Duration Object"></a>什么是 Duration Object</h2><p>根据官方文档  <a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/durable-objects/concepts/what-are-durable-objects/" >What are Durable Objects?<i class="fas fa-external-link-alt"></i></a>，原文如下：</p>
+<blockquote>
+<p>A Durable Object is a special kind of <a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/workers/" >Cloudflare Worker<i class="fas fa-external-link-alt"></i></a> which uniquely combines compute with storage. Like a Worker, a Durable Object is automatically provisioned geographically close to where it is first requested, starts up quickly when needed, and shuts down when idle. You can have millions of them around the world. However, unlike regular Workers:</p>
+<ul>
+<li>Each Durable Object has a <strong>globally-unique name</strong>, which allows you to send requests to a specific object from anywhere in the world. Thus, a Durable Object can be used to coordinate between multiple clients who need to work together.</li>
+<li>Each Durable Object has some <strong>durable storage</strong> attached. Since this storage lives together with the object, it is strongly consistent yet fast to access.</li>
+</ul>
+<p>Therefore, Durable Objects enable <strong>stateful</strong> serverless applications.</p>
+</blockquote>
+<p>我的英语水平太过于塑料，就不翻译了，简单画一下重点：</p>
+<ul>
+<li>Worker能跑的代码DO基本也能跑</li>
+<li>DO是根据名称（id）来区分实例的，可以单例串行（多Worker共享）也可以多个实例并行</li>
+<li>DO是直接有存储、有状态的</li>
+</ul>
+<p>DO是有状态的这一核心特征我们用不上，我们接着往下看文档。</p>
+<h2 id="计费与限制"><a href="#计费与限制" class="headerlink" title="计费与限制"></a>计费与限制</h2><p>|Duration Object 的计费主要围绕计算和存储展开，计算部分的<a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/durable-objects/platform/pricing/" >额度与计费规则<i class="fas fa-external-link-alt"></i></a>如下：|||</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Free plan</th>
+<th>Paid plan</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Requests</td>
+<td>100,000 &#x2F; day</td>
+<td>1 million, + $0.15&#x2F;million</td>
+</tr>
+<tr>
+<td>Includes HTTP requests, RPC sessions, WebSocket messages, and alarm invocations</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>13,000 GB-s &#x2F; day</td>
+<td>400,000 GB-s, + $12.50&#x2F;million GB-s</td>
+</tr>
+</tbody></table>
+<p>其中有两条脚注需要特别注意：</p>
+<blockquote>
+<p>4 Duration is billed in wall-clock time as long as the Object is active, but is shared across all requests active on an Object at once. Calling <code>accept()</code>​ on a WebSocket in an Object will incur duration charges for the entire time the WebSocket is connected. It is recommended to use the WebSocket Hibernation API to avoid incurring duration charges once all event handlers finish running. For a complete explanation, refer to <a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/durable-objects/platform/pricing/#when-does-a-durable-object-incur-duration-charges" >When does a Durable Object incur duration charges?<i class="fas fa-external-link-alt"></i></a>.</p>
+<p>5 Duration billing charges for the 128 MB of memory your Durable Object is allocated, regardless of actual usage. If your account creates many instances of a single Durable Object class, Durable Objects may run in the same isolate on the same physical machine and share the 128 MB of memory. These Durable Objects are still billed as if they are allocated a full 128 MB of memory.</p>
+</blockquote>
+<p>|这也就是DO是按照挂钟时间×128MB内存来计费的，貌似没提CPU时间的事啊，不急，我们再来看看<a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/durable-objects/platform/limits/" >Limits<i class="fas fa-external-link-alt"></i></a>怎么说:||</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Number of Objects</td>
+<td>Unlimited (within an account or of a given class)</td>
+</tr>
+<tr>
+<td>Maximum Durable Object classes</td>
+<td>500 (Workers Paid) &#x2F; 100 (Free)</td>
+</tr>
+<tr>
+<td>Storage per account</td>
+<td>Unlimited (Workers Paid) &#x2F; 5GB (Free)</td>
+</tr>
+<tr>
+<td>Storage per class</td>
+<td>Unlimited</td>
+</tr>
+<tr>
+<td>Storage per Durable Object</td>
+<td>10 GB</td>
+</tr>
+<tr>
+<td>Key size</td>
+<td>Key and value combined cannot exceed 2 MB</td>
+</tr>
+<tr>
+<td>Value size</td>
+<td>Key and value combined cannot exceed 2 MB</td>
+</tr>
+<tr>
+<td>WebSocket message size</td>
+<td>32 MiB (only for received messages)</td>
+</tr>
+<tr>
+<td>CPU per request</td>
+<td>30 seconds (default) &#x2F; configurable to 5 minutes of <a class="link"   target="_blank" rel="noopener" href="https://developers.cloudflare.com/workers/platform/limits/#cpu-time" >active CPU time<i class="fas fa-external-link-alt"></i></a></td>
+</tr>
+</tbody></table>
+<p>这里的active CPU time就是指的CPU时间，居然没有单独限制免费计划？！</p>
+<p>|我们再来跟Worker的限制对比一下：|||</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Workers Free</th>
+<th>Workers Paid</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Request</td>
+<td>100,000 requests&#x2F;day </br>1000 requests&#x2F;min</td>
+<td>No limit</td>
+</tr>
+<tr>
+<td>Worker memory</td>
+<td>128 MB</td>
+<td>128 MB</td>
+</tr>
+<tr>
+<td>CPU time</td>
+<td>10 ms</td>
+<td>5 min HTTP request </br>15 min Cron Trigger</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>No limit</td>
+<td>No limit for Workers. </br>15 min duration limit for Cron Triggers, Durable Object Alarms and Queue Consumers</td>
+</tr>
+</tbody></table>
+<p>看起来，虽然Worker对免费计划有单独的10ms限制，但DO却没有，那理论上所有请求都用DO处理请求的话，平均CPU时间可以到1.04s？这…这对吗？</p>
+<h1 id="对不对一试便知"><a href="#对不对一试便知" class="headerlink" title="对不对一试便知"></a>对不对一试便知</h1><p><del>剧透一下，对的，从这里开始就是教程了</del></p>
+<h2 id="从一个最简单的Demo开始"><a href="#从一个最简单的Demo开始" class="headerlink" title="从一个最简单的Demo开始"></a>从一个最简单的Demo开始</h2><p>我们来实现一个最简单的处理HTTP请求的DO试试。</p>
+<h3 id="定义-Durable-Object-类"><a href="#定义-Durable-Object-类" class="headerlink" title="定义 Durable Object 类"></a>定义 Durable Object 类</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/index.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">DurableObject</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;cloudflare:workers&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 定义 DO 类，必须 export</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">MyDurableObject</span> <span class="keyword">extends</span> <span class="title class_ inherited__">DurableObject</span>&lt;<span class="title class_">Env</span>&gt; &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"><span class="attr">ctx</span>: <span class="title class_">DurableObjectState</span>, <span class="attr">env</span>: <span class="title class_">Env</span></span>) &#123;</span><br><span class="line">    <span class="variable language_">super</span>(ctx, env);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2. 必须实现 fetch 方法，处理发给这个 DO 的请求</span></span><br><span class="line">  <span class="keyword">async</span> <span class="title function_">fetch</span>(<span class="attr">request</span>: <span class="title class_">Request</span>): <span class="title class_">Promise</span>&lt;<span class="title class_">Response</span>&gt; &#123;</span><br><span class="line">    <span class="comment">// 在这里执行 CPU 密集型操作</span></span><br><span class="line">    <span class="comment">// 可以使用 this.env 获取环境变量绑定</span></span><br><span class="line">    <span class="comment">// 避免使用全局变量，使用 DO 类的成员变量</span></span><br><span class="line">    <span class="keyword">const</span> result = <span class="keyword">await</span> <span class="variable language_">this</span>.<span class="title function_">heavyComputation</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Response</span>.<span class="title function_">json</span>(&#123; result &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">async</span> <span class="title function_">heavyComputation</span>(): <span class="title class_">Promise</span>&lt;<span class="built_in">string</span>&gt; &#123;</span><br><span class="line">    <span class="comment">// 你的 CPU 密集型逻辑</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;done&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="在-wrangler-toml-中绑定"><a href="#在-wrangler-toml-中绑定" class="headerlink" title="在 wrangler.toml 中绑定"></a>在 wrangler.toml 中绑定</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name</span> = <span class="string">&quot;do-cpu-test&quot;</span></span><br><span class="line"><span class="attr">main</span> = <span class="string">&quot;src/index.ts&quot;</span></span><br><span class="line"><span class="attr">compatibility_date</span> = <span class="string">&quot;2024-01-01&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 声明 Durable Object 绑定</span></span><br><span class="line"><span class="section">[durable_objects]</span></span><br><span class="line"><span class="attr">bindings</span> = [</span><br><span class="line">&#123; name = <span class="string">&quot;MY_DO&quot;</span>, class_name = <span class="string">&quot;MyDurableObject&quot;</span> &#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 声明 DO 类的迁移（首次部署必须，免费计划只能使用 SQLite）</span></span><br><span class="line"><span class="section">[[migrations]]</span></span><br><span class="line"><span class="attr">tag</span> = <span class="string">&quot;v1&quot;</span></span><br><span class="line"><span class="attr">new_sqlite_classes</span> = [<span class="string">&quot;MyDurableObject&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="定义-Env-类型"><a href="#定义-Env-类型" class="headerlink" title="定义 Env 类型"></a>定义 Env 类型</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Env</span> &#123;</span><br><span class="line">  <span class="attr">MY_DO</span>: <span class="title class_">DurableObjectNamespace</span>;</span><br><span class="line">  <span class="comment">// 其他绑定...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="从-Worker-调用-DO"><a href="#从-Worker-调用-DO" class="headerlink" title="从 Worker 调用 DO"></a>从 Worker 调用 DO</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="keyword">async</span> <span class="title function_">fetch</span>(<span class="attr">request</span>: <span class="title class_">Request</span>, <span class="attr">env</span>: <span class="title class_">Env</span>): <span class="title class_">Promise</span>&lt;<span class="title class_">Response</span>&gt; &#123;</span><br><span class="line">    <span class="comment">// 获取 DO 实例的 stub</span></span><br><span class="line">    <span class="keyword">const</span> id = env.<span class="property">MY_DO</span>.<span class="title function_">idFromName</span>(<span class="string">&quot;singleton&quot;</span>);</span><br><span class="line">    <span class="keyword">const</span> stub = env.<span class="property">MY_DO</span>.<span class="title function_">get</span>(id);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 直接把请求转发给 DO</span></span><br><span class="line">    <span class="keyword">return</span> stub.<span class="title function_">fetch</span>(request);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="串行复用与并行处理"><a href="#串行复用与并行处理" class="headerlink" title="串行复用与并行处理"></a>串行复用与并行处理</h2><p>还记得之前说过DO是通过名称（id）来识别实例的么？我们可以通过传递id来选择是否创建新的实例。刚才的代码中名称固定是<code>&quot;singleton&quot;</code>，这样每次获取的都是同一个实例，一次只能处理一个请求，这在高并发下会排队，不过优势是可在DO内部维护状态（本文用不到）。</p>
+<p>如果想并行处理：</p>
+<h3 id="每次请求都创建一个新的实例"><a href="#每次请求都创建一个新的实例" class="headerlink" title="每次请求都创建一个新的实例"></a>每次请求都创建一个新的实例</h3><p>可以直接使用<code>newUniqueId()</code>创建新id。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="keyword">async</span> <span class="title function_">fetch</span>(<span class="attr">request</span>: <span class="title class_">Request</span>, <span class="attr">env</span>: <span class="title class_">Env</span>): <span class="title class_">Promise</span>&lt;<span class="title class_">Response</span>&gt; &#123;</span><br><span class="line">    <span class="comment">// newUniqueId() 每次返回全新的实例</span></span><br><span class="line">    <span class="keyword">const</span> id = env.<span class="property">MY_DO</span>.<span class="title function_">newUniqueId</span>();</span><br><span class="line">    <span class="keyword">const</span> stub = env.<span class="property">MY_DO</span>.<span class="title function_">get</span>(id);</span><br><span class="line">    <span class="keyword">return</span> stub.<span class="title function_">fetch</span>(request);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="按需区分（如请求参数、用户id）"><a href="#按需区分（如请求参数、用户id）" class="headerlink" title="按需区分（如请求参数、用户id）"></a>按需区分（如请求参数、用户id）</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="keyword">async</span> <span class="title function_">fetch</span>(<span class="attr">request</span>: <span class="title class_">Request</span>, <span class="attr">env</span>: <span class="title class_">Env</span>): <span class="title class_">Promise</span>&lt;<span class="title class_">Response</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> url = <span class="keyword">new</span> <span class="title function_">URL</span>(request.<span class="property">url</span>);</span><br><span class="line">    <span class="comment">// 用 URL 参数作为实例名称</span></span><br><span class="line">    <span class="keyword">const</span> instanceName = url.<span class="property">searchParams</span>.<span class="title function_">get</span>(<span class="string">&quot;name&quot;</span>) || <span class="string">&quot;default&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> id = env.<span class="property">MY_DO</span>.<span class="title function_">idFromName</span>(instanceName);</span><br><span class="line">    <span class="keyword">const</span> stub = env.<span class="property">MY_DO</span>.<span class="title function_">get</span>(id);</span><br><span class="line">    <span class="keyword">return</span> stub.<span class="title function_">fetch</span>(request);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="完整的示例"><a href="#完整的示例" class="headerlink" title="完整的示例"></a>完整的示例</h2><p>这里我实现了两个端点，分别在Worker和DO中执行PBKDF2迭代，来模拟实际CPU密集任务。<br>用法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Worker 内执行（很快会撞 CPU 限制）</span></span><br><span class="line">curl <span class="string">&quot;https://your-worker.workers.dev/worker/pbkdf2?iters=100000&amp;reps=100&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># DO 内执行（可以随便跑，reps拉倒1000都行）</span></span><br><span class="line">curl <span class="string">&quot;https://your-worker.workers.dev/do/pbkdf2?iters=100000&amp;reps=100&amp;name=bench&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="wrangler-toml"><a href="#wrangler-toml" class="headerlink" title="wrangler.toml"></a>wrangler.toml</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name</span> = <span class="string">&quot;do-cpu-test&quot;</span></span><br><span class="line"><span class="attr">main</span> = <span class="string">&quot;src/index.ts&quot;</span></span><br><span class="line"><span class="attr">compatibility_date</span> = <span class="string">&quot;2025-12-25&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[durable_objects]</span></span><br><span class="line"><span class="attr">bindings</span> = [</span><br><span class="line">  &#123; name = <span class="string">&quot;CPU_DO&quot;</span>, class_name = <span class="string">&quot;CpuDo&quot;</span> &#125;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="section">[[migrations]]</span></span><br><span class="line"><span class="attr">tag</span> = <span class="string">&quot;v1&quot;</span></span><br><span class="line"><span class="attr">new_sqlite_classes</span> = [<span class="string">&quot;CpuDo&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="src-index-ts"><a href="#src-index-ts" class="headerlink" title="src&#x2F;index.ts"></a>src&#x2F;index.ts</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// &lt;reference types=&quot;@cloudflare/workers-types&quot; /&gt;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">DurableObject</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;cloudflare:workers&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> <span class="title class_">Env</span> &#123;</span><br><span class="line">  <span class="attr">CPU_DO</span>: <span class="title class_">DurableObjectNamespace</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ============ 工具函数：PBKDF2 烧 CPU ============</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">burnCpu</span>(<span class="params"><span class="attr">iters</span>: <span class="built_in">number</span>, <span class="attr">reps</span>: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> password = <span class="string">&quot;benchmark-password&quot;</span>;</span><br><span class="line">  <span class="keyword">const</span> salt = crypto.<span class="title function_">getRandomValues</span>(<span class="keyword">new</span> <span class="title class_">Uint8Array</span>(<span class="number">16</span>));</span><br><span class="line">  <span class="keyword">const</span> enc = <span class="keyword">new</span> <span class="title class_">TextEncoder</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> keyMaterial = <span class="keyword">await</span> crypto.<span class="property">subtle</span>.<span class="title function_">importKey</span>(</span><br><span class="line">    <span class="string">&quot;raw&quot;</span>,</span><br><span class="line">    enc.<span class="title function_">encode</span>(password),</span><br><span class="line">    <span class="string">&quot;PBKDF2&quot;</span>,</span><br><span class="line">    <span class="literal">false</span>,</span><br><span class="line">    [<span class="string">&quot;deriveBits&quot;</span>]</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> t0 = performance.<span class="title function_">now</span>();</span><br><span class="line">  <span class="keyword">let</span> lastHash = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> r = <span class="number">0</span>; r &lt; reps; r++) &#123;</span><br><span class="line">    <span class="keyword">const</span> bits = <span class="keyword">await</span> crypto.<span class="property">subtle</span>.<span class="title function_">deriveBits</span>(</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">name</span>: <span class="string">&quot;PBKDF2&quot;</span>,</span><br><span class="line">        salt,</span><br><span class="line">        <span class="attr">iterations</span>: iters,</span><br><span class="line">        <span class="attr">hash</span>: <span class="string">&quot;SHA-256&quot;</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">      keyMaterial,</span><br><span class="line">      <span class="number">256</span></span><br><span class="line">    );</span><br><span class="line">    lastHash = [...<span class="keyword">new</span> <span class="title class_">Uint8Array</span>(bits)]</span><br><span class="line">      .<span class="title function_">map</span>(<span class="function">(<span class="params">b</span>) =&gt;</span> b.<span class="title function_">toString</span>(<span class="number">16</span>).<span class="title function_">padStart</span>(<span class="number">2</span>, <span class="string">&quot;0&quot;</span>))</span><br><span class="line">      .<span class="title function_">join</span>(<span class="string">&quot;&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">params</span>: &#123; iters, reps, <span class="attr">totalIterations</span>: iters * reps &#125;,</span><br><span class="line">    <span class="attr">timing</span>: &#123; <span class="attr">wallMs</span>: <span class="title class_">Math</span>.<span class="title function_">round</span>(performance.<span class="title function_">now</span>() - t0) &#125;,</span><br><span class="line">    <span class="attr">output</span>: lastHash,</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ============ Durable Object 类 ============</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">CpuDO</span> <span class="keyword">extends</span> <span class="title class_ inherited__">DurableObject</span>&lt;<span class="title class_">Env</span>&gt; &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span></span><br><span class="line"><span class="params">    <span class="attr">ctx</span>: <span class="title class_">DurableObjectState</span>,</span></span><br><span class="line"><span class="params">    <span class="attr">env</span>: <span class="title class_">Env</span></span></span><br><span class="line"><span class="params">  </span>) &#123;</span><br><span class="line">    <span class="variable language_">super</span>(ctx, env);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> <span class="title function_">fetch</span>(<span class="attr">request</span>: <span class="title class_">Request</span>): <span class="title class_">Promise</span>&lt;<span class="title class_">Response</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> url = <span class="keyword">new</span> <span class="title function_">URL</span>(request.<span class="property">url</span>);</span><br><span class="line">    <span class="keyword">const</span> iters = <span class="title class_">Math</span>.<span class="title function_">min</span>(<span class="built_in">parseInt</span>(url.<span class="property">searchParams</span>.<span class="title function_">get</span>(<span class="string">&quot;iters&quot;</span>) || <span class="string">&quot;100000&quot;</span>), <span class="number">100000</span>);</span><br><span class="line">    <span class="keyword">const</span> reps = <span class="title class_">Math</span>.<span class="title function_">min</span>(<span class="built_in">parseInt</span>(url.<span class="property">searchParams</span>.<span class="title function_">get</span>(<span class="string">&quot;reps&quot;</span>) || <span class="string">&quot;1&quot;</span>), <span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> result = <span class="keyword">await</span> <span class="title function_">burnCpu</span>(iters, reps);</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Response</span>.<span class="title function_">json</span>(&#123;</span><br><span class="line">      <span class="attr">executor</span>: <span class="string">&quot;DurableObject&quot;</span>,</span><br><span class="line">      <span class="attr">instanceId</span>: <span class="variable language_">this</span>.<span class="property">ctx</span>.<span class="property">id</span>.<span class="title function_">toString</span>(),</span><br><span class="line">      ...result,</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ============ Worker 入口 ============</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="keyword">async</span> <span class="title function_">fetch</span>(<span class="attr">request</span>: <span class="title class_">Request</span>, <span class="attr">env</span>: <span class="title class_">Env</span>): <span class="title class_">Promise</span>&lt;<span class="title class_">Response</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> url = <span class="keyword">new</span> <span class="title function_">URL</span>(request.<span class="property">url</span>);</span><br><span class="line">    <span class="keyword">const</span> path = url.<span class="property">pathname</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 路由：Worker 内执行</span></span><br><span class="line">    <span class="keyword">if</span> (path === <span class="string">&quot;/worker/pbkdf2&quot;</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> iters = <span class="title class_">Math</span>.<span class="title function_">min</span>(<span class="built_in">parseInt</span>(url.<span class="property">searchParams</span>.<span class="title function_">get</span>(<span class="string">&quot;iters&quot;</span>) || <span class="string">&quot;100000&quot;</span>), <span class="number">100000</span>);</span><br><span class="line">      <span class="keyword">const</span> reps = <span class="title class_">Math</span>.<span class="title function_">min</span>(<span class="built_in">parseInt</span>(url.<span class="property">searchParams</span>.<span class="title function_">get</span>(<span class="string">&quot;reps&quot;</span>) || <span class="string">&quot;1&quot;</span>), <span class="number">1000</span>);</span><br><span class="line">      <span class="keyword">const</span> result = <span class="keyword">await</span> <span class="title function_">burnCpu</span>(iters, reps);</span><br><span class="line">      <span class="keyword">return</span> <span class="title class_">Response</span>.<span class="title function_">json</span>(&#123; <span class="attr">executor</span>: <span class="string">&quot;Worker&quot;</span>, ...result &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 路由：DO 内执行</span></span><br><span class="line">    <span class="keyword">if</span> (path === <span class="string">&quot;/do/pbkdf2&quot;</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> name = url.<span class="property">searchParams</span>.<span class="title function_">get</span>(<span class="string">&quot;name&quot;</span>) || <span class="string">&quot;default&quot;</span>;</span><br><span class="line">      <span class="keyword">const</span> id = env.<span class="property">CPU_DO</span>.<span class="title function_">idFromName</span>(name);</span><br><span class="line">      <span class="keyword">const</span> stub = env.<span class="property">CPU_DO</span>.<span class="title function_">get</span>(id);</span><br><span class="line">      <span class="keyword">return</span> stub.<span class="title function_">fetch</span>(request);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Response</span>.<span class="title function_">json</span>(&#123;</span><br><span class="line">      <span class="attr">endpoints</span>: &#123;</span><br><span class="line">        <span class="string">&quot;/worker/pbkdf2?iters=N&amp;reps=M&quot;</span>: <span class="string">&quot;在 Worker 内执行（受 10ms CPU 限制）&quot;</span>,</span><br><span class="line">        <span class="string">&quot;/do/pbkdf2?iters=N&amp;reps=M&amp;name=X&quot;</span>: <span class="string">&quot;在 DO 内执行（按 Duration 计费）&quot;</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="package-json"><a href="#package-json" class="headerlink" title="package.json"></a>package.json</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;do-cpu-test&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;dev&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wrangler dev&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;dev:remote&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wrangler dev --remote&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;deploy&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wrangler deploy&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;devDependencies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;@cloudflare/workers-types&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^4.20251201.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;typescript&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^5.7.3&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;wrangler&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^4.34.0&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p>我直接把reps拉到1000，除了玄学1101外没遇到别的限制。<br>​<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://files.seeusercontent.com/2026/04/22/5ixC/WZP2zy4QvG.png"
+                        alt="WZP2zy4QvG.png"
+                 ><br>这个CPU时间是free plan的Worker跑到冒烟都跑不出来的。</p>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>现在可以回答开头的问题了：<strong>这对，DO真的是30s CPU时间</strong>，只是DO还可能会受一些别的限制，比如释放不及时、同一台物理机上的DO会共用128M内存、创建DO和往返需要额外挂钟时间等。</p>
+<p>现在我们来通俗的总结一下免费计划中Worker和DO的区别，<del>这就像是占着茅</del><br>还是文雅的总结一下好了，这就像是在一家会员制餐厅里：</p>
+<ul>
+<li>Worker是点餐的：点了多少才能吃多少（CPU时间限制），但是这个座位想占多久占多久（挂钟时间不限制）</li>
+<li>Durable Object是吃自助餐的：按座位数×时间算钱，但占着座位的时候可以一直猛猛吃。</li>
+</ul>
+<p>无脑DO不可取，但适当利用可以极大拓展免费版Worker的可能，比如可以采用自实现的高迭代次数的密码hash、解析大体积JSON……</p>
+<p>不知各位在用Worker构建项目时是否也遇到了CPU时间限制的困扰呢？也许DO就是你项目的最后一块拼图。</p>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                /post/clever-use-of-do-to-bypass-the-10ms-cpu-time-limit-of-cloudflare-worker-free-plan-zivolc.html
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    Author
+                </div>
+                <div class="content">qaz741wsd856</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    Published
+                </div>
+                <div class="content">2025-12-27 14:40</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    License
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="Copy copyright info" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="Share to WeChat"
+            data-tooltip-img-tip="Scan by WeChat"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="Share to WeiBo"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/post/general-method-for-pt-unable-to-connect-to-tracker-zmakcu.html"
+                                   title="PT连不上Tracker的通用方法"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">PT连不上Tracker的通用方法</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/post/what-do-you-mean-your-bitwarden-is-running-on-cloudflare-teach-you-how-to-recruit-good-people-2giwvx.html"
+                                   title="什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">什么叫你的BitWarden是跑在Cloudflare上的？教你薅干大善人！</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A7%E7%94%A8DO%E7%BB%95%E8%BF%87Cloudflare-Worker%E5%85%8D%E8%B4%B9%E8%AE%A1%E5%88%92%E7%9A%8410ms-CPU%E6%97%B6%E9%97%B4%E9%99%90%E5%88%B6"><span class="nav-text">巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-Duration-Object-%E5%8F%AF%E4%BB%A5%E7%BC%93%E8%A7%A3CPU%E6%97%B6%E9%97%B4%E9%99%90%E5%88%B6"><span class="nav-text">为什么 Duration Object 可以缓解CPU时间限制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Duration-Object"><span class="nav-text">什么是 Duration Object</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E8%B4%B9%E4%B8%8E%E9%99%90%E5%88%B6"><span class="nav-text">计费与限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E4%B8%8D%E5%AF%B9%E4%B8%80%E8%AF%95%E4%BE%BF%E7%9F%A5"><span class="nav-text">对不对一试便知</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E4%B8%80%E4%B8%AA%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84Demo%E5%BC%80%E5%A7%8B"><span class="nav-text">从一个最简单的Demo开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-Durable-Object-%E7%B1%BB"><span class="nav-text">定义 Durable Object 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-wrangler-toml-%E4%B8%AD%E7%BB%91%E5%AE%9A"><span class="nav-text">在 wrangler.toml 中绑定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-Env-%E7%B1%BB%E5%9E%8B"><span class="nav-text">定义 Env 类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E-Worker-%E8%B0%83%E7%94%A8-DO"><span class="nav-text">从 Worker 调用 DO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%B2%E8%A1%8C%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%B9%B6%E8%A1%8C%E5%A4%84%E7%90%86"><span class="nav-text">串行复用与并行处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AF%8F%E6%AC%A1%E8%AF%B7%E6%B1%82%E9%83%BD%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E5%AE%9E%E4%BE%8B"><span class="nav-text">每次请求都创建一个新的实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%89%E9%9C%80%E5%8C%BA%E5%88%86%EF%BC%88%E5%A6%82%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E3%80%81%E7%94%A8%E6%88%B7id%EF%BC%89"><span class="nav-text">按需区分（如请求参数、用户id）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84%E7%A4%BA%E4%BE%8B"><span class="nav-text">完整的示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#wrangler-toml"><span class="nav-text">wrangler.toml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#src-index-ts"><span class="nav-text">src&#x2F;index.ts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#package-json"><span class="nav-text">package.json</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-text">结论</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2020</span>&nbsp;-&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">qaz741wsd856</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+        <div class="count-info info-item">
+            
+
+            
+                <span class="count-item border-box uv">
+                    <span class="item-type border-box">Unique Visitor</span>
+                    <span class="item-value border-box uv" id="busuanzi_value_site_uv"></span>
+                </span>
+            
+
+            
+                <span class="count-item border-box pv">
+                    <span class="item-type border-box">Page View</span>
+                    <span class="item-value border-box pv" id="busuanzi_value_site_pv"></span>
+                </span>
+            
+        </div>
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A7%E7%94%A8DO%E7%BB%95%E8%BF%87Cloudflare-Worker%E5%85%8D%E8%B4%B9%E8%AE%A1%E5%88%92%E7%9A%8410ms-CPU%E6%97%B6%E9%97%B4%E9%99%90%E5%88%B6"><span class="nav-text">巧用DO绕过Cloudflare Worker免费计划的10ms CPU时间限制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-Duration-Object-%E5%8F%AF%E4%BB%A5%E7%BC%93%E8%A7%A3CPU%E6%97%B6%E9%97%B4%E9%99%90%E5%88%B6"><span class="nav-text">为什么 Duration Object 可以缓解CPU时间限制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Duration-Object"><span class="nav-text">什么是 Duration Object</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E8%B4%B9%E4%B8%8E%E9%99%90%E5%88%B6"><span class="nav-text">计费与限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E4%B8%8D%E5%AF%B9%E4%B8%80%E8%AF%95%E4%BE%BF%E7%9F%A5"><span class="nav-text">对不对一试便知</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E4%B8%80%E4%B8%AA%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84Demo%E5%BC%80%E5%A7%8B"><span class="nav-text">从一个最简单的Demo开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-Durable-Object-%E7%B1%BB"><span class="nav-text">定义 Durable Object 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-wrangler-toml-%E4%B8%AD%E7%BB%91%E5%AE%9A"><span class="nav-text">在 wrangler.toml 中绑定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-Env-%E7%B1%BB%E5%9E%8B"><span class="nav-text">定义 Env 类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E-Worker-%E8%B0%83%E7%94%A8-DO"><span class="nav-text">从 Worker 调用 DO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%B2%E8%A1%8C%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%B9%B6%E8%A1%8C%E5%A4%84%E7%90%86"><span class="nav-text">串行复用与并行处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AF%8F%E6%AC%A1%E8%AF%B7%E6%B1%82%E9%83%BD%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E5%AE%9E%E4%BE%8B"><span class="nav-text">每次请求都创建一个新的实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%89%E9%9C%80%E5%8C%BA%E5%88%86%EF%BC%88%E5%A6%82%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E3%80%81%E7%94%A8%E6%88%B7id%EF%BC%89"><span class="nav-text">按需区分（如请求参数、用户id）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84%E7%A4%BA%E4%BE%8B"><span class="nav-text">完整的示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#wrangler-toml"><span class="nav-text">wrangler.toml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#src-index-ts"><span class="nav-text">src&#x2F;index.ts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#package-json"><span class="nav-text">package.json</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-text">结论</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/toggle-theme.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/code-block.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/local-search.js"></script>
+
+
+<!-- lazyload -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/lazyload.js"></script>
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/post-helper.js"></script>
+
+        <!-- toc -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/toc.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/copyright-info.js"></script>
+        
+
+        <!-- share -->
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/post/share.js"></script>
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@4.2.5/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>
